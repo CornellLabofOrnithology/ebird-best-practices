@@ -9,7 +9,7 @@ documentclass: book
 bibliography: [references.bib, packages.bib]
 biblio-style: apalike
 link-citations: yes
-github-repo: mstrimas/ebird-good-practices
+github-repo: cornelllabofornithology/ebird-good-practices
 description: "Best practices for using eBird data to estimate species distributions"
 ---
 
@@ -20,4 +20,4 @@ description: "Best practices for using eBird data to estimate species distributi
 
 A preprint of the paper associated with this book is currently [available on bioRxiv](https://www.biorxiv.org/content/10.1101/574392v2).
 
-This book is a living document that will be regularly updated. To submit fixes or suggest additions and improvements to the book, please file an [issue on GitHub](https://github.com/mstrimas/ebird-best-practices/issues).
+This book is a living document that will be regularly updated. To submit fixes or suggest additions and improvements to the book, please file an [issue on GitHub](https://github.com/cornelllabofornithology/ebird-best-practices/issues).

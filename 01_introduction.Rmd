@@ -33,7 +33,7 @@ To understand the code examples used throughout this book, some knowledge of the
 
 ### Data package {#intro-setup-data}
 
-The first two chapters of this book focus on obtaining and preparing eBird and land cover data for the modeling that will occur in the remaining chapters. These steps can be time consuming and laborious. If you'd like to skip straight to the analysis, [**download this package of prepared data**](https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip). Unzip this file so that the contents are in the `data/` subdirectory of your RStudio project folder. This will allow you to jump right in to the modeling and ensure that you're using exactly the same data as was used when creating this book. This is a good option if you don't have enough hard drive space to store the full eBird data set, which is more than 200GB, or don't have a fast enough internet connection to download it.
+The first two chapters of this book focus on obtaining and preparing eBird and land cover data for the modeling that will occur in the remaining chapters. These steps can be time consuming and laborious. If you'd like to skip straight to the analysis, [**download this package of prepared data**](https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip). Unzip this file so that the contents are in the `data/` subdirectory of your RStudio project folder. This will allow you to jump right in to the modeling and ensure that you're using exactly the same data as was used when creating this book. This is a good option if you don't have enough hard drive space to store the full eBird data set, which is more than 200GB, or don't have a fast enough internet connection to download it.
 
 ### Software {#intro-setup-software}
 
@@ -109,7 +109,7 @@ You now have access to the full eBird dataset! Note, however, that **the EBD is 
 
 Throughout this book, we'll be producing maps of species distributions. To provide context for these distributions, we'll need GIS data for political boundaries. [Natural Earth](https://www.naturalearthdata.com/) is the best source for a range of tightly integrated vector and raster GIS data for producing professional cartographic maps. The R package, [`rnaturalearth`](https://github.com/ropensci/rnaturalearth) provides a convenient method for accessing these data from within R. We'll also need [Bird Conservation Region (BCR)](http://nabci-us.org/resources/bird-conservation-regions/) boundaries, which are available through [Bird Studies Canada](https://www.birdscanada.org/research/gislab/index.jsp?targetpg=bcr&targetpg=bcr).
 
-These GIS data layers are most easily accessed by [**downloading the data package**](https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip) for this book. 
+These GIS data layers are most easily accessed by [**downloading the data package**](https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip) for this book. 
 These data were generated using the following code. If you intend to run this code yourself, first create an RStudio project, so the files will be stored within the `data/` subdirectory of the project. This will allow us to load these data in later chapters as they're needed. Note that calls to `ne_download()` often produce warnings suggesting that you've used the incorrect "category"; these can safely be ignored.
 
 ```{r intro-setup-gis, eval = FALSE}

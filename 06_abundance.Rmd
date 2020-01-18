@@ -16,7 +16,7 @@ In some respects, the abundance model presented here is similar to the encounter
 
 ## Data preparation {#abundance-data}
 
-Let's start by loading the necessary packages and data. If you created or downloaded the files needed to follow the analyses in the previous chapters, you may want to [download the data package](https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip) and unzip it to your project directory. Because we're modeling abundance in this chapter, we'll remove any records for which the observer reported that Wood Thrush was present, but didn't report a count of the number of species (coded as 'X' records in the eBird database).
+Let's start by loading the necessary packages and data. If you created or downloaded the files needed to follow the analyses in the previous chapters, you may want to [download the data package](https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip) and unzip it to your project directory. Because we're modeling abundance in this chapter, we'll remove any records for which the observer reported that Wood Thrush was present, but didn't report a count of the number of species (coded as 'X' records in the eBird database).
 
 ```{r abundance-intro-data} 
 library(lubridate)
