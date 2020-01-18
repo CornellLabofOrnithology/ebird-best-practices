@@ -13,7 +13,7 @@
   
   
   <meta property="og:description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="github-repo" content="mstrimas/ebird-good-practices" />
+  <meta name="github-repo" content="cornelllabofornithology/ebird-good-practices" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Chapter 2 eBird Data | Best Practices for Using eBird Data" />
@@ -326,7 +326,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb7-10" data-line-number="10"><span class="cf">if</span> (<span class="op">!</span><span class="kw">file.exists</span>(f_ebd)) {</a>
 <a class="sourceLine" id="cb7-11" data-line-number="11">  <span class="kw">auk_filter</span>(ebd_filters, <span class="dt">file =</span> f_ebd, <span class="dt">file_sampling =</span> f_sampling)</a>
 <a class="sourceLine" id="cb7-12" data-line-number="12">}</a></code></pre></div>
-<p>These files are now a few megabytes rather than hundreds of gigabytes, which means they can easily be read into R! Don’t feel like waiting for <code>auk_filter()</code> to run? <a href="https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip">Download the data package</a> mentioned in the introduction to get a copy of the EBD subset for Wood Thrush in June in BCR27 and proceed to the next section; just make sure you load the packages in the first code chunk before proceeding.</p>
+<p>These files are now a few megabytes rather than hundreds of gigabytes, which means they can easily be read into R! Don’t feel like waiting for <code>auk_filter()</code> to run? <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip">Download the data package</a> mentioned in the introduction to get a copy of the EBD subset for Wood Thrush in June in BCR27 and proceed to the next section; just make sure you load the packages in the first code chunk before proceeding.</p>
 </div>
 <div id="ebird-zf" class="section level2">
 <h2><span class="header-section-number">2.3</span> Importing and zero-filling</h2>
@@ -382,11 +382,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb11-9" data-line-number="9">         duration_minutes, effort_distance_km,</a>
 <a class="sourceLine" id="cb11-10" data-line-number="10">         number_observers)</a>
 <a class="sourceLine" id="cb11-11" data-line-number="11"><span class="kw">write_csv</span>(ebird, <span class="st">&quot;data/ebd_woothr_june_bcr27_zf.csv&quot;</span>, <span class="dt">na =</span> <span class="st">&quot;&quot;</span>)</a></code></pre></div>
-<p>If you’d like to ensure you’re using exactly the same data as was used to generate this book, download the <a href="https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip">data package</a> mentioned in the <a href="intro.html#intro-setup-data">setup instructions</a> and place the contents in the <code>data/</code> subdirectory of your project directory.</p>
+<p>If you’d like to ensure you’re using exactly the same data as was used to generate this book, download the <a href="https://raw.githubusercontent.com/cornelllabofornithology/ebird-best-practices/master/data.zip">data package</a> mentioned in the <a href="intro.html#intro-setup-data">setup instructions</a> and place the contents in the <code>data/</code> subdirectory of your project directory.</p>
 </div>
 <div id="ebird-explore" class="section level2">
 <h2><span class="header-section-number">2.5</span> Exploratory analysis and visualization</h2>
-<p>Before proceeding to fitting species distribution models with these data, it’s worth exploring the dataset to see what we’re working with. Let’s start by making a simple map of the observations. This map uses GIS data available for <a href="https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip">download in the data package</a>. Place the contents of the zip file in the <code>data/</code> subdirectory of your project directory.</p>
+<p>Before proceeding to fitting species distribution models with these data, it’s worth exploring the dataset to see what we’re working with. Let’s start by making a simple map of the observations. This map uses GIS data available for <a href="https://raw.githubusercontent.com/cornelllabofornithology/ebird-best-practices/master/data.zip">download in the data package</a>. Place the contents of the zip file in the <code>data/</code> subdirectory of your project directory.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co"># load and project gis data</span></a>
 <a class="sourceLine" id="cb12-2" data-line-number="2">map_proj &lt;-<span class="st"> </span><span class="kw">st_crs</span>(<span class="dv">102003</span>)</a>
 <a class="sourceLine" id="cb12-3" data-line-number="3">ne_land &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_land&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>

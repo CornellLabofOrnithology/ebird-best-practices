@@ -13,7 +13,7 @@
   
   
   <meta property="og:description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="github-repo" content="mstrimas/ebird-good-practices" />
+  <meta name="github-repo" content="cornelllabofornithology/ebird-good-practices" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Chapter 5 Modeling Occupancy | Best Practices for Using eBird Data" />
@@ -251,7 +251,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">5.1</span> Introduction</h2>
 <p>In this chapter, we’ll cover the basic steps for applying <strong>occupancy models</strong> to eBird data. In Chapter <a href="encounter.html#encounter">4</a>, we used analytical approaches that accounted for variation in detectability by including covariates that are known to influence detection rates (e.g. effort) that are incorporated into the model simultaneously with the covariates that influence occurrence. In contrast, occupancy models jointly model the ecological process of species occurrence <em>and</em> the observation process of species detection as parallel models. The application of these models typically requires data from repeated sampling visits (occasions) to a single site during a time frame over which the population can be considered closed to the appearance or disappearance of birds. Although the majority of eBird checklists do not meet these requirements, it is possible to apply occupancy models to eBird data by extracting a subset of the data that do conform to a repeat-sampling data structure. Here, we present a simple example of how to process eBird data to meet the assumptions of occupancy models. To illustrate our example, we apply a single-season occupancy model to estimate occupancy and detection probabilities for Wood Thrush in the month of June for BCR 27.
 This chapter differs from the previous chapter on modeling encounter rate in two important ways. First, the random forest model used in Chapter <a href="encounter.html#encounter">4</a> is an example of a <a href="https://en.wikipedia.org/wiki/Machine_learning">machine learning</a> approach, while the occupancy models used in this chapter use a more traditional likelihood approach. This latter class of statistical models are widely used for addressing specific questions and hypotheses, while the goal of machine learning is primarily to identify patterns and make predictions <span class="citation">(Bzdok, Altman, and Krzywinski <a href="#ref-bzdokPointsSignificanceStatistics2018">2018</a>)</span>. Second, machine learning approaches can accommodate complex non-linear effects and interactions between covariates, and are useful when modeling habitat associations that can vary across large spatial and temporal scales. In contrast, occupancy models are well suited for describing linear effects and simpler interactions. In this example, we specifically focus on the mechanics of filtering and formatting the data to fit occupancy models, and less on the specifics of model selection and how to choose suitable predictor variables for estimating detection and occupancy probabilities. The predictors we do include are informed by our inferences on variable importance scores from the random forest model in Chapter <a href="encounter.html#encounter">4</a>, as well as our existing knowledge of the species being modeled.</p>
-<p>If you worked through the previous chapters, you should have all the data necessary for this chapter. You can also <a href="https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip">download the data package</a>, and unzip it to your project directory.</p>
+<p>If you worked through the previous chapters, you should have all the data necessary for this chapter. You can also <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip">download the data package</a>, and unzip it to your project directory.</p>
 <div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" data-line-number="1"><span class="kw">library</span>(auk)</a>
 <a class="sourceLine" id="cb52-2" data-line-number="2"><span class="kw">library</span>(lubridate)</a>
 <a class="sourceLine" id="cb52-3" data-line-number="3"><span class="kw">library</span>(sf)</a>
@@ -397,31 +397,38 @@ This chapter differs from the previous chapter on modeling encounter rate in two
 <a class="sourceLine" id="cb57-12" data-line-number="12"><span class="co">#&gt; 2125  128 3587 </span></a>
 <a class="sourceLine" id="cb57-13" data-line-number="13"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb57-14" data-line-number="14"><span class="co">#&gt; Site-level covariates:</span></a>
-<a class="sourceLine" id="cb57-15" data-line-number="15"><span class="co">#&gt;  n_observations     latitude      longitude        pland_04        pland_05        pland_12        pland_13    </span></a>
-<a class="sourceLine" id="cb57-16" data-line-number="16"><span class="co">#&gt;  Min.   : 2.00   Min.   :29.7   Min.   :-91.4   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :0.000  </span></a>
-<a class="sourceLine" id="cb57-17" data-line-number="17"><span class="co">#&gt;  1st Qu.: 2.00   1st Qu.:31.2   1st Qu.:-85.6   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000  </span></a>
-<a class="sourceLine" id="cb57-18" data-line-number="18"><span class="co">#&gt;  Median : 2.00   Median :33.1   Median :-81.4   Median :0.000   Median :0.000   Median :0.000   Median :0.000  </span></a>
-<a class="sourceLine" id="cb57-19" data-line-number="19"><span class="co">#&gt;  Mean   : 3.86   Mean   :33.2   Mean   :-82.0   Mean   :0.052   Mean   :0.047   Mean   :0.025   Mean   :0.159  </span></a>
-<a class="sourceLine" id="cb57-20" data-line-number="20"><span class="co">#&gt;  3rd Qu.: 5.00   3rd Qu.:35.1   3rd Qu.:-78.3   3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:0.203  </span></a>
-<a class="sourceLine" id="cb57-21" data-line-number="21"><span class="co">#&gt;  Max.   :10.00   Max.   :37.4   Max.   :-75.5   Max.   :1.000   Max.   :1.000   Max.   :1.000   Max.   :1.000  </span></a>
-<a class="sourceLine" id="cb57-22" data-line-number="22"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb57-23" data-line-number="23"><span class="co">#&gt; Observation-level covariates:</span></a>
-<a class="sourceLine" id="cb57-24" data-line-number="24"><span class="co">#&gt;  time_observations_started duration_minutes effort_distance_km number_observers protocol_type     </span></a>
-<a class="sourceLine" id="cb57-25" data-line-number="25"><span class="co">#&gt;  Min.   : 0                Min.   :  1      Min.   :0          Min.   :1        Length:5840       </span></a>
-<a class="sourceLine" id="cb57-26" data-line-number="26"><span class="co">#&gt;  1st Qu.: 8                1st Qu.: 16      1st Qu.:0          1st Qu.:1        Class :character  </span></a>
-<a class="sourceLine" id="cb57-27" data-line-number="27"><span class="co">#&gt;  Median :10                Median : 35      Median :0          Median :1        Mode  :character  </span></a>
-<a class="sourceLine" id="cb57-28" data-line-number="28"><span class="co">#&gt;  Mean   :12                Mean   : 53      Mean   :1          Mean   :1                          </span></a>
-<a class="sourceLine" id="cb57-29" data-line-number="29"><span class="co">#&gt;  3rd Qu.:16                3rd Qu.: 70      3rd Qu.:1          3rd Qu.:1                          </span></a>
-<a class="sourceLine" id="cb57-30" data-line-number="30"><span class="co">#&gt;  Max.   :24                Max.   :300      Max.   :5          Max.   :4                          </span></a>
-<a class="sourceLine" id="cb57-31" data-line-number="31"><span class="co">#&gt;  NA&#39;s   :3587              NA&#39;s   :3587     NA&#39;s   :3587       NA&#39;s   :3587                       </span></a>
-<a class="sourceLine" id="cb57-32" data-line-number="32"><span class="co">#&gt;     pland_04       pland_05   </span></a>
-<a class="sourceLine" id="cb57-33" data-line-number="33"><span class="co">#&gt;  Min.   :0      Min.   :0     </span></a>
-<a class="sourceLine" id="cb57-34" data-line-number="34"><span class="co">#&gt;  1st Qu.:0      1st Qu.:0     </span></a>
-<a class="sourceLine" id="cb57-35" data-line-number="35"><span class="co">#&gt;  Median :0      Median :0     </span></a>
-<a class="sourceLine" id="cb57-36" data-line-number="36"><span class="co">#&gt;  Mean   :0      Mean   :0     </span></a>
-<a class="sourceLine" id="cb57-37" data-line-number="37"><span class="co">#&gt;  3rd Qu.:0      3rd Qu.:0     </span></a>
-<a class="sourceLine" id="cb57-38" data-line-number="38"><span class="co">#&gt;  Max.   :1      Max.   :1     </span></a>
-<a class="sourceLine" id="cb57-39" data-line-number="39"><span class="co">#&gt;  NA&#39;s   :3587   NA&#39;s   :3587</span></a></code></pre></div>
+<a class="sourceLine" id="cb57-15" data-line-number="15"><span class="co">#&gt;  n_observations     latitude      longitude        pland_04        pland_05        pland_12    </span></a>
+<a class="sourceLine" id="cb57-16" data-line-number="16"><span class="co">#&gt;  Min.   : 2.00   Min.   :29.7   Min.   :-91.4   Min.   :0.000   Min.   :0.000   Min.   :0.000  </span></a>
+<a class="sourceLine" id="cb57-17" data-line-number="17"><span class="co">#&gt;  1st Qu.: 2.00   1st Qu.:31.2   1st Qu.:-85.6   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000  </span></a>
+<a class="sourceLine" id="cb57-18" data-line-number="18"><span class="co">#&gt;  Median : 2.00   Median :33.1   Median :-81.4   Median :0.000   Median :0.000   Median :0.000  </span></a>
+<a class="sourceLine" id="cb57-19" data-line-number="19"><span class="co">#&gt;  Mean   : 3.86   Mean   :33.2   Mean   :-82.0   Mean   :0.052   Mean   :0.047   Mean   :0.025  </span></a>
+<a class="sourceLine" id="cb57-20" data-line-number="20"><span class="co">#&gt;  3rd Qu.: 5.00   3rd Qu.:35.1   3rd Qu.:-78.3   3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:0.000  </span></a>
+<a class="sourceLine" id="cb57-21" data-line-number="21"><span class="co">#&gt;  Max.   :10.00   Max.   :37.4   Max.   :-75.5   Max.   :1.000   Max.   :1.000   Max.   :1.000  </span></a>
+<a class="sourceLine" id="cb57-22" data-line-number="22"><span class="co">#&gt;     pland_13    </span></a>
+<a class="sourceLine" id="cb57-23" data-line-number="23"><span class="co">#&gt;  Min.   :0.000  </span></a>
+<a class="sourceLine" id="cb57-24" data-line-number="24"><span class="co">#&gt;  1st Qu.:0.000  </span></a>
+<a class="sourceLine" id="cb57-25" data-line-number="25"><span class="co">#&gt;  Median :0.000  </span></a>
+<a class="sourceLine" id="cb57-26" data-line-number="26"><span class="co">#&gt;  Mean   :0.159  </span></a>
+<a class="sourceLine" id="cb57-27" data-line-number="27"><span class="co">#&gt;  3rd Qu.:0.203  </span></a>
+<a class="sourceLine" id="cb57-28" data-line-number="28"><span class="co">#&gt;  Max.   :1.000  </span></a>
+<a class="sourceLine" id="cb57-29" data-line-number="29"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb57-30" data-line-number="30"><span class="co">#&gt; Observation-level covariates:</span></a>
+<a class="sourceLine" id="cb57-31" data-line-number="31"><span class="co">#&gt;  time_observations_started duration_minutes effort_distance_km number_observers protocol_type     </span></a>
+<a class="sourceLine" id="cb57-32" data-line-number="32"><span class="co">#&gt;  Min.   : 0                Min.   :  1      Min.   :0          Min.   :1        Length:5840       </span></a>
+<a class="sourceLine" id="cb57-33" data-line-number="33"><span class="co">#&gt;  1st Qu.: 8                1st Qu.: 16      1st Qu.:0          1st Qu.:1        Class :character  </span></a>
+<a class="sourceLine" id="cb57-34" data-line-number="34"><span class="co">#&gt;  Median :10                Median : 35      Median :0          Median :1        Mode  :character  </span></a>
+<a class="sourceLine" id="cb57-35" data-line-number="35"><span class="co">#&gt;  Mean   :12                Mean   : 53      Mean   :1          Mean   :1                          </span></a>
+<a class="sourceLine" id="cb57-36" data-line-number="36"><span class="co">#&gt;  3rd Qu.:16                3rd Qu.: 70      3rd Qu.:1          3rd Qu.:1                          </span></a>
+<a class="sourceLine" id="cb57-37" data-line-number="37"><span class="co">#&gt;  Max.   :24                Max.   :300      Max.   :5          Max.   :4                          </span></a>
+<a class="sourceLine" id="cb57-38" data-line-number="38"><span class="co">#&gt;  NA&#39;s   :3587              NA&#39;s   :3587     NA&#39;s   :3587       NA&#39;s   :3587                       </span></a>
+<a class="sourceLine" id="cb57-39" data-line-number="39"><span class="co">#&gt;     pland_04       pland_05   </span></a>
+<a class="sourceLine" id="cb57-40" data-line-number="40"><span class="co">#&gt;  Min.   :0      Min.   :0     </span></a>
+<a class="sourceLine" id="cb57-41" data-line-number="41"><span class="co">#&gt;  1st Qu.:0      1st Qu.:0     </span></a>
+<a class="sourceLine" id="cb57-42" data-line-number="42"><span class="co">#&gt;  Median :0      Median :0     </span></a>
+<a class="sourceLine" id="cb57-43" data-line-number="43"><span class="co">#&gt;  Mean   :0      Mean   :0     </span></a>
+<a class="sourceLine" id="cb57-44" data-line-number="44"><span class="co">#&gt;  3rd Qu.:0      3rd Qu.:0     </span></a>
+<a class="sourceLine" id="cb57-45" data-line-number="45"><span class="co">#&gt;  Max.   :1      Max.   :1     </span></a>
+<a class="sourceLine" id="cb57-46" data-line-number="46"><span class="co">#&gt;  NA&#39;s   :3587   NA&#39;s   :3587</span></a></code></pre></div>
 </div>
 </div>
 <div id="occupancy-model" class="section level2">

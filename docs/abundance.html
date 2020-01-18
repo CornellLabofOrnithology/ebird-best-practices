@@ -13,7 +13,7 @@
   
   
   <meta property="og:description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="github-repo" content="mstrimas/ebird-good-practices" />
+  <meta name="github-repo" content="cornelllabofornithology/ebird-good-practices" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Chapter 6 Modeling Relative Abundance | Best Practices for Using eBird Data" />
@@ -255,7 +255,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="abundance-data" class="section level2">
 <h2><span class="header-section-number">6.2</span> Data preparation</h2>
-<p>Let’s start by loading the necessary packages and data. If you created or downloaded the files needed to follow the analyses in the previous chapters, you may want to <a href="https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip">download the data package</a> and unzip it to your project directory. Because we’re modeling abundance in this chapter, we’ll remove any records for which the observer reported that Wood Thrush was present, but didn’t report a count of the number of species (coded as ‘X’ records in the eBird database).</p>
+<p>Let’s start by loading the necessary packages and data. If you created or downloaded the files needed to follow the analyses in the previous chapters, you may want to <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip">download the data package</a> and unzip it to your project directory. Because we’re modeling abundance in this chapter, we’ll remove any records for which the observer reported that Wood Thrush was present, but didn’t report a count of the number of species (coded as ‘X’ records in the eBird database).</p>
 <div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb69-1" data-line-number="1"><span class="kw">library</span>(lubridate)</a>
 <a class="sourceLine" id="cb69-2" data-line-number="2"><span class="kw">library</span>(sf)</a>
 <a class="sourceLine" id="cb69-3" data-line-number="3"><span class="kw">library</span>(raster)</a>

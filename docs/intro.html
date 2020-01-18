@@ -13,7 +13,7 @@
   
   
   <meta property="og:description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="github-repo" content="mstrimas/ebird-good-practices" />
+  <meta name="github-repo" content="cornelllabofornithology/ebird-good-practices" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Chapter 1 Introduction and Setup | Best Practices for Using eBird Data" />
@@ -271,7 +271,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">1.3</span> Setup</h2>
 <div id="intro-setup-data" class="section level3">
 <h3><span class="header-section-number">1.3.1</span> Data package</h3>
-<p>The first two chapters of this book focus on obtaining and preparing eBird and land cover data for the modeling that will occur in the remaining chapters. These steps can be time consuming and laborious. If you’d like to skip straight to the analysis, <a href="https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip"><strong>download this package of prepared data</strong></a>. Unzip this file so that the contents are in the <code>data/</code> subdirectory of your RStudio project folder. This will allow you to jump right in to the modeling and ensure that you’re using exactly the same data as was used when creating this book. This is a good option if you don’t have enough hard drive space to store the full eBird data set, which is more than 200GB, or don’t have a fast enough internet connection to download it.</p>
+<p>The first two chapters of this book focus on obtaining and preparing eBird and land cover data for the modeling that will occur in the remaining chapters. These steps can be time consuming and laborious. If you’d like to skip straight to the analysis, <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip"><strong>download this package of prepared data</strong></a>. Unzip this file so that the contents are in the <code>data/</code> subdirectory of your RStudio project folder. This will allow you to jump right in to the modeling and ensure that you’re using exactly the same data as was used when creating this book. This is a good option if you don’t have enough hard drive space to store the full eBird data set, which is more than 200GB, or don’t have a fast enough internet connection to download it.</p>
 </div>
 <div id="intro-setup-software" class="section level3">
 <h3><span class="header-section-number">1.3.2</span> Software</h3>
@@ -345,7 +345,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="intro-setup-gis" class="section level3">
 <h3><span class="header-section-number">1.3.6</span> GIS data</h3>
 <p>Throughout this book, we’ll be producing maps of species distributions. To provide context for these distributions, we’ll need GIS data for political boundaries. <a href="https://www.naturalearthdata.com/">Natural Earth</a> is the best source for a range of tightly integrated vector and raster GIS data for producing professional cartographic maps. The R package, <a href="https://github.com/ropensci/rnaturalearth"><code>rnaturalearth</code></a> provides a convenient method for accessing these data from within R. We’ll also need <a href="http://nabci-us.org/resources/bird-conservation-regions/">Bird Conservation Region (BCR)</a> boundaries, which are available through <a href="https://www.birdscanada.org/research/gislab/index.jsp?targetpg=bcr&amp;targetpg=bcr">Bird Studies Canada</a>.</p>
-<p>These GIS data layers are most easily accessed by <a href="https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip"><strong>downloading the data package</strong></a> for this book.
+<p>These GIS data layers are most easily accessed by <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip"><strong>downloading the data package</strong></a> for this book.
 These data were generated using the following code. If you intend to run this code yourself, first create an RStudio project, so the files will be stored within the <code>data/</code> subdirectory of the project. This will allow us to load these data in later chapters as they’re needed. Note that calls to <code>ne_download()</code> often produce warnings suggesting that you’ve used the incorrect “category”; these can safely be ignored.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">library</span>(sf)</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(rnaturalearth)</a>
