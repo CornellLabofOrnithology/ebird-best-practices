@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 1 Introduction and Setup | Best Practices for Using eBird Data</title>
+  <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
+  <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 1 Introduction and Setup | Best Practices for Using eBird Data" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Best practices for using eBird data to estimate species distributions" />
+  <meta name="github-repo" content="mstrimas/ebird-good-practices" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 1 Introduction and Setup | Best Practices for Using eBird Data" />
+  
+  <meta name="twitter:description" content="Best practices for using eBird data to estimate species distributions" />
+  
+
+<meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="ebird.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135911366-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-135911366-1');
+</script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">eBird Best Practices</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction and Setup</a><ul>
+<li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#intro-intro"><i class="fa fa-check"></i><b>1.1</b> Introduction</a></li>
+<li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#intro-pre"><i class="fa fa-check"></i><b>1.2</b> Prerequisites</a></li>
+<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a><ul>
+<li class="chapter" data-level="1.3.1" data-path="intro.html"><a href="intro.html#intro-setup-data"><i class="fa fa-check"></i><b>1.3.1</b> Data package</a></li>
+<li class="chapter" data-level="1.3.2" data-path="intro.html"><a href="intro.html#intro-setup-software"><i class="fa fa-check"></i><b>1.3.2</b> Software</a></li>
+<li class="chapter" data-level="1.3.3" data-path="intro.html"><a href="intro.html#intro-setup-packages"><i class="fa fa-check"></i><b>1.3.3</b> R packages</a></li>
+<li class="chapter" data-level="1.3.4" data-path="intro.html"><a href="intro.html#intro-setup-tidyverse"><i class="fa fa-check"></i><b>1.3.4</b> Tidyverse</a></li>
+<li class="chapter" data-level="1.3.5" data-path="intro.html"><a href="intro.html#intro-setup-ebird"><i class="fa fa-check"></i><b>1.3.5</b> Getting eBird data access</a></li>
+<li class="chapter" data-level="1.3.6" data-path="intro.html"><a href="intro.html#intro-setup-gis"><i class="fa fa-check"></i><b>1.3.6</b> GIS data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="ebird.html"><a href="ebird.html"><i class="fa fa-check"></i><b>2</b> eBird Data</a><ul>
+<li class="chapter" data-level="2.1" data-path="ebird.html"><a href="ebird.html#ebird-intro"><i class="fa fa-check"></i><b>2.1</b> Introduction</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="ebird.html"><a href="ebird.html#ebird-intro-tax"><i class="fa fa-check"></i><b>2.1.1</b> eBird taxonomy</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="ebird.html"><a href="ebird.html#ebird-extract"><i class="fa fa-check"></i><b>2.2</b> Data extraction with <code>auk</code></a></li>
+<li class="chapter" data-level="2.3" data-path="ebird.html"><a href="ebird.html#ebird-zf"><i class="fa fa-check"></i><b>2.3</b> Importing and zero-filling</a></li>
+<li class="chapter" data-level="2.4" data-path="ebird.html"><a href="ebird.html#ebird-detect"><i class="fa fa-check"></i><b>2.4</b> Accounting for variation in detectability</a></li>
+<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="ebird.html"><a href="ebird.html#ebird-explore-time"><i class="fa fa-check"></i><b>2.5.1</b> Time of day</a></li>
+<li class="chapter" data-level="2.5.2" data-path="ebird.html"><a href="ebird.html#ebird-explore-duration"><i class="fa fa-check"></i><b>2.5.2</b> Checklist duration</a></li>
+<li class="chapter" data-level="2.5.3" data-path="ebird.html"><a href="ebird.html#ebird-explore-distance"><i class="fa fa-check"></i><b>2.5.3</b> Distance traveled</a></li>
+<li class="chapter" data-level="2.5.4" data-path="ebird.html"><a href="ebird.html#number-of-observers-ebird-explore-observers"><i class="fa fa-check"></i><b>2.5.4</b> Number of observers {#ebird-explore-observers,}</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="ebird.html"><a href="ebird.html#ebird-size"><i class="fa fa-check"></i><b>2.6</b> EBD file size issues</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="ebird.html"><a href="ebird.html#ebird-size-custom"><i class="fa fa-check"></i><b>2.6.1</b> Custom downloads</a></li>
+<li class="chapter" data-level="2.6.2" data-path="ebird.html"><a href="ebird.html#ebird-size-strict"><i class="fa fa-check"></i><b>2.6.2</b> Stricter filtering</a></li>
+<li class="chapter" data-level="2.6.3" data-path="ebird.html"><a href="ebird.html#ebird-size-columns"><i class="fa fa-check"></i><b>2.6.3</b> Removing columns</a></li>
+<li class="chapter" data-level="2.6.4" data-path="ebird.html"><a href="ebird.html#ebird-size-split"><i class="fa fa-check"></i><b>2.6.4</b> Splitting by species</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="covariates.html"><a href="covariates.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a><ul>
+<li class="chapter" data-level="3.1" data-path="covariates.html"><a href="covariates.html#covariates-intro"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="covariates.html"><a href="covariates.html#covariates-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="covariates.html"><a href="covariates.html#covariates-dl-setup"><i class="fa fa-check"></i><b>3.2.1</b> <code>MODIS</code> setup</a></li>
+<li class="chapter" data-level="3.2.2" data-path="covariates.html"><a href="covariates.html#covariates-dl-r"><i class="fa fa-check"></i><b>3.2.2</b> Download using R</a></li>
+<li class="chapter" data-level="3.2.3" data-path="covariates.html"><a href="covariates.html#covariates-dl-trouble"><i class="fa fa-check"></i><b>3.2.3</b> Troubleshooting</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="covariates.html"><a href="covariates.html#covariates-lsm"><i class="fa fa-check"></i><b>3.3</b> Landscape metrics</a></li>
+<li class="chapter" data-level="3.4" data-path="covariates.html"><a href="covariates.html#covariates-prediction"><i class="fa fa-check"></i><b>3.4</b> Prediction surface</a></li>
+<li class="chapter" data-level="3.5" data-path="covariates.html"><a href="covariates.html#covariates-elevation"><i class="fa fa-check"></i><b>3.5</b> Elevation</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a><ul>
+<li class="chapter" data-level="4.1" data-path="encounter.html"><a href="encounter.html#encouter-intro"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="encounter.html"><a href="encounter.html#encounter-data"><i class="fa fa-check"></i><b>4.2</b> Data preparation</a></li>
+<li class="chapter" data-level="4.3" data-path="encounter.html"><a href="encounter.html#encounter-sss"><i class="fa fa-check"></i><b>4.3</b> Spatiotemporal subsampling</a></li>
+<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="encounter.html"><a href="encounter.html#encounter-rf-cal"><i class="fa fa-check"></i><b>4.4.1</b> Calibration</a></li>
+<li class="chapter" data-level="4.4.2" data-path="encounter.html"><a href="encounter.html#encounter-rf-assess"><i class="fa fa-check"></i><b>4.4.2</b> Assessment</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Habitat associations</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pi"><i class="fa fa-check"></i><b>4.5.1</b> Predictor importance</a></li>
+<li class="chapter" data-level="4.5.2" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pd"><i class="fa fa-check"></i><b>4.5.2</b> Partial dependence</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="encounter.html"><a href="encounter.html#encounter-predict"><i class="fa fa-check"></i><b>4.6</b> Prediction</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a><ul>
+<li class="chapter" data-level="5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-intro"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
+<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.2.1</b> Data formatting</a></li>
+<li class="chapter" data-level="5.2.2" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.2.2</b> Spatial subsampling</a></li>
+<li class="chapter" data-level="5.2.3" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.2.3</b> <code>unmarked</code> object</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.3.1</b> Assessment</a></li>
+<li class="chapter" data-level="5.3.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.3.2</b> Model selection</a></li>
+<li class="chapter" data-level="5.3.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-detection"><i class="fa fa-check"></i><b>5.3.3</b> Exploring detection model submodel</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.4</b> Prediction</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a><ul>
+<li class="chapter" data-level="6.1" data-path="abundance.html"><a href="abundance.html#abundance-intro"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.2" data-path="abundance.html"><a href="abundance.html#abundance-data"><i class="fa fa-check"></i><b>6.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="abundance.html"><a href="abundance.html#abundance-data-sss"><i class="fa fa-check"></i><b>6.2.1</b> Spatiotemporal subsampling</a></li>
+<li class="chapter" data-level="6.2.2" data-path="abundance.html"><a href="abundance.html#abundance-data-tt"><i class="fa fa-check"></i><b>6.2.2</b> Test-train split</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="abundance.html"><a href="abundance.html#abundance-explore"><i class="fa fa-check"></i><b>6.3</b> Exploratory data analysis</a></li>
+<li class="chapter" data-level="6.4" data-path="abundance.html"><a href="abundance.html#abundance-model"><i class="fa fa-check"></i><b>6.4</b> Abundance models</a></li>
+<li class="chapter" data-level="6.5" data-path="abundance.html"><a href="abundance.html#abundance-assess"><i class="fa fa-check"></i><b>6.5</b> Asssessment</a><ul>
+<li class="chapter" data-level="6.5.1" data-path="abundance.html"><a href="abundance.html#abundance-assess-rank"><i class="fa fa-check"></i><b>6.5.1</b> Predictive performance: Ranking</a></li>
+<li class="chapter" data-level="6.5.2" data-path="abundance.html"><a href="abundance.html#abundance-assess-mag"><i class="fa fa-check"></i><b>6.5.2</b> Predictive performance: Magnitude</a></li>
+<li class="chapter" data-level="6.5.3" data-path="abundance.html"><a href="abundance.html#abundance-assess-cov"><i class="fa fa-check"></i><b>6.5.3</b> Assessing covariate effects</a></li>
+</ul></li>
+<li class="chapter" data-level="6.6" data-path="abundance.html"><a href="abundance.html#abundance-predict"><i class="fa fa-check"></i><b>6.6</b> Prediction</a></li>
+<li class="chapter" data-level="6.7" data-path="abundance.html"><a href="abundance.html#abundance-final"><i class="fa fa-check"></i><b>6.7</b> Final thoughts</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Best Practices for Using eBird Data</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="intro" class="section level1">
+<h1><span class="header-section-number">Chapter 1</span> Introduction and Setup</h1>
+<div id="intro-intro" class="section level2">
+<h2><span class="header-section-number">1.1</span> Introduction</h2>
+<p>Citizen science data are increasingly making important contributions to ecological research and conservation. One of the most common forms of citizen science data is derived from members of the public recording species observations. <a href="https://ebird.org/">eBird</a> <span class="citation">(Sullivan et al. <a href="#ref-sullivanEBirdEnterpriseIntegrated2014">2014</a>)</span> is the largest of these biological citizen science programs. As of January 2019, the database contained nearly 600 million bird observations from every country in the world, with observations of nearly every bird species on Earth. The eBird database is valuable to researchers across the globe, due to its year-round, broad spatial coverage, high volumes of <a href="https://en.wikipedia.org/wiki/Open_data">open access</a> data, and applications to many ecological questions. These data have been widely used in scientific research to study phenology, species distributions, population trends, evolution, behavior, global change, and conservation. However, robust inference with eBird data requires careful processing of the data to address the challenges associated with citizen science datasets. This book, and the <a href="https://www.biorxiv.org/content/10.1101/574392v1">associated paper</a>, outlines a set of best practices for addressing these challenges and making reliable estimates of species distributions from eBird data.</p>
+<p>There are two key characteristics that distinguish eBird from many other citizen science projects and facilitate robust ecological analyses: the checklist structure enables non-detection to be inferred and the effort information associated with a checklist facilitates robust analyses by accounting for variation in the observation process <span class="citation">(La Sorte et al. <a href="#ref-lasorteOpportunitiesChallengesBig2018">2018</a>; Kelling et al. <a href="#ref-kellingFindingSignalNoise2018">2018</a>)</span>. When a participant submits data to eBird, sightings of multiple species from the same observation period are grouped together into a single <strong>checklist</strong>. <strong>Complete checklists</strong> are those for which the participant reported all birds that they were able to detect and identify. Critically, this enables scientists to infer counts of zero individuals for the species that were not reported. If checklists are not complete, it’s not possible to ascertain whether the absence of a species on a list was a non-detection or the result of a participant not recording the species. In addition, citizen science projects occur on a spectrum from those with predefined sampling structures that resemble more traditional survey designs, to those that are unstructured and collect observations opportunistically. eBird is a <strong>semi-structured</strong> project, having flexible, easy to follow protocols that attract many participants, but also collecting data on the observation process (e.g. amount of time spent birding, number of observers, etc.), which can be used in subsequent analyses <span class="citation">(Kelling et al. <a href="#ref-kellingFindingSignalNoise2018">2018</a>)</span>.</p>
+<p>Despite the strengths of eBird data, species observations collected through citizen science projects present a number of challenges that are not found in conventional scientific data. The following are some of the primary challenges associated these data; challenges that will be addressed throughout this book:</p>
+<ul>
+<li><strong>Taxonomic bias:</strong> participants often have preferences for certain species, which may lead to preferential recording of some species over others <span class="citation">(Greenwood <a href="#ref-greenwoodCitizensScienceBird2007">2007</a>; Tulloch and Szabo <a href="#ref-tullochBehaviouralEcologyApproach2012">2012</a>)</span>. Restricting analyses to complete checklists largely mitigates this issue.</li>
+<li><strong>Spatial bias:</strong> most participants in citizen science surveys sample near their homes <span class="citation">(Luck et al. <a href="#ref-luckAlleviatingSpatialConflict2004">2004</a>)</span>, in easily accessible areas such as roadsides <span class="citation">(Kadmon, Farber, and Danin <a href="#ref-kadmonEffectRoadsideBias2004">2004</a>)</span>, or in areas and habitats of known high biodiversity <span class="citation">(Prendergast et al. <a href="#ref-prendergastCorrectingVariationRecording1993">1993</a>)</span>. A simple method to reduce the spatial bias that we describe is to create an equal area grid over the region of interest, and sample a given number of checklists from within each grid cell.</li>
+<li><strong>Temporal bias:</strong> participants preferentially sample when they are available, such as weekends <span class="citation">(Courter et al. <a href="#ref-courterWeekendBiasCitizen2013">2013</a>)</span>, and at times of year when they expect to observe more birds, notably during spring migration <span class="citation">(Sullivan et al. <a href="#ref-sullivanEBirdEnterpriseIntegrated2014">2014</a>)</span>. To address the weekend bias, we recommend using a temporal scale of a week or multiple weeks for most analyses.</li>
+<li><strong>Spatial precision:</strong> the spatial location of an eBird checklist is given as a single latitude-longitude point; however, this may not be precise for two main reasons. First, for traveling checklists, this location represents just one point on the journey. Second, eBird checklists are often assigned to a <strong>hotspot</strong> (a common location for all birders visiting a popular birding site) rather than their true location. For these reasons, it’s not appropriate to align the eBird locations with very precise habitat covariates, and we recommend summarizing covariates within a neighborhood around the checklist location.</li>
+<li><strong>Class imbalance:</strong> bird species that are rare or hard to detect may have data with high class imbalance, with many more checklists with non-detections than detections. For these species, a distribution model predicting that the species is absent everywhere will have high accuracy, but no ecological value. We’ll follow the methods for addressing class imbalance proposed by Robinson et al. <span class="citation">(<a href="#ref-robinsonUsingCitizenScience2018">2018</a>)</span>.</li>
+<li><strong>Variation in detectability:</strong> detectability describes the probability of a species that is present in an area being detected and identified. Detectability varies by season, habitat, and species <span class="citation">(Johnston et al. <a href="#ref-johnstonSpeciesTraitsExplain2014">2014</a>, <a href="#ref-johnstonEstimatesObserverExpertise2018">2018</a>)</span>. Furthermore, eBird data are collected with high variation in effort, time of day, number of observers, and external conditions such as weather, all of which can affect the detectability of species <span class="citation">(Ellis and Taylor <a href="#ref-ellisEffectsWeatherTime2018">2018</a>; Oliveira et al. <a href="#ref-oliveiraObservationDiurnalSoaring2018">2018</a>)</span>. Therefore, detectability is particularly important to consider when comparing between seasons, habitats or species. Since eBird uses a semi-structured protocol, that collects variables associated with variation in detectability, we’ll be able to account for a larger proportion of this variation in our analyses.</li>
+</ul>
+<p>The remainder of this book will demonstrate how to address these challenges using real data from eBird to produce reliable estimates of species distributions. In general, we’ll take a two-pronged approach to dealing with unstructured data and maximizing the value of citizen science data: imposing more structure onto the data via data filtering and including covariates in models to account for the remaining variation.</p>
+<p>The next two chapters show how to access and prepare <a href="ebird.html#ebird">eBird data</a> and <a href="covariates.html#covariates">land cover covariates</a>, respectively. The remaining three chapters provide examples of different species distribution models that can be fit using these data: <a href="encounter.html#encounter">encounter rate models</a>, <a href="occupancy.html#occupancy">occupancy models</a>, and <a href="abundance.html#abundance">abundance models</a>. Although these examples focus on the use of eBird data, in many cases they also apply to similar citizen science datasets.</p>
+</div>
+<div id="intro-pre" class="section level2">
+<h2><span class="header-section-number">1.2</span> Prerequisites</h2>
+<p>To understand the code examples used throughout this book, some knowledge of the programming language <a href="https://www.r-project.org/">R</a> is required. If you don’t meet this requirement, or begin to feel lost trying to understand the code used in this book, we suggest consulting one of the excellent free resources available online for learning R. For those with little or no prior programming experience, <a href="https://rstudio-education.github.io/hopr/">Hands-On Programming with R</a> is an excellent introduction. For those with some familiarity with the basics of R that want to take their skills to the next level, we suggest <a href="https://r4ds.had.co.nz/">R for Data Science</a> as the best resource for learning how to work with data within R.</p>
+</div>
+<div id="intro-setup" class="section level2">
+<h2><span class="header-section-number">1.3</span> Setup</h2>
+<div id="intro-setup-data" class="section level3">
+<h3><span class="header-section-number">1.3.1</span> Data package</h3>
+<p>The first two chapters of this book focus on obtaining and preparing eBird and land cover data for the modeling that will occur in the remaining chapters. These steps can be time consuming and laborious. If you’d like to skip straight to the analysis, <a href="https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip"><strong>download this package of prepared data</strong></a>. Unzip this file so that the contents are in the <code>data/</code> subdirectory of your RStudio project folder. This will allow you to jump right in to the modeling and ensure that you’re using exactly the same data as was used when creating this book. This is a good option if you don’t have enough hard drive space to store the full eBird data set, which is more than 200GB, or don’t have a fast enough internet connection to download it.</p>
+</div>
+<div id="intro-setup-software" class="section level3">
+<h3><span class="header-section-number">1.3.2</span> Software</h3>
+<p>The examples throughout this website use the programming language <strong>R</strong> <span class="citation">(R Core Team <a href="#ref-R-base">2018</a>)</span> to work with eBird data. If you don’t have R installed, <a href="https://cloud.r-project.org/">download it now</a>, if you already have R, chances are you’re using an outdated version, so <a href="https://cloud.r-project.org/">update it to the latest version now</a>. R is updated regularly, and <strong>it is important that you have the most recent version of R</strong> to avoid headaches when installing packages. We suggest checking every couple months to see if a new version has been released.</p>
+<p>We strongly encourage R users to use <strong>RStudio</strong>. RStudio is not required to follow along with this book; however, it will make your R experience significantly better. If you don’t have RStudio, <a href="https://www.rstudio.com/products/rstudio/download/#download">download it now</a>, if you already have it, <a href="https://www.rstudio.com/products/rstudio/download/#download">update it</a> because new versions with useful additional features are regularly released. Pro tip: immediately go into RStudio preferences (Tools &gt; Global Options) and on the General pane uncheck “Restore .RData into workspace at startup” and set “Save workspace to .RData on exit” to “Never”. This will avoid cluttering your R session with old data and save you headaches down the road.</p>
+<p>Due to the massive size of the eBird dataset, working with it requires the Unix command-line utility AWK. You won’t need to use AWK directly, since the R package <code>auk</code> does this hard work for you, but you do need AWK to be installed on your computer. Linux and Mac users should already have AWK installed on their machines; however, Windows user will need to <a href="https://www.cygwin.com/">install Cygwin</a> to gain access to AWK. Cygwin is free software that allows Windows users to use Unix tools. Cygwin should be installed in the default location (<code>C:/cygwin/bin/gawk.exe</code> or <code>C:/cygwin64/bin/gawk.exe</code>) in order for everything to work correctly. Note: there’s no need to do anything at the “Select Utilities” screen, AWK will be installed by default.</p>
+</div>
+<div id="intro-setup-packages" class="section level3">
+<h3><span class="header-section-number">1.3.3</span> R packages</h3>
+<p>The examples in this book use a variety of R packages for accessing eBird data, working with spatial data, data processing and manipulation, and model fitting. To install all the packages necessary to work through this book, run the following code:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;mstrimas/ebppackages&quot;</span>)</a></code></pre></div>
+<p>Note that several of the spatial packages require dependencies. If installing these packages fails, consult the <a href="https://r-spatial.github.io/sf/#installing">instructions for installing dependencies on the <code>sf</code> package website</a>. Finally, <strong>ensure all R packages are updated</strong> to their most recent version by clicking on the Update button on the Packages tab in RStudio.</p>
+</div>
+<div id="intro-setup-tidyverse" class="section level3">
+<h3><span class="header-section-number">1.3.4</span> Tidyverse</h3>
+<p>Throughout this book, we use packages from the <a href="https://www.tidyverse.org/">Tidyverse</a>, an opinionated collection of R packages designed for data science. Packages such as <a href="http://ggplot2.tidyverse.org/"><code>ggplot2</code></a>, for data visualization, and <a href="http://dplyr.tidyverse.org/"><code>dplyr</code></a>, for data manipulation, are two of the most well known Tidyverse packages; however, there are many more. In the following chapters, we often use Tidyverse functions without explanation. If you encounter a function you’re unfamiliar with, consult the documentation for help (e.g. <code>?mutate</code> to see help for the <code>dplyr</code> function <code>mutate()</code>). More generally, the free online book <a href="http://r4ds.had.co.nz/">R for Data Science</a> by <a href="http://hadley.nz/">Hadley Wickham</a> is the best introduction to working with data in R using the Tidyverse.</p>
+<p>The one piece of the Tidyverse that we will cover here, because it is ubiquitous throughout this book and unfamiliar to many, is the pipe operator <code>%&gt;%</code>. The pipe operator takes the expression to the left of it and “pipes” it into the first argument of the expression on the right, i.e. one can replace <code>f(x)</code> with <code>x %&gt;% f()</code>. The pipe makes code significantly more readable by avoiding nested function calls, reducing the need for intermediate variables, and making sequential operations read left-to-right. For example, to add a new variable to a data frame, then summarize using a grouping variable, the following are equivalent:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># pipes</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">mtcars <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">wt_kg =</span> <span class="dv">454</span> <span class="op">*</span><span class="st"> </span>wt) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="st">  </span><span class="kw">group_by</span>(cyl) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">wt_kg =</span> <span class="kw">mean</span>(wt_kg))</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="co">#&gt; # A tibble: 3 x 2</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co">#&gt;     cyl wt_kg</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co">#&gt;   &lt;dbl&gt; &lt;dbl&gt;</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co">#&gt; 1     4 1038.</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="co">#&gt; 2     6 1415.</span></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co">#&gt; 3     8 1816.</span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co"># intermediate variables</span></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">mtcars_kg &lt;-<span class="st"> </span><span class="kw">mutate</span>(mtcars, <span class="dt">wt_kg =</span> <span class="dv">454</span> <span class="op">*</span><span class="st"> </span>wt)</a>
+<a class="sourceLine" id="cb2-17" data-line-number="17">mtcars_grouped &lt;-<span class="st"> </span><span class="kw">group_by</span>(mtcars_kg, cyl)</a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="kw">summarize</span>(mtcars_grouped, <span class="dt">wt_kg =</span> <span class="kw">mean</span>(wt_kg))</a>
+<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; # A tibble: 3 x 2</span></a>
+<a class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt;     cyl wt_kg</span></a>
+<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt;   &lt;dbl&gt; &lt;dbl&gt;</span></a>
+<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="co">#&gt; 1     4 1038.</span></a>
+<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="co">#&gt; 2     6 1415.</span></a>
+<a class="sourceLine" id="cb2-24" data-line-number="24"><span class="co">#&gt; 3     8 1816.</span></a>
+<a class="sourceLine" id="cb2-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb2-26" data-line-number="26"><span class="co"># nested function calls</span></a>
+<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="kw">summarize</span>(</a>
+<a class="sourceLine" id="cb2-28" data-line-number="28">  <span class="kw">group_by</span>(</a>
+<a class="sourceLine" id="cb2-29" data-line-number="29">    <span class="kw">mutate</span>(mtcars, <span class="dt">wt_kg =</span> <span class="dv">454</span> <span class="op">*</span><span class="st"> </span>wt),</a>
+<a class="sourceLine" id="cb2-30" data-line-number="30">    cyl</a>
+<a class="sourceLine" id="cb2-31" data-line-number="31">  ),</a>
+<a class="sourceLine" id="cb2-32" data-line-number="32">  <span class="dt">wt_kg =</span> <span class="kw">mean</span>(wt_kg)</a>
+<a class="sourceLine" id="cb2-33" data-line-number="33">)</a>
+<a class="sourceLine" id="cb2-34" data-line-number="34"><span class="co">#&gt; # A tibble: 3 x 2</span></a>
+<a class="sourceLine" id="cb2-35" data-line-number="35"><span class="co">#&gt;     cyl wt_kg</span></a>
+<a class="sourceLine" id="cb2-36" data-line-number="36"><span class="co">#&gt;   &lt;dbl&gt; &lt;dbl&gt;</span></a>
+<a class="sourceLine" id="cb2-37" data-line-number="37"><span class="co">#&gt; 1     4 1038.</span></a>
+<a class="sourceLine" id="cb2-38" data-line-number="38"><span class="co">#&gt; 2     6 1415.</span></a>
+<a class="sourceLine" id="cb2-39" data-line-number="39"><span class="co">#&gt; 3     8 1816.</span></a></code></pre></div>
+<p>Once you become familiar with the pipe operator, we believe you’ll find the the above example using the pipe the easiest of the three to read and interpret.</p>
+</div>
+<div id="intro-setup-ebird" class="section level3">
+<h3><span class="header-section-number">1.3.5</span> Getting eBird data access</h3>
+<p>The complete eBird database is provided via the <a href="https://ebird.org/science/download-ebird-data-products">eBird Basic Dataset (EBD)</a>, a large text file. To access the EBD, begin by <a href="https://secure.birds.cornell.edu/cassso/account/create">creating an eBird account and signing in</a>. Then visit the <a href="https://ebird.org/data/download">eBird Data Access page</a> and fill out the data access request form. eBird data access is free; however, you will need to request access in order to download the EBD. Filling out the access request form allows eBird to keep track of the number of people using the data and obtain information on the applications for which the data are used.</p>
+<p>Once you have access to the data, proceed to the <a href="https://ebird.org/data/download/ebd">download page</a>. Download both the World EBD (~ 42 GB compressed, ~ 210 GB uncompressed) and corresponding Sampling Event Data (~ 3.5 GB compressed, ~ 11 GB uncompressed). The former provides observation-level data, while the latter provides checklist-level data; both files are required for species distribution modeling. If limited hard drive space or a slow internet connection make dealing with these large files challenging, consult Section <a href="ebird.html#ebird-size-custom">2.6.1</a> for details on a method for downloading a subset of EBD.</p>
+<p>The downloaded data files will be in <code>.tar</code> format, and should be unarchived. The resulting directories will contain files with extension <code>.txt.gz</code>, these files should be uncompressed (on Windows use <a href="https://www.7-zip.org/">7-Zip</a>, on Mac use the default system uncompression utility) to produce two text files (e.g., <code>ebd_relAug-2019.txt</code> and <code>ebd_sampling_relAug-2019.txt</code>). Move these files to a sensible, central location on your computer. In general, we suggest creating an <code>ebird/</code> folder nested in a <code>data/</code> folder within your home directory (i.e. <code>~/data/ebird/</code>) to store these files, and throughout the remainder of this chapter we’ll assume you’ve placed the data there. If you choose to store the EBD elsewhere, you will need to update references to this folder in the code. If the files are too large to fit on your computer’s hard drive, they can be stored on an external hard drive.</p>
+<p>Each time you want to access eBird data in an R project, you’ll need to reference the full path to these text files, for example <code>~/data/ebird/ebd_relAug-2019.txt</code>. In general, it’s best to avoid using absolute paths in R scripts because it makes them less portable–if you’re sharing the files with someone else, they’ll need to change the file paths to point to the location at which they’ve stored the eBird data. The R package <code>auk</code> provides a workaround for this, by allowing users to set an environment variable (<code>EBD_PATH</code>) that points to the directory where you’ve stored the eBird data. To set this variable, use the function <a href="https://cornelllabofornithology.github.io/auk/reference/auk_set_ebd_path.html"><code>auk_set_ebd_path()</code></a>. For example, if the EBD and Sampling Event Data files are in <code>~/data/ebird/</code>, use:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># set ebd path</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">auk<span class="op">::</span><span class="kw">auk_set_ebd_path</span>(<span class="st">&quot;~/data/ebird/&quot;</span>)</a></code></pre></div>
+<p>After restarting your R session, you should be able to refer directly to the EBD or Sampling Event Data files within <code>auk</code> functions (e.g., <code>auk_ebd(&quot;ebd_relAug-2019.txt&quot;)</code>). Provided your collaborators have also set <code>EDB_PATH</code>, your scripts should now be portable.</p>
+<p>You now have access to the full eBird dataset! Note, however, that <strong>the EBD is updated monthly</strong>. If you want the most recent eBird records, be sure to <strong>regularly download an updated version</strong>. Finally, <strong>whenever you update the EBD, always update the <code>auk</code> package as well</strong>, this will ensure that <code>auk</code> will be able to handle any changes to the EBD that may have occurred.</p>
+</div>
+<div id="intro-setup-gis" class="section level3">
+<h3><span class="header-section-number">1.3.6</span> GIS data</h3>
+<p>Throughout this book, we’ll be producing maps of species distributions. To provide context for these distributions, we’ll need GIS data for political boundaries. <a href="https://www.naturalearthdata.com/">Natural Earth</a> is the best source for a range of tightly integrated vector and raster GIS data for producing professional cartographic maps. The R package, <a href="https://github.com/ropensci/rnaturalearth"><code>rnaturalearth</code></a> provides a convenient method for accessing these data from within R. We’ll also need <a href="http://nabci-us.org/resources/bird-conservation-regions/">Bird Conservation Region (BCR)</a> boundaries, which are available through <a href="https://www.birdscanada.org/research/gislab/index.jsp?targetpg=bcr&amp;targetpg=bcr">Bird Studies Canada</a>.</p>
+<p>These GIS data layers are most easily accessed by <a href="https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip"><strong>downloading the data package</strong></a> for this book.
+These data were generated using the following code. If you intend to run this code yourself, first create an RStudio project, so the files will be stored within the <code>data/</code> subdirectory of the project. This will allow us to load these data in later chapters as they’re needed. Note that calls to <code>ne_download()</code> often produce warnings suggesting that you’ve used the incorrect “category”; these can safely be ignored.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">library</span>(sf)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(rnaturalearth)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># file to save spatial data</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">gpkg_dir &lt;-<span class="st"> &quot;data&quot;</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="cf">if</span> (<span class="op">!</span><span class="kw">dir.exists</span>(gpkg_dir)) {</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">  <span class="kw">dir.create</span>(gpkg_dir)</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">}</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">f_ne &lt;-<span class="st"> </span><span class="kw">file.path</span>(gpkg_dir, <span class="st">&quot;gis-data.gpkg&quot;</span>)</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co"># download bcrs</span></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">tmp_dir &lt;-<span class="st"> </span><span class="kw">normalizePath</span>(<span class="kw">tempdir</span>())</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14">tmp_bcr &lt;-<span class="st"> </span><span class="kw">file.path</span>(tmp_dir, <span class="st">&quot;bcr.zip&quot;</span>)</a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="kw">paste0</span>(<span class="st">&quot;https://www.birdscanada.org/research/gislab/download/&quot;</span>, </a>
+<a class="sourceLine" id="cb4-16" data-line-number="16">       <span class="st">&quot;bcr_terrestrial_shape.zip&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17"><span class="st">  </span><span class="kw">download.file</span>(<span class="dt">destfile =</span> tmp_bcr)</a>
+<a class="sourceLine" id="cb4-18" data-line-number="18"><span class="kw">unzip</span>(tmp_bcr, <span class="dt">exdir =</span> tmp_dir)</a>
+<a class="sourceLine" id="cb4-19" data-line-number="19">bcr &lt;-<span class="st"> </span><span class="kw">file.path</span>(tmp_dir, <span class="st">&quot;BCR_Terrestrial_master_International.shp&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-20" data-line-number="20"><span class="st">  </span><span class="kw">read_sf</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-21" data-line-number="21"><span class="st">  </span><span class="kw">select</span>(<span class="dt">bcr_code =</span> BCR, <span class="dt">bcr_name =</span> LABEL) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-22" data-line-number="22"><span class="st">  </span><span class="kw">filter</span>(bcr_code <span class="op">==</span><span class="st"> </span><span class="dv">27</span>)</a>
+<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="co"># clean up</span></a>
+<a class="sourceLine" id="cb4-24" data-line-number="24"><span class="kw">list.files</span>(tmp_dir, <span class="st">&quot;bcr&quot;</span>, <span class="dt">ignore.case =</span> <span class="ot">TRUE</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-25" data-line-number="25"><span class="st">  </span><span class="kw">unlink</span>()</a>
+<a class="sourceLine" id="cb4-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb4-27" data-line-number="27"><span class="co"># political boundaries</span></a>
+<a class="sourceLine" id="cb4-28" data-line-number="28"><span class="co"># land border with lakes removed</span></a>
+<a class="sourceLine" id="cb4-29" data-line-number="29">ne_land &lt;-<span class="st"> </span><span class="kw">ne_download</span>(<span class="dt">scale =</span> <span class="dv">50</span>, <span class="dt">category =</span> <span class="st">&quot;cultural&quot;</span>,</a>
+<a class="sourceLine" id="cb4-30" data-line-number="30">                       <span class="dt">type =</span> <span class="st">&quot;admin_0_countries_lakes&quot;</span>,</a>
+<a class="sourceLine" id="cb4-31" data-line-number="31">                       <span class="dt">returnclass =</span> <span class="st">&quot;sf&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-32" data-line-number="32"><span class="st">  </span><span class="kw">filter</span>(CONTINENT <span class="op">==</span><span class="st"> &quot;North America&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-33" data-line-number="33"><span class="st">  </span><span class="kw">st_set_precision</span>(<span class="fl">1e6</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-34" data-line-number="34"><span class="st">  </span><span class="kw">st_union</span>()</a>
+<a class="sourceLine" id="cb4-35" data-line-number="35"><span class="co"># country lines</span></a>
+<a class="sourceLine" id="cb4-36" data-line-number="36"><span class="co"># downloaded globally then filtered to north america with st_intersect()</span></a>
+<a class="sourceLine" id="cb4-37" data-line-number="37">ne_country_lines &lt;-<span class="st"> </span><span class="kw">ne_download</span>(<span class="dt">scale =</span> <span class="dv">50</span>, <span class="dt">category =</span> <span class="st">&quot;cultural&quot;</span>,</a>
+<a class="sourceLine" id="cb4-38" data-line-number="38">                                <span class="dt">type =</span> <span class="st">&quot;admin_0_boundary_lines_land&quot;</span>,</a>
+<a class="sourceLine" id="cb4-39" data-line-number="39">                                <span class="dt">returnclass =</span> <span class="st">&quot;sf&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-40" data-line-number="40"><span class="st">  </span><span class="kw">st_geometry</span>()</a>
+<a class="sourceLine" id="cb4-41" data-line-number="41">ne_country_lines &lt;-<span class="st"> </span><span class="kw">st_intersects</span>(ne_country_lines, ne_land, <span class="dt">sparse =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-42" data-line-number="42"><span class="st">  </span><span class="kw">as.logical</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-43" data-line-number="43"><span class="st">  </span>{ne_country_lines[.]}</a>
+<a class="sourceLine" id="cb4-44" data-line-number="44"><span class="co"># states, north america</span></a>
+<a class="sourceLine" id="cb4-45" data-line-number="45">ne_state_lines &lt;-<span class="st"> </span><span class="kw">ne_download</span>(<span class="dt">scale =</span> <span class="dv">50</span>, <span class="dt">category =</span> <span class="st">&quot;cultural&quot;</span>,</a>
+<a class="sourceLine" id="cb4-46" data-line-number="46">                              <span class="dt">type =</span> <span class="st">&quot;admin_1_states_provinces_lines&quot;</span>,</a>
+<a class="sourceLine" id="cb4-47" data-line-number="47">                              <span class="dt">returnclass =</span> <span class="st">&quot;sf&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-48" data-line-number="48"><span class="st">  </span><span class="kw">filter</span>(adm0_a3 <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;USA&quot;</span>, <span class="st">&quot;CAN&quot;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-49" data-line-number="49"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">iso_a2 =</span> <span class="kw">recode</span>(adm0_a3, <span class="dt">USA =</span> <span class="st">&quot;US&quot;</span>, <span class="dt">CAN =</span> <span class="st">&quot;CAN&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-50" data-line-number="50"><span class="st">  </span><span class="kw">select</span>(<span class="dt">country =</span> adm0_name, <span class="dt">country_code =</span> iso_a2)</a>
+<a class="sourceLine" id="cb4-51" data-line-number="51"></a>
+<a class="sourceLine" id="cb4-52" data-line-number="52"><span class="co"># output</span></a>
+<a class="sourceLine" id="cb4-53" data-line-number="53"><span class="kw">unlink</span>(f_ne)</a>
+<a class="sourceLine" id="cb4-54" data-line-number="54"><span class="kw">write_sf</span>(ne_land, f_ne, <span class="st">&quot;ne_land&quot;</span>)</a>
+<a class="sourceLine" id="cb4-55" data-line-number="55"><span class="kw">write_sf</span>(ne_country_lines, f_ne, <span class="st">&quot;ne_country_lines&quot;</span>)</a>
+<a class="sourceLine" id="cb4-56" data-line-number="56"><span class="kw">write_sf</span>(ne_state_lines, f_ne, <span class="st">&quot;ne_state_lines&quot;</span>)</a>
+<a class="sourceLine" id="cb4-57" data-line-number="57"><span class="kw">write_sf</span>(bcr, f_ne, <span class="st">&quot;bcr&quot;</span>)</a></code></pre></div>
+
+</div>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-courterWeekendBiasCitizen2013">
+<p>Courter, Jason R., Ron J. Johnson, Claire M. Stuyck, Brian A. Lang, and Evan W. Kaiser. 2013. “Weekend Bias in Citizen Science Data Reporting: Implications for Phenology Studies.” <em>International Journal of Biometeorology</em> 57 (5): 715–20. <a href="https://doi.org/10.1007/s00484-012-0598-7">https://doi.org/10.1007/s00484-012-0598-7</a>.</p>
+</div>
+<div id="ref-ellisEffectsWeatherTime2018">
+<p>Ellis, Murray V., and Jennifer E. Taylor. 2018. “Effects of Weather, Time of Day, and Survey Effort on Estimates of Species Richness in Temperate Woodlands.” <em>Emu-Austral Ornithology</em> 118 (2): 183–92.</p>
+</div>
+<div id="ref-greenwoodCitizensScienceBird2007">
+<p>Greenwood, Jeremy J. D. 2007. “Citizens, Science and Bird Conservation.” <em>Journal of Ornithology</em> 148 (1): 77–124. <a href="https://doi.org/10.1007/s10336-007-0239-9">https://doi.org/10.1007/s10336-007-0239-9</a>.</p>
+</div>
+<div id="ref-johnstonEstimatesObserverExpertise2018">
+<p>Johnston, Alison, Daniel Fink, Wesley M. Hochachka, and Steve Kelling. 2018. “Estimates of Observer Expertise Improve Species Distributions from Citizen Science Data.” <em>Methods in Ecology and Evolution</em> 9 (1): 88–97.</p>
+</div>
+<div id="ref-johnstonSpeciesTraitsExplain2014">
+<p>Johnston, Alison, Stuart E. Newson, Kate Risely, Andy J. Musgrove, Dario Massimino, Stephen R. Baillie, and James W. Pearce-Higgins. 2014. “Species Traits Explain Variation in Detectability of UK Birds.” <em>Bird Study</em> 61 (3): 340–50.</p>
+</div>
+<div id="ref-kadmonEffectRoadsideBias2004">
+<p>Kadmon, Ronen, Oren Farber, and Avinoam Danin. 2004. “Effect of Roadside Bias on the Accuracy of Predictive Maps Produced by Bioclimatic Models.” <em>Ecological Applications</em> 14 (2): 401–13.</p>
+</div>
+<div id="ref-kellingFindingSignalNoise2018">
+<p>Kelling, Steve, Alison Johnston, Daniel Fink, Viviana Ruiz-Gutierrez, Rick Bonney, Aletta Bonn, Miguel Fernandez, et al. 2018. “Finding the Signal in the Noise of Citizen Science Observations.” <em>bioRxiv</em>, May, 326314. <a href="https://doi.org/10.1101/326314">https://doi.org/10.1101/326314</a>.</p>
+</div>
+<div id="ref-lasorteOpportunitiesChallengesBig2018">
+<p>La Sorte, Frank A., Christopher A. Lepczyk, Jessica L. Burnett, Allen H. Hurlbert, Morgan W. Tingley, and Benjamin Zuckerberg. 2018. “Opportunities and Challenges for Big Data Ornithology.” <em>The Condor</em> 120 (2): 414–26.</p>
+</div>
+<div id="ref-luckAlleviatingSpatialConflict2004">
+<p>Luck, Gary W., Taylor H. Ricketts, Gretchen C. Daily, and Marc Imhoff. 2004. “Alleviating Spatial Conflict Between People and Biodiversity.” <em>Proceedings of the National Academy of Sciences</em> 101 (1): 182–86. <a href="https://doi.org/10.1073/pnas.2237148100">https://doi.org/10.1073/pnas.2237148100</a>.</p>
+</div>
+<div id="ref-oliveiraObservationDiurnalSoaring2018">
+<p>Oliveira, Camilo Viana, Fabio Olmos, Manoel dos Santos-Filho, and Christine Steiner São Bernardo. 2018. “Observation of Diurnal Soaring Raptors in Northeastern Brazil Depends on Weather Conditions and Time of Day.” <em>Journal of Raptor Research</em> 52 (1): 56–65.</p>
+</div>
+<div id="ref-prendergastCorrectingVariationRecording1993">
+<p>Prendergast, J. R., S. N. Wood, J. H. Lawton, and B. C. Eversham. 1993. “Correcting for Variation in Recording Effort in Analyses of Diversity Hotspots.” <em>Biodiversity Letters</em>, 39–53.</p>
+</div>
+<div id="ref-R-base">
+<p>R Core Team. 2018. <em>R: A Language and Environment for Statistical Computing</em>. Vienna, Austria: R Foundation for Statistical Computing. <a href="https://www.R-project.org/">https://www.R-project.org/</a>.</p>
+</div>
+<div id="ref-robinsonUsingCitizenScience2018">
+<p>Robinson, Orin J., Viviana Ruiz-Gutierrez, Daniel Fink, Robert J. Meese, Marcel Holyoak, and Evan G. Cooch. 2018. “Using Citizen Science Data in Integrated Population Models to Inform Conservation Decision-Making.” <em>bioRxiv</em>, 293464.</p>
+</div>
+<div id="ref-sullivanEBirdEnterpriseIntegrated2014">
+<p>Sullivan, Brian L., Jocelyn L. Aycrigg, Jessie H. Barry, Rick E. Bonney, Nicholas Bruns, Caren B. Cooper, Theo Damoulas, et al. 2014. “The eBird Enterprise: An Integrated Approach to Development and Application of Citizen Science.” <em>Biological Conservation</em> 169 (January): 31–40. <a href="https://doi.org/10.1016/j.biocon.2013.11.003">https://doi.org/10.1016/j.biocon.2013.11.003</a>.</p>
+</div>
+<div id="ref-tullochBehaviouralEcologyApproach2012">
+<p>Tulloch, Ayesha IT, and Judit K. Szabo. 2012. “A Behavioural Ecology Approach to Understand Volunteer Surveying for Citizen Science Datasets.” <em>Emu-Austral Ornithology</em> 112 (4): 313–25.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="ebird.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": false,
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mstrimas/ebird-best-practices/edit/master/01_introduction.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

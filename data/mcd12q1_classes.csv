@@ -1,0 +1,18 @@
+class,name,description
+0,Water bodies,At least 60% of area is covered by permanent water bodies.
+1,Evergreen Needleleaf Forests,Dominated by evergreen conifer trees (canopy >2m). Tree cover >60%.
+2,Evergreen Broadleaf Forests,Dominated by evergreen broadleaf and palmate trees (canopy >2m). Tree cover >60%.
+3,Deciduous Needleleaf Forests,Dominated by deciduous needleleaf (e.g. larch) trees (canopy >2m). Tree cover >60%.
+4,Deciduous Broadleaf Forests,Dominated by deciduous broadleaf trees (canopy >2m). Tree cover >60%.
+5,Mixed Forests,Dominated by neither deciduous nor evergreen (40-60% of each) tree type (canopy >2m). Tree cover >60%.
+6,Closed Shrublands,Dominated by woody perennials (1-2m height) >60% cover.
+7,Open Shrublands,Dominated by woody perennials (1-2m height) 10-60% cover.
+8,Woody Savannas,Tree cover 30-60% (canopy >2m).
+9,Savannas,Tree cover 10-30% (canopy >2m).
+10,Grasslands,Dominated by herbaceous annuals (<2m).
+11,Permanent Wetlands,Permanently inundated lands with 30-60% water cover and >10% vegetated cover.
+12,Croplands,At least 60% of area is cultivated cropland.
+13,Urban and Built-up Lands,"At least 30% impervious surface area including building materials, asphalt, and vehicles."
+14,Cropland/Natural Vegetation Mosaics,"Mosaics of small-scale cultivation 40-60% with natural tree, shrub, or herbaceous vegetation."
+15,Non-Vegetated Lands,"At least 60% of area is non-vegetated barren (sand, rock, soil) or permanent snow and ice with less than 10% vegetation."
+255,Unclassified,Has not received a map label because of missing inputs.

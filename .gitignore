@@ -1,0 +1,8 @@
+.Rhistory
+.RData
+.Rproj.user
+.Rbuildignore
+data/calculate-cci.R
+data/ebd_all_june_bcr27.txt
+data/cci_june_bcr27.csv
+data/elevation_1KMmd_GMTEDmd.tif

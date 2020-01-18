@@ -1,0 +1,17 @@
+`r if (knitr::is_html_output()) '# References {-}'`
+
+
+```{r prepare-data-package, echo = FALSE}
+zip_file <- "data/data.zip"
+files <- c("ebd_woothr_june_bcr27.txt", 
+           "ebd_checklists_june_bcr27.txt",
+           "ebd_woothr_june_bcr27_zf.csv",
+           "gis-data.gpkg",
+           "mcd12q1_classes.csv",
+           "pland-elev_location-year.csv",
+           "pland-elev_prediction-surface.csv",
+           "prediction-surface.tif")
+unlink(zip_file)
+zip(zip_file, file.path("data", files))
+```
+

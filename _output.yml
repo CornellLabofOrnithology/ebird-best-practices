@@ -1,0 +1,14 @@
+bookdown::gitbook:
+  css: style.css
+  config:
+    toc:
+      collapse: section
+      before: |
+        <li><a href="./">eBird Best Practices</a></li>
+      after: null
+    edit:
+      link: https://github.com/mstrimas/ebird-best-practices/edit/master/%s
+      text: "Edit"
+    sharing: no
+  includes:
+    in_header: ga.html

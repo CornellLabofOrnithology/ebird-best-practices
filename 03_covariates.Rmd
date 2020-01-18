@@ -1,0 +1,381 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Habitat Covariates {#covariates}
+
+## Introduction {#covariates-intro}
+
+Species distribution models work by finding associations between species occurrence or abundance and environmental variables. Using these relationships, it's possible to predict the distribution in areas that aren't sampled, provided we know the value of the environmental variables in these areas. Therefore, to proceed with the modeling in the next several chapters, we'll need to prepare a suite of environmental variables to be used as covariates in our models. The particular set of covariates that's most suitable for a given study will depend on the focal species, region, and time period, as well as the availability of data. When species distributions are well defined by the environmental covariates, extrapolations to unsurveyed areas will be more accurate. So, itss worth considering which environmental covariates are important for your species. Scientists can use many variables to characterise a species distribution - for example, climate, weather, and soil type. Here we use only landcover and elevation as example environmental covariates.
+
+Fortunately, there are an abundance of freely available, satellite-based land cover products derived from satellites such as [Landsat](https://en.wikipedia.org/wiki/Landsat_program), [SPOT](https://en.wikipedia.org/wiki/SPOT_(satellite)), and [MODIS](https://en.wikipedia.org/wiki/Moderate_Resolution_Imaging_Spectroradiometer) that are suitable for distribution modeling. This land cover data will act as a proxy for habitat and throughout this book we'll often use habitat and land cover interchangeably. In addition, we'll include elevation as an additional covariate, which can be important for many species.
+
+For the examples in this book, we'll use land cover covariates derived from the [MODIS MCD12Q1 v006](https://lpdaac.usgs.gov/products/mcd12q1v006/) land cover product [@friedlMCD12Q1MODISTerra2015]. This product has global coverage at 500 m spatial resolution and annual temporal resolution from 2001-2018. These data are available for several different classification schemes. We'll use the University of Maryland (UMD) land cover classification, which provides a globally accurate classification of land cover in our experience. This system classifies pixels into one of 16 different land cover classes:
+
+```{r landcover, echo = FALSE}
+lc_classes <- readr::read_csv("data/mcd12q1_classes.csv")
+names(lc_classes) <- stringr::str_to_title(names(lc_classes))
+knitr::kable(lc_classes)
+```
+
+For a wide range of studies, this MODIS land cover dataset will be suitable for generating habitat covariates; however, there may be particular cases where the study species, habitat, or ecological question requires different, or more specialized, data. For example, shorebird distribution modeling would benefit from data on the [extent of tidal flats](https://www.intertidal.app), seabirds distributions are often influenced by [ocean depth](https://eatlas.org.au/data/uuid/80301676-97fb-4bdf-b06c-e961e5c0cb0b), and in many regions [elevation](https://github.com/jhollist/elevatr) plays a critical role in shaping species distributions. Regardless of which habitat data you decide to use for your project, this chapter should provide a template for how to prepare these data as covariates for modeling species distributions.
+
+The following section will cover how to access and download MODIS land cover data. Next, we'll demonstrate how to summarize these data within a neighborhood around each checklist location. Then, we'll calculate a set of covariates over a regular grid, which we'll use to make predictions of species distributions throughout our study area. Finally, as an example of including covariate data from multiple sources, we'll demonstrate how to incorporate elevation data as an additional covariate. If you want to skip this section and jump straight to the modeling, you can download the [data package](https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip), which includes all the prepared MODIS data that we'll use in the remainder of this book.
+
+## Downloading MODIS data {#covariates-dl}
+
+As with most satellite data, MODIS data are provided as [1200 km by 1200 km tiles](https://modis-land.gsfc.nasa.gov/MODLAND_grid.html) for ease of download. Each tile is a [raster GIS dataset](http://desktop.arcgis.com/en/arcmap/10.3/manage-data/raster-and-images/what-is-raster-data.htm) consisting of a regular grid of 500 m resolution cells. The surface of the Earth is divided up into a grid of these tiles, each given an ID, for example, h10v12 is the tile from the 10th column and 12th row of the grid. Compiling MODIS data for a given region requires figuring out which set of tiles covers the region, downloading those tiles, combining the tiles together into a single raster dataset, and converting from the native MODIS HDF format, which R can't read, to a standard GeoTIFF format. This needs to be done for each year for which we want habitat data, and can be a time consuming and error prone process. Fortunately, the [R package `MODIS`](https://github.com/MatMatt/MODIS) automates most of these steps. Unfortunately, this package can be challenging and confusing to get working. With this in mind, this section will provide detailed instruction for setting up and using the `MODIS` package.
+
+Let's start by figuring out the tile IDs for the tiles that BCR 27 spans. Recall that we prepared a BCR boundary in Section \@ref(intro-setup-gis) of the Introduction; if you haven't already done so, [download the data package](https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip) now to get that boundary. Given a set of spatial features, the `MODIS` package can quickly tell us which MODIS tiles we need.
+
+```{r landcover-dl-data}
+library(sf)
+library(raster)
+library(MODIS)
+library(velox)
+library(viridis)
+library(tidyverse)
+# resolve namespace conflicts
+select <- dplyr::select
+projection <- raster::projection
+
+# bcr 27 boundary
+bcr <- read_sf("data/gis-data.gpkg", "bcr") %>% 
+  filter(bcr_code == 27) %>% 
+  # project to the native modis projectin
+  st_transform(crs = paste("+proj=sinu +lon_0=0 +x_0=0 +y_0=0",
+                           "+a=6371007.181 +b=6371007.181 +units=m +no_defs"))
+# load ebird data
+ebird <- read_csv("data/ebd_woothr_june_bcr27_zf.csv")
+# get list of tiles required to cover this bcr
+tiles <- getTile(bcr)
+tiles@tile
+```
+
+So, we'll need to download these three tiles for each of the 10 years from 2010-2019.
+
+### `MODIS` setup {#covariates-dl-setup}
+
+Before we start using `MODIS` for the first time, a bit of setup is required. First, [sign up for a NASA Earthdata account](https://urs.earthdata.nasa.gov/users/new) to get access to MODIS, and other NASA data. Then use `MODIS::EarthdataLogin(usr = "username", pwd = "password")`, with the username and password you just created, to store your login credentials so the `MODIS` package can access them.
+
+Next, you'll need to install [GDAL](https://www.gdal.org/), an open source library for working with geospatial data that's needed for processing the MODIS tiles. The steps for installing GDAL are system dependent:
+
+- **Mac OS X:** First, check if GDAL is installed with HDF4 support by running `gdal-config --formats` in Terminal. If you see `hdf4` in the list, you don't need to do anything else! If not, [install the Homebrew](https://brew.sh/) package manager by following the [instructions on the website](https://brew.sh/). Then, run the following commands in Terminal to install GDAL:
+
+```
+brew tap osgeo/osgeo4mac
+brew install hdf4 
+brew link --overwrite hdf4 
+brew install osgeo-gdal
+brew link --force osgeo-gdal
+```
+
+- **Windows:** install GDAL using [OSGeo4W](http://trac.osgeo.org/osgeo4w/), a suite of open source geospatial tools. In R, run `MODIS:::checkTools("GDAL")`, which will search your system for GDAL and suggest a command such as `MODIS::MODISoptions(gdalPath = "c:/OSGeo4W64/bin")` that will make GDAL available to the `MODIS` package. Run this command and, when it asks, agree to making the settings permanent.
+- **Linux:** run `sudo apt-get install gdal-bin` in the terminal.
+
+Finally, run `MODIS:::checkTools("GDAL")` to check that GDAL is installed and that the `MODIS` package can find it. If GDAL can't be found, you'll need to manually locate it and use `MODIS::MODISoptions(gdalPath = "path/to/gdal/")` to tell the `MODIS` package where it is.
+
+### Download using R {#covariates-dl-r}
+
+Once all the setup steps have been completed, we can start downloading some data! The `MODIS` function `runGdal()` downloads and processes MODIS tiles into a single GeoTIFF for each year. Note that at the time of writing, land cover data from 2019 haven't been prepared yet, so we'll use 2018 data for both 2018 and 2019. The key arguments to `runGdal()` are:
+
+- `product`: is the specific MODIS product to download. For a full list of available datasets use `MODIS::getProduct()`.
+- `collection`: each MODIS product may have multiple collections, corresponding roughly to versions. Use `getCollection()` to find the available collection for a given product.
+- `SDSstring`: a string specifying which bands to extract, with zeros for bands to drop and 1 for bands to keep. Most MODIS products have multiple bands stored in a single raster file, for example, reflectances in different wavelength ranges or, in our case, land cover using different land cover classification systems. The [documentation for the MCD12Q1 dataset](https://lpdaac.usgs.gov/products/mcd12q1v006/) shows that there are 13 bands in the downloaded files, and we're interested in band 2, which contains the UMD landcover classification.
+- `extent`: any of several different spatial objects specifying the region that we want data for. In our case, we'll use the BCR polygon; however, for a list of available options consult the help for `getTile()`. Note that `runGdal()` will return raster data in the same projection as the input extent, which is why we projected the BCR boundary to the MODIS sinusoidal projection.
+- `begin` and `end`: the start and end dates of the time period from which to extract data. Although the land cover data are only available annually, we need to specify full dates because some other products are available on a more granular basis.
+- `outDirPath`: directory to store processed MODIS data.
+- `job`: a name for this task, which will become the sub-directory of `outDirPath` within which the processed data are stored.
+
+```{r landcover-dl-r, eval = FALSE}
+# earliest year of ebird data
+begin_year <- format(min(ebird$observation_date), "%Y.01.01")
+# end date for ebird data
+end_year <- format(max(ebird$observation_date), "%Y.12.31")
+# download tiles and combine into a single raster for each year
+tifs <- runGdal(product = "MCD12Q1", collection = "006", SDSstring = "01", 
+                extent = bcr %>% st_buffer(dist = 10000), 
+                begin = begin_year, end = end_year, 
+                outDirPath = "data", job = "modis",
+                MODISserverOrder = "LPDAAC") %>% 
+  pluck("MCD12Q1.006") %>% 
+  unlist()
+
+# rename tifs to have more descriptive names
+new_names <- format(as.Date(names(tifs)), "%Y") %>% 
+  sprintf("modis_mcd12q1_umd_%s.tif", .) %>% 
+  file.path(dirname(tifs), .)
+file.rename(tifs, new_names)
+```
+
+If everything ran smoothly, we now have annual GeoTIFFs of MODIS land cover data that we can load into R. You may see error messages stating `Cannot find proj.db`, or something similar, these can be safely ignored provided the modis have been created in `data/modis/` directory.
+
+```{r landcover-dl-load}
+# load the landcover data
+landcover <- list.files("data/modis", "^modis_mcd12q1_umd", 
+                        full.names = TRUE) %>% 
+  stack()
+# label layers with year
+landcover <- names(landcover) %>% 
+  str_extract("(?<=modis_mcd12q1_umd_)[0-9]{4}") %>% 
+  paste0("y", .) %>% 
+  setNames(landcover, .)
+landcover
+```
+
+These data have not been prepared yet for the last couple years, so we'll need to fill in the missing years using the most recent year for which there is data. To facilitate that, let's figure out which is the most recent year with data.
+
+```{r landcover-dl-load-max}
+max_lc_year <- names(landcover) %>% 
+  str_extract("[0-9]{4}") %>% 
+  as.integer() %>% 
+  max()
+```
+
+So, we have landcover data up to `r max_lc_year`.
+
+### Troubleshooting {#covariates-dl-trouble}
+
+If the call to `runGDAL()` didn't work for you, don't worry, you're not alone! It's challenging to get the `MODIS` package working and errors are common when you're first trying to get it set up. The most common error is not having GDAL installed correctly, which will give an error like `GDAL not installed or configured`. Either you don't have GDAL at all or you have it, but it doesn't have support for HDF4 files (this is the native format for MODIS data). Try following the [above instructions](habit-dl-setup) again. If it still doesn't work, consult the instructions on the `MODIStsp` website for [installing GDAL](http://ropensci.github.io/MODIStsp/articles/installation.html#installing-gdal-1-11-1). 
+
+Another error you may see is: `Make sure either 'wget' or 'curl' is available in order to download data from LP DAAC or NSIDC.`. This should only arise on versions of Windows before Windows 10. If you see this error, you'll need to install `curl`, which is used by R to download the MODIS tiles. There is a StackOverflow question with [excellent instructions](https://stackoverflow.com/questions/9507353/how-do-i-install-and-use-curl-on-windows) for installing `curl` and getting it setup on your system.
+
+If these tips haven't solved your particular problem, you'll need to turn to Google to troubleshoot or find someone who has experience with these tools and ask them to help. Good luck!
+
+## Landscape metrics {#covariates-lsm}
+
+At this point we could use the MODIS land cover data directly, simply extracting the land cover class for each checklist location. However, we instead advocate summarizing the land cover data within a neighborhood around the checklist locations. As discussed in Section \@ref(intro-intro), checklist locations are not precise, so it's more appropriate to use the habitat in the surrounding area, rather than only at the checklist location. More fundamentally, organisms interact with their environment not at a single point, but at the scale of a landscape, so it's important to include habitat information characterizing a suitably-sized landscape around the observation location.
+
+There are a variety of **landscape metrics** that can be used to characterize the composition (what habitat is available) and configuration (how that habitat is arranged spatially) of landscapes. The simplest metric of landscape composition is the proportion of the landscape in each land cover class (PLAND in the parlance of [FRAGSTATS](https://www.umass.edu/landeco/research/fragstats/fragstats.html)). For a broad range of scenarios, PLAND is a reliable choice for calculating habitat covariates in distribution modeling. Based on our experience working with eBird data, an approximately 2.5 km by 2.5 km neighborhood (5 by 5 MODIS cells) centered on the checklist location is sufficient to account for the spatial precision in the data when the maximum distance of travelling counts has been limited to 5 km, while being a relevant ecological scale for many bird species.
+
+We'll start by finding the full set of unique checklists locations for each year in the eBird data. Then we convert these locations to spatial `sf` features and project them to the sinusoidal equal area projection used by MODIS. We'll buffer these points to create a neighborhood around each location with a diamter equal to 5 MODIS cells. Finally, we split the neighborhoods up by year so we can match to MODIS land cover data from the corresponding year.
+
+```{r landcover-lsm-buffer}
+neighborhood_radius <- 5 * ceiling(max(res(landcover))) / 2
+ebird_buff <- ebird %>% 
+  distinct(year = format(observation_date, "%Y"),
+           locality_id, latitude, longitude) %>% 
+  # for 2018 use 2017 landcover data
+  mutate(year_lc = if_else(as.integer(year) > max_lc_year, 
+                           as.character(max_lc_year), year),
+         year_lc = paste0("y", year_lc)) %>% 
+  # convert to spatial features
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>% 
+  # transform to modis projection
+  st_transform(crs = projection(landcover)) %>% 
+  # buffer to create neighborhood around each point
+  st_buffer(dist = neighborhood_radius) %>% 
+  # nest by year
+  nest(data = c(year, locality_id, geometry))
+```
+
+Now, we'll loop over the years and for each square neighborhood extract all the raster values within that neighborhood. We use the `velox` package for this, since it's often orders of magnitude faster than using `raster::extract()`.
+
+```{r landcover-lsm-extract}
+# function to extract landcover data for all checklists in a given year
+calculate_pland <- function(yr, regions, lc) {
+  # create a lookup table to get locality_id from row number
+  locs <- st_set_geometry(regions, NULL) %>% 
+    mutate(id = row_number())
+  
+  # extract using velox
+  lc_vlx <- velox(lc[[yr]])
+  lc_vlx$extract(regions, df = TRUE) %>% 
+    # velox doesn't properly name columns, fix that
+    set_names(c("id", "landcover")) %>% 
+    # join to lookup table to get locality_id
+    inner_join(locs, ., by = "id") %>% 
+    select(-id)
+}
+# iterate over all years extracting landcover for all checklists in each
+lc_extract <- ebird_buff %>% 
+  mutate(pland = map2(year_lc, data, calculate_pland, lc = landcover)) %>% 
+  select(pland) %>% 
+  unnest(cols = pland)
+```
+
+Now we have the set of land cover values within a neighborhood around each checklist location. We can summarize these data within each neighborhood to calculate PLAND: the proportion of the neighborhood within each land cover class. 
+
+```{r landcover-lsm-pland}
+pland <- lc_extract %>% 
+  # count landcovers
+  count(locality_id, year, landcover) %>% 
+  # calculate proporiton
+  group_by(locality_id, year) %>% 
+  mutate(pland = n / sum(n)) %>% 
+  ungroup() %>% 
+  select(-n) %>% 
+  # remove NAs after tallying so pland is relative to total number of cells
+  filter(!is.na(landcover))
+
+# tranform to wide format, filling in implicit missing values with 0s
+pland <- pland %>% 
+  mutate(landcover = paste0("pland_", str_pad(landcover, 2, pad = "0"))) %>% 
+  pivot_wider(names_from = landcover, 
+              values_from = pland, 
+              values_fill = list(pland = 0))
+
+# save
+write_csv(pland, "data/modis_pland_location-year.csv")
+```
+
+## Prediction surface {#covariates-prediction}
+
+After fitting species distribution models, the goal is typically to make predictions throughout the study area. To do this, we'll need a regular grid of habitat covariates over which to make predictions. In this section, we'll create such a prediction surface for BCR 27 using the MODIS land cover data from the most recent year for which they're available. To start, we'll need a template raster with cells equal in size to the neighborhoods we defined in the previous section: 5 by 5 MODIS land cover cells. We can use `raster::aggregate()` to achieve this. We'll also use `raster::rasterize()` to assign the value 1 to all cells within BCR 27 and leave all cells outside BCR 27 empty.
+
+```{r landcover-prediction-template}
+agg_factor <- round(2 * neighborhood_radius / res(landcover))
+r <- raster(landcover) %>% 
+  aggregate(agg_factor) 
+r <- bcr %>% 
+  st_transform(crs = projection(r)) %>% 
+  rasterize(r, field = 1) %>% 
+  # remove any empty cells at edges
+  trim()
+r <- writeRaster(r, filename = "data/prediction-surface.tif", overwrite = TRUE)
+```
+
+Next, for each cell of this raster, we'll calculate the PLAND metrics using the same approach as the previous section. Note that we will only be creating this prediction surface for the most current year of landcover data in our example.
+
+```{r landcover-prediction-calc}
+# get cell centers and create neighborhoods
+r_centers <- rasterToPoints(r, spatial = TRUE) %>% 
+  st_as_sf() %>% 
+  transmute(id = row_number())
+r_cells <- st_buffer(r_centers, dist = neighborhood_radius)
+
+# extract landcover values within neighborhoods, only needed most recent year
+lc_vlx <- velox(landcover[[paste0("y", max_lc_year)]])
+lc_extract_pred <- lc_vlx$extract(r_cells, df = TRUE) %>% 
+  set_names(c("id", "landcover"))
+
+# calculate the percent for each landcover class
+pland_pred <- lc_extract_pred %>% 
+  count(id, landcover) %>% 
+  group_by(id) %>% 
+  mutate(pland = n / sum(n)) %>% 
+  ungroup() %>% 
+  select(-n) %>% 
+  # remove NAs after tallying so pland is relative to total number of cells
+  filter(!is.na(landcover))
+
+# tranform to wide format, filling in implicit missing values with 0s
+pland_pred <- pland_pred %>% 
+  mutate(landcover = paste0("pland_", str_pad(landcover, 2, pad = "0"))) %>% 
+  pivot_wider(names_from = landcover, 
+              values_from = pland, 
+              values_fill = list(pland = 0)) %>% 
+  mutate(year = max_lc_year) %>% 
+  select(id, year, everything())
+
+# join in coordinates
+pland_coords <- st_transform(r_centers, crs = 4326) %>% 
+  st_coordinates() %>% 
+  as.data.frame() %>% 
+  cbind(id = r_centers$id, .) %>% 
+  rename(longitude = X, latitude = Y) %>% 
+  inner_join(pland_pred, by = "id")
+```
+
+Keeping these data in a data frame is a compact way to store them and will be required once we make model predictions in later chapters. However, we can always use the raster template to convert these PLAND metrics into a spatial format, for example, if we want to map them. Let's look at how this works for land cover class 4: deciduous broadleaf forest.
+
+```{r landcover-prediction-map}
+forest_cover <- pland_coords %>% 
+  # convert to spatial features
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>% 
+  st_transform(crs = projection(r)) %>% 
+  # rasterize points
+  rasterize(r, field = "pland_04") %>% 
+  # project to albers equal-area for mapping
+  projectRaster(crs = st_crs(102003)$proj4string, method = "ngb") %>% 
+  # trim off empty edges of raster
+  trim()
+
+# make a map
+par(mar = c(0.25, 0.25, 2, 0.25))
+t <- str_glue("Proportion of Deciduous Broadleaf Forest\n",
+              "{max_lc_year} MODIS Landcover")
+plot(forest_cover, axes = FALSE, box = FALSE, col = viridis(10), main = t)
+```
+
+## Elevation {#covariates-elevation}
+
+In some scenarios, you may want to include additional covariates to complement the land cover variables. There is a wealth of open access raster data available for this purpose; however, in most cases, these data will not have a simple R interface for accessing them. Instead, you'll typically have to manually download and process these data. As an example of how this works, we'll demonstrate how to include covariates for elevation, which frequently plays an important role in shaping species distributions.
+
+Amatulli et al. [-@amatulliSuiteGlobalCrossscale2018] provide a suite of global, 1km resolution topographic variables designed for use in distribution modeling. A range of variables are available, including elevation, slope, roughness, and many others; we'll focus on elevation here, but the approach can easily be applied to other variables. To start, visit [the website for these data](http://www.earthenv.org/topography), download the 1 km resolution median elevation product, and save the file (`elevation_1KMmd_GMTEDmd.tif`) in the `data/` subdirectory of your project:
+
+![](images/03_covariates_elevation.png)
+
+```{r covariates-elevation-dl, echo=FALSE}
+f_dem <- "elevation_1KMmd_GMTEDmd.tif"
+if (!file.exists(file.path("data", f_dem))) {
+  download.file(paste0("https://data.earthenv.org/topography/", f_dem),
+                file.path("data", f_dem))
+}
+```
+
+Next we'll load the file, crop it down from it's full global extent to just the portion we need for BCR 27, and reproject it to the MODIS sinusoidal projection.
+
+```{r covariates-elevation-load}
+elev <- raster("data/elevation_1KMmd_GMTEDmd.tif")
+# crop, buffer bcr by 10 km to provide a little wiggly room
+elev <- bcr %>% 
+  st_buffer(dist = 10000) %>% 
+  st_transform(crs = projection(elev)) %>% 
+  crop(elev, .) %>% 
+  projectRaster(crs = projection(landcover))
+```
+
+Now we extract the elevation values within the neighborhood of each checklist location just as we did before for the land cover data. Then we'll calculate the median and standard deviation of the elevation within each neighborhood.
+
+```{r covariates-elevation-extract}
+# buffer each checklist location
+ebird_buff_noyear <- ebird %>% 
+  distinct(locality_id, latitude, longitude) %>% 
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>% 
+  st_transform(crs = projection(elev)) %>% 
+  st_buffer(dist = neighborhood_radius)
+
+# extract using velox and calculate median and sd
+locs <- st_set_geometry(ebird_buff_noyear, NULL) %>% 
+    mutate(id = row_number())
+elev_checklists <- velox(elev)$extract(ebird_buff_noyear, df = TRUE) %>% 
+  # velox doesn't properly name columns, fix that
+  set_names(c("id", "elevation")) %>% 
+  # join to lookup table to get locality_id
+  inner_join(locs, ., by = "id") %>% 
+  # summarize
+  group_by(locality_id) %>% 
+  summarize(elevation_median = median(elevation, na.rm = TRUE),
+            elevation_sd = sd(elevation, na.rm = TRUE))
+```
+
+We'll need to do repeat this process to calculate the elevation covariates for the prediction surface.
+
+```{r covariates-elevation-pred}
+# extract using velox and calculate median and sd
+elev_pred <- velox(elev)$extract(r_cells, df = TRUE) %>% 
+  # velox doesn't properly name columns, fix that
+  set_names(c("id", "elevation")) %>% 
+  # summarize
+  group_by(id) %>% 
+  summarize(elevation_median = median(elevation, na.rm = TRUE),
+            elevation_sd = sd(elevation, na.rm = TRUE))
+```
+
+Finally, we'll combine these elevation covariates with the land cover covariates.
+
+```{r covariates-elevation-combine}
+# checklist covariates
+pland_elev_checklist <- inner_join(pland, elev_checklists, by = "locality_id")
+write_csv(pland_elev_checklist, "data/pland-elev_location-year.csv")
+
+# prediction surface covariates
+pland_elev_pred <- inner_join(pland_coords, elev_pred, by = "id")
+write_csv(pland_elev_pred, "data/pland-elev_prediction-surface.csv")
+glimpse(pland_elev_pred)
+```
+
+This completes the data preparation. The following chapters will focus on using these data to model species distributions.
