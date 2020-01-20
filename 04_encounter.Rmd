@@ -284,7 +284,7 @@ calibration_model <- scam(obs ~ s(pred, k = 5, bs = "mpi"),
                           data = rf_pred_train)
 
 # calculate the average observed encounter rates for different 
-# categories of estimated encounter rates 
+# categories of estimated encounter rates 
 
 average_encounter <- rf_pred_train %>%
   mutate(pred_cat = cut(rf_pred_train$pred, breaks = seq(0, 1, by=0.02))) %>%
@@ -397,7 +397,7 @@ ggplot(pi) +
 
 The most important predictors of detection/non-detection are generally effort variables. Indeed, that's the case here: start time and checklist duration both have high predictor importance. This tells us that the time of day and length of time the observer was out, both have a large effect on whether Wood Thrush was recorded on the checklist. 
 
-Both elevation covariates have high importance, and the top descriptors of vegetation type are the proportions of woody savanna (`pland_08`), mixed forest (`pland_05`), and deciduous broadleaf forest (`pland_04`). Note that high importance doesn't tell us the direction of the relationship with detection, for that we'll have to look at partial dependence plots.
+Both elevation covariates have high importance, and the top descriptors of vegetation type are the proportions of mixed forest, woody savanna, and deciduous broadleaf forest. Note that high importance doesn't tell us the direction of the relationship with detection, for that we'll have to look at partial dependence plots.
 
 ### Partial dependence {#encounter-habitat-pd}
 
@@ -411,9 +411,12 @@ top_pred <- pi %>%
   arrange(desc(importance))
 
 # calculate partial dependence for each predictor
+# map is used to iteratively apply partial_dependence to each predictor
 pd <- top_pred %>% 
   mutate(pd = map(predictor, partial_dependence, 
-                  fit = rf, data = ebird_split$train),
+                  fit = rf, 
+                  data = ebird_split$train,
+                  n = c(25, 1000)),
          pd = map(pd, ~ .[, c(1, 3)]),
          pd = map(pd, set_names, nm = c("value",  "encounter_rate"))) %>% 
   unnest(cols = pd)
@@ -441,7 +444,7 @@ ggplot(pd) +
         axis.ticks  = element_line(color = "grey60"))
 ```
 
-There are a range of interesting responses here. As seen in Section \@ref(ebird-explore), the encounter rate for Wood Thrush peaks early in the morning when they're most likely to be singing, then quickly drops off in the middle of the day, before slightly increasing in the evening. Some other predictors show a more smoothly increasing relationship with encounter rate, for example, as the landscape contains more deciduous forest (`pland_04`), the encounter rate increases.
+There are a range of interesting responses here. As seen in Section \@ref(ebird-explore), the encounter rate for Wood Thrush peaks early in the morning when they're most likely to be singing, then quickly drops off in the middle of the day, before slightly increasing in the evening. Some other predictors show a more smoothly increasing relationship with encounter rate, for example, as the landscape contains more deciduous forest, the encounter rate increases.
 
 The random forest model has a number of interactions, which are not displayed in these partial dependence plots. When interpreting these, bear in mind that there are likely some more complex interaction effects beneath these individual plots. 
 
@@ -456,8 +459,8 @@ To find the time of day with the highest detection probability, we can look for 
 pd_time <- partial_dependence(rf, 
                               vars = "time_observations_started", 
                               # make estimates at 30 minute intervals
-                              # use the entire training dataset for estimation
-                              n = c(24 * 2, nrow(ebird_split$train)), 
+                              # using a subset of the training dataset
+                              n = c(24 * 2, 1000), 
                               data = ebird_split$train) %>% 
   select(time_observations_started, encounter_rate = "TRUE")
 

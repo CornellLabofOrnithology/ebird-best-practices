@@ -44,7 +44,7 @@ projection <- raster::projection
 # bcr 27 boundary
 bcr <- read_sf("data/gis-data.gpkg", "bcr") %>% 
   filter(bcr_code == 27) %>% 
-  # project to the native modis projectin
+  # project to the native modis projection
   st_transform(crs = paste("+proj=sinu +lon_0=0 +x_0=0 +y_0=0",
                            "+a=6371007.181 +b=6371007.181 +units=m +no_defs"))
 # load ebird data
@@ -209,11 +209,37 @@ pland <- lc_extract %>%
   select(-n) %>% 
   # remove NAs after tallying so pland is relative to total number of cells
   filter(!is.na(landcover))
+```
 
-# tranform to wide format, filling in implicit missing values with 0s
+Finally, we'll convert the numeric landcover codes to more descriptive names and transform the data to a wide format with each row a location and the PLAND values in columns.
+
+```{r landcover-lsm-trans}
+# convert names to be more descriptive
+lc_names <- tibble(landcover = 0:15,
+                   lc_name = c("pland_00_water", 
+                               "pland_01_evergreen_needleleaf", 
+                               "pland_02_evergreen_broadleaf", 
+                               "pland_03_deciduous_needleleaf", 
+                               "pland_04_deciduous_broadleaf", 
+                               "pland_05_mixed_forest",
+                               "pland_06_closed_shrubland", 
+                               "pland_07_open_shrubland", 
+                               "pland_08_woody_savanna", 
+                               "pland_09_savanna", 
+                               "pland_10_grassland", 
+                               "pland_11_wetland", 
+                               "pland_12_cropland", 
+                               "pland_13_urban", 
+                               "pland_14_mosiac", 
+                               "pland_15_barren"))
 pland <- pland %>% 
-  mutate(landcover = paste0("pland_", str_pad(landcover, 2, pad = "0"))) %>% 
-  pivot_wider(names_from = landcover, 
+  inner_join(lc_names, by = "landcover") %>% 
+  arrange(landcover) %>% 
+  select(-landcover)
+
+# tranform to wide format, filling in implicit missing values with 0s%>% 
+pland <- pland %>% 
+  pivot_wider(names_from = lc_name, 
               values_from = pland, 
               values_fill = list(pland = 0))
 
@@ -261,10 +287,15 @@ pland_pred <- lc_extract_pred %>%
   # remove NAs after tallying so pland is relative to total number of cells
   filter(!is.na(landcover))
 
+# convert names to be more descriptive
+pland_pred <- pland_pred %>% 
+  inner_join(lc_names, by = "landcover") %>% 
+  arrange(landcover) %>% 
+  select(-landcover)
+
 # tranform to wide format, filling in implicit missing values with 0s
 pland_pred <- pland_pred %>% 
-  mutate(landcover = paste0("pland_", str_pad(landcover, 2, pad = "0"))) %>% 
-  pivot_wider(names_from = landcover, 
+  pivot_wider(names_from = lc_name, 
               values_from = pland, 
               values_fill = list(pland = 0)) %>% 
   mutate(year = max_lc_year) %>% 
@@ -287,7 +318,7 @@ forest_cover <- pland_coords %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>% 
   st_transform(crs = projection(r)) %>% 
   # rasterize points
-  rasterize(r, field = "pland_04") %>% 
+  rasterize(r, field = "pland_04_deciduous_broadleaf") %>% 
   # project to albers equal-area for mapping
   projectRaster(crs = st_crs(102003)$proj4string, method = "ngb") %>% 
   # trim off empty edges of raster

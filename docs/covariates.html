@@ -368,7 +368,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb20-11" data-line-number="11"><span class="co"># bcr 27 boundary</span></a>
 <a class="sourceLine" id="cb20-12" data-line-number="12">bcr &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;bcr&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb20-13" data-line-number="13"><span class="st">  </span><span class="kw">filter</span>(bcr_code <span class="op">==</span><span class="st"> </span><span class="dv">27</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb20-14" data-line-number="14"><span class="st">  </span><span class="co"># project to the native modis projectin</span></a>
+<a class="sourceLine" id="cb20-14" data-line-number="14"><span class="st">  </span><span class="co"># project to the native modis projection</span></a>
 <a class="sourceLine" id="cb20-15" data-line-number="15"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">paste</span>(<span class="st">&quot;+proj=sinu +lon_0=0 +x_0=0 +y_0=0&quot;</span>,</a>
 <a class="sourceLine" id="cb20-16" data-line-number="16">                           <span class="st">&quot;+a=6371007.181 +b=6371007.181 +units=m +no_defs&quot;</span>))</a>
 <a class="sourceLine" id="cb20-17" data-line-number="17"><span class="co"># load ebird data</span></a>
@@ -511,85 +511,112 @@ brew link --force osgeo-gdal</code></pre>
 <a class="sourceLine" id="cb27-7" data-line-number="7"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb27-8" data-line-number="8"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>n) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb27-9" data-line-number="9"><span class="st">  </span><span class="co"># remove NAs after tallying so pland is relative to total number of cells</span></a>
-<a class="sourceLine" id="cb27-10" data-line-number="10"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(landcover))</a>
-<a class="sourceLine" id="cb27-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb27-12" data-line-number="12"><span class="co"># tranform to wide format, filling in implicit missing values with 0s</span></a>
-<a class="sourceLine" id="cb27-13" data-line-number="13">pland &lt;-<span class="st"> </span>pland <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb27-14" data-line-number="14"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">landcover =</span> <span class="kw">paste0</span>(<span class="st">&quot;pland_&quot;</span>, <span class="kw">str_pad</span>(landcover, <span class="dv">2</span>, <span class="dt">pad =</span> <span class="st">&quot;0&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb27-15" data-line-number="15"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> landcover, </a>
-<a class="sourceLine" id="cb27-16" data-line-number="16">              <span class="dt">values_from =</span> pland, </a>
-<a class="sourceLine" id="cb27-17" data-line-number="17">              <span class="dt">values_fill =</span> <span class="kw">list</span>(<span class="dt">pland =</span> <span class="dv">0</span>))</a>
-<a class="sourceLine" id="cb27-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb27-19" data-line-number="19"><span class="co"># save</span></a>
-<a class="sourceLine" id="cb27-20" data-line-number="20"><span class="kw">write_csv</span>(pland, <span class="st">&quot;data/modis_pland_location-year.csv&quot;</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb27-10" data-line-number="10"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(landcover))</a></code></pre></div>
+<p>Finally, we’ll convert the numeric landcover codes to more descriptive names and transform the data to a wide format with each row a location and the PLAND values in columns.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="co"># convert names to be more descriptive</span></a>
+<a class="sourceLine" id="cb28-2" data-line-number="2">lc_names &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">landcover =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">15</span>,</a>
+<a class="sourceLine" id="cb28-3" data-line-number="3">                   <span class="dt">lc_name =</span> <span class="kw">c</span>(<span class="st">&quot;pland_00_water&quot;</span>, </a>
+<a class="sourceLine" id="cb28-4" data-line-number="4">                               <span class="st">&quot;pland_01_evergreen_needleleaf&quot;</span>, </a>
+<a class="sourceLine" id="cb28-5" data-line-number="5">                               <span class="st">&quot;pland_02_evergreen_broadleaf&quot;</span>, </a>
+<a class="sourceLine" id="cb28-6" data-line-number="6">                               <span class="st">&quot;pland_03_deciduous_needleleaf&quot;</span>, </a>
+<a class="sourceLine" id="cb28-7" data-line-number="7">                               <span class="st">&quot;pland_04_deciduous_broadleaf&quot;</span>, </a>
+<a class="sourceLine" id="cb28-8" data-line-number="8">                               <span class="st">&quot;pland_05_mixed_forest&quot;</span>,</a>
+<a class="sourceLine" id="cb28-9" data-line-number="9">                               <span class="st">&quot;pland_06_closed_shrubland&quot;</span>, </a>
+<a class="sourceLine" id="cb28-10" data-line-number="10">                               <span class="st">&quot;pland_07_open_shrubland&quot;</span>, </a>
+<a class="sourceLine" id="cb28-11" data-line-number="11">                               <span class="st">&quot;pland_08_woody_savanna&quot;</span>, </a>
+<a class="sourceLine" id="cb28-12" data-line-number="12">                               <span class="st">&quot;pland_09_savanna&quot;</span>, </a>
+<a class="sourceLine" id="cb28-13" data-line-number="13">                               <span class="st">&quot;pland_10_grassland&quot;</span>, </a>
+<a class="sourceLine" id="cb28-14" data-line-number="14">                               <span class="st">&quot;pland_11_wetland&quot;</span>, </a>
+<a class="sourceLine" id="cb28-15" data-line-number="15">                               <span class="st">&quot;pland_12_cropland&quot;</span>, </a>
+<a class="sourceLine" id="cb28-16" data-line-number="16">                               <span class="st">&quot;pland_13_urban&quot;</span>, </a>
+<a class="sourceLine" id="cb28-17" data-line-number="17">                               <span class="st">&quot;pland_14_mosiac&quot;</span>, </a>
+<a class="sourceLine" id="cb28-18" data-line-number="18">                               <span class="st">&quot;pland_15_barren&quot;</span>))</a>
+<a class="sourceLine" id="cb28-19" data-line-number="19">pland &lt;-<span class="st"> </span>pland <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb28-20" data-line-number="20"><span class="st">  </span><span class="kw">inner_join</span>(lc_names, <span class="dt">by =</span> <span class="st">&quot;landcover&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb28-21" data-line-number="21"><span class="st">  </span><span class="kw">arrange</span>(landcover) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb28-22" data-line-number="22"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>landcover)</a>
+<a class="sourceLine" id="cb28-23" data-line-number="23"></a>
+<a class="sourceLine" id="cb28-24" data-line-number="24"><span class="co"># tranform to wide format, filling in implicit missing values with 0s%&gt;% </span></a>
+<a class="sourceLine" id="cb28-25" data-line-number="25">pland &lt;-<span class="st"> </span>pland <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb28-26" data-line-number="26"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> lc_name, </a>
+<a class="sourceLine" id="cb28-27" data-line-number="27">              <span class="dt">values_from =</span> pland, </a>
+<a class="sourceLine" id="cb28-28" data-line-number="28">              <span class="dt">values_fill =</span> <span class="kw">list</span>(<span class="dt">pland =</span> <span class="dv">0</span>))</a>
+<a class="sourceLine" id="cb28-29" data-line-number="29"></a>
+<a class="sourceLine" id="cb28-30" data-line-number="30"><span class="co"># save</span></a>
+<a class="sourceLine" id="cb28-31" data-line-number="31"><span class="kw">write_csv</span>(pland, <span class="st">&quot;data/modis_pland_location-year.csv&quot;</span>)</a></code></pre></div>
 </div>
 <div id="covariates-prediction" class="section level2">
 <h2><span class="header-section-number">3.4</span> Prediction surface</h2>
 <p>After fitting species distribution models, the goal is typically to make predictions throughout the study area. To do this, we’ll need a regular grid of habitat covariates over which to make predictions. In this section, we’ll create such a prediction surface for BCR 27 using the MODIS land cover data from the most recent year for which they’re available. To start, we’ll need a template raster with cells equal in size to the neighborhoods we defined in the previous section: 5 by 5 MODIS land cover cells. We can use <code>raster::aggregate()</code> to achieve this. We’ll also use <code>raster::rasterize()</code> to assign the value 1 to all cells within BCR 27 and leave all cells outside BCR 27 empty.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">agg_factor &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>neighborhood_radius <span class="op">/</span><span class="st"> </span><span class="kw">res</span>(landcover))</a>
-<a class="sourceLine" id="cb28-2" data-line-number="2">r &lt;-<span class="st"> </span><span class="kw">raster</span>(landcover) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb28-3" data-line-number="3"><span class="st">  </span><span class="kw">aggregate</span>(agg_factor) </a>
-<a class="sourceLine" id="cb28-4" data-line-number="4">r &lt;-<span class="st"> </span>bcr <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb28-5" data-line-number="5"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb28-6" data-line-number="6"><span class="st">  </span><span class="kw">rasterize</span>(r, <span class="dt">field =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb28-7" data-line-number="7"><span class="st">  </span><span class="co"># remove any empty cells at edges</span></a>
-<a class="sourceLine" id="cb28-8" data-line-number="8"><span class="st">  </span><span class="kw">trim</span>()</a>
-<a class="sourceLine" id="cb28-9" data-line-number="9">r &lt;-<span class="st"> </span><span class="kw">writeRaster</span>(r, <span class="dt">filename =</span> <span class="st">&quot;data/prediction-surface.tif&quot;</span>, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">agg_factor &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>neighborhood_radius <span class="op">/</span><span class="st"> </span><span class="kw">res</span>(landcover))</a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">r &lt;-<span class="st"> </span><span class="kw">raster</span>(landcover) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb29-3" data-line-number="3"><span class="st">  </span><span class="kw">aggregate</span>(agg_factor) </a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">r &lt;-<span class="st"> </span>bcr <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb29-5" data-line-number="5"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb29-6" data-line-number="6"><span class="st">  </span><span class="kw">rasterize</span>(r, <span class="dt">field =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb29-7" data-line-number="7"><span class="st">  </span><span class="co"># remove any empty cells at edges</span></a>
+<a class="sourceLine" id="cb29-8" data-line-number="8"><span class="st">  </span><span class="kw">trim</span>()</a>
+<a class="sourceLine" id="cb29-9" data-line-number="9">r &lt;-<span class="st"> </span><span class="kw">writeRaster</span>(r, <span class="dt">filename =</span> <span class="st">&quot;data/prediction-surface.tif&quot;</span>, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p>Next, for each cell of this raster, we’ll calculate the PLAND metrics using the same approach as the previous section. Note that we will only be creating this prediction surface for the most current year of landcover data in our example.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="co"># get cell centers and create neighborhoods</span></a>
-<a class="sourceLine" id="cb29-2" data-line-number="2">r_centers &lt;-<span class="st"> </span><span class="kw">rasterToPoints</span>(r, <span class="dt">spatial =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-3" data-line-number="3"><span class="st">  </span><span class="kw">st_as_sf</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-4" data-line-number="4"><span class="st">  </span><span class="kw">transmute</span>(<span class="dt">id =</span> <span class="kw">row_number</span>())</a>
-<a class="sourceLine" id="cb29-5" data-line-number="5">r_cells &lt;-<span class="st"> </span><span class="kw">st_buffer</span>(r_centers, <span class="dt">dist =</span> neighborhood_radius)</a>
-<a class="sourceLine" id="cb29-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb29-7" data-line-number="7"><span class="co"># extract landcover values within neighborhoods, only needed most recent year</span></a>
-<a class="sourceLine" id="cb29-8" data-line-number="8">lc_vlx &lt;-<span class="st"> </span><span class="kw">velox</span>(landcover[[<span class="kw">paste0</span>(<span class="st">&quot;y&quot;</span>, max_lc_year)]])</a>
-<a class="sourceLine" id="cb29-9" data-line-number="9">lc_extract_pred &lt;-<span class="st"> </span>lc_vlx<span class="op">$</span><span class="kw">extract</span>(r_cells, <span class="dt">df =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-10" data-line-number="10"><span class="st">  </span><span class="kw">set_names</span>(<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;landcover&quot;</span>))</a>
-<a class="sourceLine" id="cb29-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb29-12" data-line-number="12"><span class="co"># calculate the percent for each landcover class</span></a>
-<a class="sourceLine" id="cb29-13" data-line-number="13">pland_pred &lt;-<span class="st"> </span>lc_extract_pred <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-14" data-line-number="14"><span class="st">  </span><span class="kw">count</span>(id, landcover) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-15" data-line-number="15"><span class="st">  </span><span class="kw">group_by</span>(id) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-16" data-line-number="16"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pland =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-17" data-line-number="17"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-18" data-line-number="18"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>n) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-19" data-line-number="19"><span class="st">  </span><span class="co"># remove NAs after tallying so pland is relative to total number of cells</span></a>
-<a class="sourceLine" id="cb29-20" data-line-number="20"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(landcover))</a>
-<a class="sourceLine" id="cb29-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb29-22" data-line-number="22"><span class="co"># tranform to wide format, filling in implicit missing values with 0s</span></a>
-<a class="sourceLine" id="cb29-23" data-line-number="23">pland_pred &lt;-<span class="st"> </span>pland_pred <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-24" data-line-number="24"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">landcover =</span> <span class="kw">paste0</span>(<span class="st">&quot;pland_&quot;</span>, <span class="kw">str_pad</span>(landcover, <span class="dv">2</span>, <span class="dt">pad =</span> <span class="st">&quot;0&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-25" data-line-number="25"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> landcover, </a>
-<a class="sourceLine" id="cb29-26" data-line-number="26">              <span class="dt">values_from =</span> pland, </a>
-<a class="sourceLine" id="cb29-27" data-line-number="27">              <span class="dt">values_fill =</span> <span class="kw">list</span>(<span class="dt">pland =</span> <span class="dv">0</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-28" data-line-number="28"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> max_lc_year) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-29" data-line-number="29"><span class="st">  </span><span class="kw">select</span>(id, year, <span class="kw">everything</span>())</a>
-<a class="sourceLine" id="cb29-30" data-line-number="30"></a>
-<a class="sourceLine" id="cb29-31" data-line-number="31"><span class="co"># join in coordinates</span></a>
-<a class="sourceLine" id="cb29-32" data-line-number="32">pland_coords &lt;-<span class="st"> </span><span class="kw">st_transform</span>(r_centers, <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-33" data-line-number="33"><span class="st">  </span><span class="kw">st_coordinates</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-34" data-line-number="34"><span class="st">  </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-35" data-line-number="35"><span class="st">  </span><span class="kw">cbind</span>(<span class="dt">id =</span> r_centers<span class="op">$</span>id, .) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-36" data-line-number="36"><span class="st">  </span><span class="kw">rename</span>(<span class="dt">longitude =</span> X, <span class="dt">latitude =</span> Y) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-37" data-line-number="37"><span class="st">  </span><span class="kw">inner_join</span>(pland_pred, <span class="dt">by =</span> <span class="st">&quot;id&quot;</span>)</a></code></pre></div>
-<p>Keeping these data in a data frame is a compact way to store them and will be required once we make model predictions in later chapters. However, we can always use the raster template to convert these PLAND metrics into a spatial format, for example, if we want to map them. Let’s look at how this works for land cover class 4: deciduous broadleaf forest.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">forest_cover &lt;-<span class="st"> </span>pland_coords <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-2" data-line-number="2"><span class="st">  </span><span class="co"># convert to spatial features</span></a>
-<a class="sourceLine" id="cb30-3" data-line-number="3"><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-4" data-line-number="4"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-5" data-line-number="5"><span class="st">  </span><span class="co"># rasterize points</span></a>
-<a class="sourceLine" id="cb30-6" data-line-number="6"><span class="st">  </span><span class="kw">rasterize</span>(r, <span class="dt">field =</span> <span class="st">&quot;pland_04&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-7" data-line-number="7"><span class="st">  </span><span class="co"># project to albers equal-area for mapping</span></a>
-<a class="sourceLine" id="cb30-8" data-line-number="8"><span class="st">  </span><span class="kw">projectRaster</span>(<span class="dt">crs =</span> <span class="kw">st_crs</span>(<span class="dv">102003</span>)<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb30-9" data-line-number="9"><span class="st">  </span><span class="co"># trim off empty edges of raster</span></a>
-<a class="sourceLine" id="cb30-10" data-line-number="10"><span class="st">  </span><span class="kw">trim</span>()</a>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="co"># get cell centers and create neighborhoods</span></a>
+<a class="sourceLine" id="cb30-2" data-line-number="2">r_centers &lt;-<span class="st"> </span><span class="kw">rasterToPoints</span>(r, <span class="dt">spatial =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-3" data-line-number="3"><span class="st">  </span><span class="kw">st_as_sf</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-4" data-line-number="4"><span class="st">  </span><span class="kw">transmute</span>(<span class="dt">id =</span> <span class="kw">row_number</span>())</a>
+<a class="sourceLine" id="cb30-5" data-line-number="5">r_cells &lt;-<span class="st"> </span><span class="kw">st_buffer</span>(r_centers, <span class="dt">dist =</span> neighborhood_radius)</a>
+<a class="sourceLine" id="cb30-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb30-7" data-line-number="7"><span class="co"># extract landcover values within neighborhoods, only needed most recent year</span></a>
+<a class="sourceLine" id="cb30-8" data-line-number="8">lc_vlx &lt;-<span class="st"> </span><span class="kw">velox</span>(landcover[[<span class="kw">paste0</span>(<span class="st">&quot;y&quot;</span>, max_lc_year)]])</a>
+<a class="sourceLine" id="cb30-9" data-line-number="9">lc_extract_pred &lt;-<span class="st"> </span>lc_vlx<span class="op">$</span><span class="kw">extract</span>(r_cells, <span class="dt">df =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-10" data-line-number="10"><span class="st">  </span><span class="kw">set_names</span>(<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;landcover&quot;</span>))</a>
 <a class="sourceLine" id="cb30-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb30-12" data-line-number="12"><span class="co"># make a map</span></a>
-<a class="sourceLine" id="cb30-13" data-line-number="13"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="dv">2</span>, <span class="fl">0.25</span>))</a>
-<a class="sourceLine" id="cb30-14" data-line-number="14">t &lt;-<span class="st"> </span><span class="kw">str_glue</span>(<span class="st">&quot;Proportion of Deciduous Broadleaf Forest</span><span class="ch">\n</span><span class="st">&quot;</span>,</a>
-<a class="sourceLine" id="cb30-15" data-line-number="15">              <span class="st">&quot;{max_lc_year} MODIS Landcover&quot;</span>)</a>
-<a class="sourceLine" id="cb30-16" data-line-number="16"><span class="kw">plot</span>(forest_cover, <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">box =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="kw">viridis</span>(<span class="dv">10</span>), <span class="dt">main =</span> t)</a></code></pre></div>
+<a class="sourceLine" id="cb30-12" data-line-number="12"><span class="co"># calculate the percent for each landcover class</span></a>
+<a class="sourceLine" id="cb30-13" data-line-number="13">pland_pred &lt;-<span class="st"> </span>lc_extract_pred <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-14" data-line-number="14"><span class="st">  </span><span class="kw">count</span>(id, landcover) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-15" data-line-number="15"><span class="st">  </span><span class="kw">group_by</span>(id) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-16" data-line-number="16"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pland =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-17" data-line-number="17"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-18" data-line-number="18"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>n) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-19" data-line-number="19"><span class="st">  </span><span class="co"># remove NAs after tallying so pland is relative to total number of cells</span></a>
+<a class="sourceLine" id="cb30-20" data-line-number="20"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(landcover))</a>
+<a class="sourceLine" id="cb30-21" data-line-number="21"></a>
+<a class="sourceLine" id="cb30-22" data-line-number="22"><span class="co"># convert names to be more descriptive</span></a>
+<a class="sourceLine" id="cb30-23" data-line-number="23">pland_pred &lt;-<span class="st"> </span>pland_pred <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-24" data-line-number="24"><span class="st">  </span><span class="kw">inner_join</span>(lc_names, <span class="dt">by =</span> <span class="st">&quot;landcover&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-25" data-line-number="25"><span class="st">  </span><span class="kw">arrange</span>(landcover) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-26" data-line-number="26"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>landcover)</a>
+<a class="sourceLine" id="cb30-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb30-28" data-line-number="28"><span class="co"># tranform to wide format, filling in implicit missing values with 0s</span></a>
+<a class="sourceLine" id="cb30-29" data-line-number="29">pland_pred &lt;-<span class="st"> </span>pland_pred <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-30" data-line-number="30"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> lc_name, </a>
+<a class="sourceLine" id="cb30-31" data-line-number="31">              <span class="dt">values_from =</span> pland, </a>
+<a class="sourceLine" id="cb30-32" data-line-number="32">              <span class="dt">values_fill =</span> <span class="kw">list</span>(<span class="dt">pland =</span> <span class="dv">0</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-33" data-line-number="33"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> max_lc_year) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-34" data-line-number="34"><span class="st">  </span><span class="kw">select</span>(id, year, <span class="kw">everything</span>())</a>
+<a class="sourceLine" id="cb30-35" data-line-number="35"></a>
+<a class="sourceLine" id="cb30-36" data-line-number="36"><span class="co"># join in coordinates</span></a>
+<a class="sourceLine" id="cb30-37" data-line-number="37">pland_coords &lt;-<span class="st"> </span><span class="kw">st_transform</span>(r_centers, <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-38" data-line-number="38"><span class="st">  </span><span class="kw">st_coordinates</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-39" data-line-number="39"><span class="st">  </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-40" data-line-number="40"><span class="st">  </span><span class="kw">cbind</span>(<span class="dt">id =</span> r_centers<span class="op">$</span>id, .) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-41" data-line-number="41"><span class="st">  </span><span class="kw">rename</span>(<span class="dt">longitude =</span> X, <span class="dt">latitude =</span> Y) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb30-42" data-line-number="42"><span class="st">  </span><span class="kw">inner_join</span>(pland_pred, <span class="dt">by =</span> <span class="st">&quot;id&quot;</span>)</a></code></pre></div>
+<p>Keeping these data in a data frame is a compact way to store them and will be required once we make model predictions in later chapters. However, we can always use the raster template to convert these PLAND metrics into a spatial format, for example, if we want to map them. Let’s look at how this works for land cover class 4: deciduous broadleaf forest.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1">forest_cover &lt;-<span class="st"> </span>pland_coords <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb31-2" data-line-number="2"><span class="st">  </span><span class="co"># convert to spatial features</span></a>
+<a class="sourceLine" id="cb31-3" data-line-number="3"><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb31-4" data-line-number="4"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb31-5" data-line-number="5"><span class="st">  </span><span class="co"># rasterize points</span></a>
+<a class="sourceLine" id="cb31-6" data-line-number="6"><span class="st">  </span><span class="kw">rasterize</span>(r, <span class="dt">field =</span> <span class="st">&quot;pland_04_deciduous_broadleaf&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb31-7" data-line-number="7"><span class="st">  </span><span class="co"># project to albers equal-area for mapping</span></a>
+<a class="sourceLine" id="cb31-8" data-line-number="8"><span class="st">  </span><span class="kw">projectRaster</span>(<span class="dt">crs =</span> <span class="kw">st_crs</span>(<span class="dv">102003</span>)<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb31-9" data-line-number="9"><span class="st">  </span><span class="co"># trim off empty edges of raster</span></a>
+<a class="sourceLine" id="cb31-10" data-line-number="10"><span class="st">  </span><span class="kw">trim</span>()</a>
+<a class="sourceLine" id="cb31-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb31-12" data-line-number="12"><span class="co"># make a map</span></a>
+<a class="sourceLine" id="cb31-13" data-line-number="13"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="dv">2</span>, <span class="fl">0.25</span>))</a>
+<a class="sourceLine" id="cb31-14" data-line-number="14">t &lt;-<span class="st"> </span><span class="kw">str_glue</span>(<span class="st">&quot;Proportion of Deciduous Broadleaf Forest</span><span class="ch">\n</span><span class="st">&quot;</span>,</a>
+<a class="sourceLine" id="cb31-15" data-line-number="15">              <span class="st">&quot;{max_lc_year} MODIS Landcover&quot;</span>)</a>
+<a class="sourceLine" id="cb31-16" data-line-number="16"><span class="kw">plot</span>(forest_cover, <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">box =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="kw">viridis</span>(<span class="dv">10</span>), <span class="dt">main =</span> t)</a></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/landcover-prediction-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 </div>
 <div id="covariates-elevation" class="section level2">
@@ -598,75 +625,75 @@ brew link --force osgeo-gdal</code></pre>
 <p>Amatulli et al. <span class="citation">(<a href="#ref-amatulliSuiteGlobalCrossscale2018">2018</a>)</span> provide a suite of global, 1km resolution topographic variables designed for use in distribution modeling. A range of variables are available, including elevation, slope, roughness, and many others; we’ll focus on elevation here, but the approach can easily be applied to other variables. To start, visit <a href="http://www.earthenv.org/topography">the website for these data</a>, download the 1 km resolution median elevation product, and save the file (<code>elevation_1KMmd_GMTEDmd.tif</code>) in the <code>data/</code> subdirectory of your project:</p>
 <p><img src="images/03_covariates_elevation.png" /></p>
 <p>Next we’ll load the file, crop it down from it’s full global extent to just the portion we need for BCR 27, and reproject it to the MODIS sinusoidal projection.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1">elev &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="st">&quot;data/elevation_1KMmd_GMTEDmd.tif&quot;</span>)</a>
-<a class="sourceLine" id="cb31-2" data-line-number="2"><span class="co"># crop, buffer bcr by 10 km to provide a little wiggly room</span></a>
-<a class="sourceLine" id="cb31-3" data-line-number="3">elev &lt;-<span class="st"> </span>bcr <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb31-4" data-line-number="4"><span class="st">  </span><span class="kw">st_buffer</span>(<span class="dt">dist =</span> <span class="dv">10000</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb31-5" data-line-number="5"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(elev)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb31-6" data-line-number="6"><span class="st">  </span><span class="kw">crop</span>(elev, .) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb31-7" data-line-number="7"><span class="st">  </span><span class="kw">projectRaster</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(landcover))</a></code></pre></div>
-<p>Now we extract the elevation values within the neighborhood of each checklist location just as we did before for the land cover data. Then we’ll calculate the median and standard deviation of the elevation within each neighborhood.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="co"># buffer each checklist location</span></a>
-<a class="sourceLine" id="cb32-2" data-line-number="2">ebird_buff_noyear &lt;-<span class="st"> </span>ebird <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb32-3" data-line-number="3"><span class="st">  </span><span class="kw">distinct</span>(locality_id, latitude, longitude) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb32-4" data-line-number="4"><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1">elev &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="st">&quot;data/elevation_1KMmd_GMTEDmd.tif&quot;</span>)</a>
+<a class="sourceLine" id="cb32-2" data-line-number="2"><span class="co"># crop, buffer bcr by 10 km to provide a little wiggly room</span></a>
+<a class="sourceLine" id="cb32-3" data-line-number="3">elev &lt;-<span class="st"> </span>bcr <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb32-4" data-line-number="4"><span class="st">  </span><span class="kw">st_buffer</span>(<span class="dt">dist =</span> <span class="dv">10000</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb32-5" data-line-number="5"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(elev)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb32-6" data-line-number="6"><span class="st">  </span><span class="kw">st_buffer</span>(<span class="dt">dist =</span> neighborhood_radius)</a>
-<a class="sourceLine" id="cb32-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb32-8" data-line-number="8"><span class="co"># extract using velox and calculate median and sd</span></a>
-<a class="sourceLine" id="cb32-9" data-line-number="9">locs &lt;-<span class="st"> </span><span class="kw">st_set_geometry</span>(ebird_buff_noyear, <span class="ot">NULL</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb32-10" data-line-number="10"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">id =</span> <span class="kw">row_number</span>())</a>
-<a class="sourceLine" id="cb32-11" data-line-number="11">elev_checklists &lt;-<span class="st"> </span><span class="kw">velox</span>(elev)<span class="op">$</span><span class="kw">extract</span>(ebird_buff_noyear, <span class="dt">df =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb32-12" data-line-number="12"><span class="st">  </span><span class="co"># velox doesn&#39;t properly name columns, fix that</span></a>
-<a class="sourceLine" id="cb32-13" data-line-number="13"><span class="st">  </span><span class="kw">set_names</span>(<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;elevation&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb32-14" data-line-number="14"><span class="st">  </span><span class="co"># join to lookup table to get locality_id</span></a>
-<a class="sourceLine" id="cb32-15" data-line-number="15"><span class="st">  </span><span class="kw">inner_join</span>(locs, ., <span class="dt">by =</span> <span class="st">&quot;id&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb32-16" data-line-number="16"><span class="st">  </span><span class="co"># summarize</span></a>
-<a class="sourceLine" id="cb32-17" data-line-number="17"><span class="st">  </span><span class="kw">group_by</span>(locality_id) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb32-18" data-line-number="18"><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">elevation_median =</span> <span class="kw">median</span>(elevation, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),</a>
-<a class="sourceLine" id="cb32-19" data-line-number="19">            <span class="dt">elevation_sd =</span> <span class="kw">sd</span>(elevation, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</a></code></pre></div>
+<a class="sourceLine" id="cb32-6" data-line-number="6"><span class="st">  </span><span class="kw">crop</span>(elev, .) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb32-7" data-line-number="7"><span class="st">  </span><span class="kw">projectRaster</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(landcover))</a></code></pre></div>
+<p>Now we extract the elevation values within the neighborhood of each checklist location just as we did before for the land cover data. Then we’ll calculate the median and standard deviation of the elevation within each neighborhood.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="co"># buffer each checklist location</span></a>
+<a class="sourceLine" id="cb33-2" data-line-number="2">ebird_buff_noyear &lt;-<span class="st"> </span>ebird <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb33-3" data-line-number="3"><span class="st">  </span><span class="kw">distinct</span>(locality_id, latitude, longitude) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb33-4" data-line-number="4"><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb33-5" data-line-number="5"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(elev)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb33-6" data-line-number="6"><span class="st">  </span><span class="kw">st_buffer</span>(<span class="dt">dist =</span> neighborhood_radius)</a>
+<a class="sourceLine" id="cb33-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb33-8" data-line-number="8"><span class="co"># extract using velox and calculate median and sd</span></a>
+<a class="sourceLine" id="cb33-9" data-line-number="9">locs &lt;-<span class="st"> </span><span class="kw">st_set_geometry</span>(ebird_buff_noyear, <span class="ot">NULL</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb33-10" data-line-number="10"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">id =</span> <span class="kw">row_number</span>())</a>
+<a class="sourceLine" id="cb33-11" data-line-number="11">elev_checklists &lt;-<span class="st"> </span><span class="kw">velox</span>(elev)<span class="op">$</span><span class="kw">extract</span>(ebird_buff_noyear, <span class="dt">df =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb33-12" data-line-number="12"><span class="st">  </span><span class="co"># velox doesn&#39;t properly name columns, fix that</span></a>
+<a class="sourceLine" id="cb33-13" data-line-number="13"><span class="st">  </span><span class="kw">set_names</span>(<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;elevation&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb33-14" data-line-number="14"><span class="st">  </span><span class="co"># join to lookup table to get locality_id</span></a>
+<a class="sourceLine" id="cb33-15" data-line-number="15"><span class="st">  </span><span class="kw">inner_join</span>(locs, ., <span class="dt">by =</span> <span class="st">&quot;id&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb33-16" data-line-number="16"><span class="st">  </span><span class="co"># summarize</span></a>
+<a class="sourceLine" id="cb33-17" data-line-number="17"><span class="st">  </span><span class="kw">group_by</span>(locality_id) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb33-18" data-line-number="18"><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">elevation_median =</span> <span class="kw">median</span>(elevation, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),</a>
+<a class="sourceLine" id="cb33-19" data-line-number="19">            <span class="dt">elevation_sd =</span> <span class="kw">sd</span>(elevation, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</a></code></pre></div>
 <p>We’ll need to do repeat this process to calculate the elevation covariates for the prediction surface.</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="co"># extract using velox and calculate median and sd</span></a>
-<a class="sourceLine" id="cb33-2" data-line-number="2">elev_pred &lt;-<span class="st"> </span><span class="kw">velox</span>(elev)<span class="op">$</span><span class="kw">extract</span>(r_cells, <span class="dt">df =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb33-3" data-line-number="3"><span class="st">  </span><span class="co"># velox doesn&#39;t properly name columns, fix that</span></a>
-<a class="sourceLine" id="cb33-4" data-line-number="4"><span class="st">  </span><span class="kw">set_names</span>(<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;elevation&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb33-5" data-line-number="5"><span class="st">  </span><span class="co"># summarize</span></a>
-<a class="sourceLine" id="cb33-6" data-line-number="6"><span class="st">  </span><span class="kw">group_by</span>(id) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb33-7" data-line-number="7"><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">elevation_median =</span> <span class="kw">median</span>(elevation, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),</a>
-<a class="sourceLine" id="cb33-8" data-line-number="8">            <span class="dt">elevation_sd =</span> <span class="kw">sd</span>(elevation, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="co"># extract using velox and calculate median and sd</span></a>
+<a class="sourceLine" id="cb34-2" data-line-number="2">elev_pred &lt;-<span class="st"> </span><span class="kw">velox</span>(elev)<span class="op">$</span><span class="kw">extract</span>(r_cells, <span class="dt">df =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb34-3" data-line-number="3"><span class="st">  </span><span class="co"># velox doesn&#39;t properly name columns, fix that</span></a>
+<a class="sourceLine" id="cb34-4" data-line-number="4"><span class="st">  </span><span class="kw">set_names</span>(<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;elevation&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb34-5" data-line-number="5"><span class="st">  </span><span class="co"># summarize</span></a>
+<a class="sourceLine" id="cb34-6" data-line-number="6"><span class="st">  </span><span class="kw">group_by</span>(id) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb34-7" data-line-number="7"><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">elevation_median =</span> <span class="kw">median</span>(elevation, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),</a>
+<a class="sourceLine" id="cb34-8" data-line-number="8">            <span class="dt">elevation_sd =</span> <span class="kw">sd</span>(elevation, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</a></code></pre></div>
 <p>Finally, we’ll combine these elevation covariates with the land cover covariates.</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="co"># checklist covariates</span></a>
-<a class="sourceLine" id="cb34-2" data-line-number="2">pland_elev_checklist &lt;-<span class="st"> </span><span class="kw">inner_join</span>(pland, elev_checklists, <span class="dt">by =</span> <span class="st">&quot;locality_id&quot;</span>)</a>
-<a class="sourceLine" id="cb34-3" data-line-number="3"><span class="kw">write_csv</span>(pland_elev_checklist, <span class="st">&quot;data/pland-elev_location-year.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb34-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb34-5" data-line-number="5"><span class="co"># prediction surface covariates</span></a>
-<a class="sourceLine" id="cb34-6" data-line-number="6">pland_elev_pred &lt;-<span class="st"> </span><span class="kw">inner_join</span>(pland_coords, elev_pred, <span class="dt">by =</span> <span class="st">&quot;id&quot;</span>)</a>
-<a class="sourceLine" id="cb34-7" data-line-number="7"><span class="kw">write_csv</span>(pland_elev_pred, <span class="st">&quot;data/pland-elev_prediction-surface.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb34-8" data-line-number="8"><span class="kw">glimpse</span>(pland_elev_pred)</a>
-<a class="sourceLine" id="cb34-9" data-line-number="9"><span class="co">#&gt; Observations: 90,949</span></a>
-<a class="sourceLine" id="cb34-10" data-line-number="10"><span class="co">#&gt; Variables: 22</span></a>
-<a class="sourceLine" id="cb34-11" data-line-number="11"><span class="co">#&gt; $ id               &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, …</span></a>
-<a class="sourceLine" id="cb34-12" data-line-number="12"><span class="co">#&gt; $ longitude        &lt;dbl&gt; -77.3, -77.3, -77.3, -77.3, -77.3, -77.2, -77.4, -77.3, -77.3, -77.3, -77.3…</span></a>
-<a class="sourceLine" id="cb34-13" data-line-number="13"><span class="co">#&gt; $ latitude         &lt;dbl&gt; 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.…</span></a>
-<a class="sourceLine" id="cb34-14" data-line-number="14"><span class="co">#&gt; $ year             &lt;int&gt; 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 201…</span></a>
-<a class="sourceLine" id="cb34-15" data-line-number="15"><span class="co">#&gt; $ pland_08         &lt;dbl&gt; 0.952, 0.857, 0.810, 0.619, 0.905, 0.714, 0.619, 1.000, 0.810, 0.857, 0.762…</span></a>
-<a class="sourceLine" id="cb34-16" data-line-number="16"><span class="co">#&gt; $ pland_10         &lt;dbl&gt; 0.0476, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0476, 0.0…</span></a>
-<a class="sourceLine" id="cb34-17" data-line-number="17"><span class="co">#&gt; $ pland_04         &lt;dbl&gt; 0.0000, 0.1429, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0…</span></a>
-<a class="sourceLine" id="cb34-18" data-line-number="18"><span class="co">#&gt; $ pland_09         &lt;dbl&gt; 0.0000, 0.0000, 0.1905, 0.1905, 0.0000, 0.0000, 0.0000, 0.0000, 0.0952, 0.0…</span></a>
-<a class="sourceLine" id="cb34-19" data-line-number="19"><span class="co">#&gt; $ pland_05         &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.1905, 0.0952, 0.2857, 0.0000, 0.0000, 0.0476, 0.0…</span></a>
-<a class="sourceLine" id="cb34-20" data-line-number="20"><span class="co">#&gt; $ pland_13         &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.3810, 0.0000, 0.0000, 0.0…</span></a>
-<a class="sourceLine" id="cb34-21" data-line-number="21"><span class="co">#&gt; $ pland_12         &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0…</span></a>
-<a class="sourceLine" id="cb34-22" data-line-number="22"><span class="co">#&gt; $ pland_14         &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0…</span></a>
-<a class="sourceLine" id="cb34-23" data-line-number="23"><span class="co">#&gt; $ pland_01         &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0…</span></a>
-<a class="sourceLine" id="cb34-24" data-line-number="24"><span class="co">#&gt; $ pland_06         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
-<a class="sourceLine" id="cb34-25" data-line-number="25"><span class="co">#&gt; $ pland_00         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
-<a class="sourceLine" id="cb34-26" data-line-number="26"><span class="co">#&gt; $ pland_11         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
-<a class="sourceLine" id="cb34-27" data-line-number="27"><span class="co">#&gt; $ pland_02         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
-<a class="sourceLine" id="cb34-28" data-line-number="28"><span class="co">#&gt; $ pland_03         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
-<a class="sourceLine" id="cb34-29" data-line-number="29"><span class="co">#&gt; $ pland_15         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
-<a class="sourceLine" id="cb34-30" data-line-number="30"><span class="co">#&gt; $ pland_07         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
-<a class="sourceLine" id="cb34-31" data-line-number="31"><span class="co">#&gt; $ elevation_median &lt;dbl&gt; 40.7, 41.8, 42.5, 43.2, 42.6, 44.3, 45.5, 44.4, 43.7, 41.0, 40.9, 42.9, 42.…</span></a>
-<a class="sourceLine" id="cb34-32" data-line-number="32"><span class="co">#&gt; $ elevation_sd     &lt;dbl&gt; 4.347, 2.135, 3.059, 3.373, 1.331, 1.717, 2.020, 3.863, 2.705, 1.817, 1.802…</span></a></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="co"># checklist covariates</span></a>
+<a class="sourceLine" id="cb35-2" data-line-number="2">pland_elev_checklist &lt;-<span class="st"> </span><span class="kw">inner_join</span>(pland, elev_checklists, <span class="dt">by =</span> <span class="st">&quot;locality_id&quot;</span>)</a>
+<a class="sourceLine" id="cb35-3" data-line-number="3"><span class="kw">write_csv</span>(pland_elev_checklist, <span class="st">&quot;data/pland-elev_location-year.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb35-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb35-5" data-line-number="5"><span class="co"># prediction surface covariates</span></a>
+<a class="sourceLine" id="cb35-6" data-line-number="6">pland_elev_pred &lt;-<span class="st"> </span><span class="kw">inner_join</span>(pland_coords, elev_pred, <span class="dt">by =</span> <span class="st">&quot;id&quot;</span>)</a>
+<a class="sourceLine" id="cb35-7" data-line-number="7"><span class="kw">write_csv</span>(pland_elev_pred, <span class="st">&quot;data/pland-elev_prediction-surface.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb35-8" data-line-number="8"><span class="kw">glimpse</span>(pland_elev_pred)</a>
+<a class="sourceLine" id="cb35-9" data-line-number="9"><span class="co">#&gt; Observations: 90,949</span></a>
+<a class="sourceLine" id="cb35-10" data-line-number="10"><span class="co">#&gt; Variables: 22</span></a>
+<a class="sourceLine" id="cb35-11" data-line-number="11"><span class="co">#&gt; $ id                            &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,…</span></a>
+<a class="sourceLine" id="cb35-12" data-line-number="12"><span class="co">#&gt; $ longitude                     &lt;dbl&gt; -77.3, -77.3, -77.3, -77.3, -77.3, -77.2, -77.4, -77.3, -77.3,…</span></a>
+<a class="sourceLine" id="cb35-13" data-line-number="13"><span class="co">#&gt; $ latitude                      &lt;dbl&gt; 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37…</span></a>
+<a class="sourceLine" id="cb35-14" data-line-number="14"><span class="co">#&gt; $ year                          &lt;int&gt; 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 20…</span></a>
+<a class="sourceLine" id="cb35-15" data-line-number="15"><span class="co">#&gt; $ pland_00_water                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></a>
+<a class="sourceLine" id="cb35-16" data-line-number="16"><span class="co">#&gt; $ pland_01_evergreen_needleleaf &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000…</span></a>
+<a class="sourceLine" id="cb35-17" data-line-number="17"><span class="co">#&gt; $ pland_02_evergreen_broadleaf  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></a>
+<a class="sourceLine" id="cb35-18" data-line-number="18"><span class="co">#&gt; $ pland_03_deciduous_needleleaf &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></a>
+<a class="sourceLine" id="cb35-19" data-line-number="19"><span class="co">#&gt; $ pland_04_deciduous_broadleaf  &lt;dbl&gt; 0.0000, 0.1429, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000…</span></a>
+<a class="sourceLine" id="cb35-20" data-line-number="20"><span class="co">#&gt; $ pland_05_mixed_forest         &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.1905, 0.0952, 0.2857, 0.0000, 0.0000…</span></a>
+<a class="sourceLine" id="cb35-21" data-line-number="21"><span class="co">#&gt; $ pland_06_closed_shrubland     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></a>
+<a class="sourceLine" id="cb35-22" data-line-number="22"><span class="co">#&gt; $ pland_07_open_shrubland       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></a>
+<a class="sourceLine" id="cb35-23" data-line-number="23"><span class="co">#&gt; $ pland_08_woody_savanna        &lt;dbl&gt; 0.952, 0.857, 0.810, 0.619, 0.905, 0.714, 0.619, 1.000, 0.810,…</span></a>
+<a class="sourceLine" id="cb35-24" data-line-number="24"><span class="co">#&gt; $ pland_09_savanna              &lt;dbl&gt; 0.0000, 0.0000, 0.1905, 0.1905, 0.0000, 0.0000, 0.0000, 0.0000…</span></a>
+<a class="sourceLine" id="cb35-25" data-line-number="25"><span class="co">#&gt; $ pland_10_grassland            &lt;dbl&gt; 0.0476, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000…</span></a>
+<a class="sourceLine" id="cb35-26" data-line-number="26"><span class="co">#&gt; $ pland_11_wetland              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></a>
+<a class="sourceLine" id="cb35-27" data-line-number="27"><span class="co">#&gt; $ pland_12_cropland             &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000…</span></a>
+<a class="sourceLine" id="cb35-28" data-line-number="28"><span class="co">#&gt; $ pland_13_urban                &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.3810, 0.0000…</span></a>
+<a class="sourceLine" id="cb35-29" data-line-number="29"><span class="co">#&gt; $ pland_14_mosiac               &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000…</span></a>
+<a class="sourceLine" id="cb35-30" data-line-number="30"><span class="co">#&gt; $ pland_15_barren               &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></a>
+<a class="sourceLine" id="cb35-31" data-line-number="31"><span class="co">#&gt; $ elevation_median              &lt;dbl&gt; 40.7, 41.8, 42.5, 43.2, 42.6, 44.3, 45.5, 44.4, 43.7, 41.0, 40…</span></a>
+<a class="sourceLine" id="cb35-32" data-line-number="32"><span class="co">#&gt; $ elevation_sd                  &lt;dbl&gt; 4.347, 2.135, 3.059, 3.373, 1.331, 1.717, 2.020, 3.863, 2.705,…</span></a></code></pre></div>
 <p>This completes the data preparation. The following chapters will focus on using these data to model species distributions.</p>
 
 </div>

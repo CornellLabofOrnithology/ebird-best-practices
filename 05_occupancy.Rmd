@@ -115,9 +115,9 @@ We'll use our filtered observations to fit a single-season occupancy model using
 
 At this stage, we need to specify which variables will be ecological process (i.e. occupancy) covariates and which will be observational process (i.e. detection) covariates. Occupancy covariates (`site_covs`) will be unique at the level of the site, while detection covariates (`obs_covs`) will be unique for each site and sampling occasion (i.e. checklist).
 
-For this example, we'll use MODIS land cover variables as habitat covariates for modeling the occupancy probability of Wood Thrush. Based on [predictor importance](#encounter-habitat-pi) measures from Chapter \@ref(encounter), we include deciduous broadleaf forest (`pland_04`) and mixed forest (`pland_05`) as habitat types for which we expect positive relationships with occupancy, and croplands (`pland_12`) and urban (`pland_13`), for which we expect negative relationships. 
+For this example, we'll use MODIS land cover variables as habitat covariates for modeling the occupancy probability of Wood Thrush. Based on [predictor importance](#encounter-habitat-pi) measures from Chapter \@ref(encounter), we include deciduous broadleaf forest and mixed forest as habitat types for which we expect positive relationships with occupancy, and croplands and urban, for which we expect negative relationships. 
 
-To estimate detection probability, we include five effort variables that are related to the detection process. Habitat type has been shown to affect detectability, for example, some species are harder to detect in densely forested habitats relative to more open habitat types. So we also include deciduous broadleaf forest (`pland_04`) and mixed forest (`pland_05`) as variables in the detectability model. Occupancy models allow us to tease apart the differing effects of habitat on both detection and occupancy probabilities. 
+To estimate detection probability, we include five effort variables that are related to the detection process. Habitat type has been shown to affect detectability, for example, some species are harder to detect in densely forested habitats relative to more open habitat types. So we also include deciduous broadleaf forest and mixed forest as variables in the detectability model. Occupancy models allow us to tease apart the differing effects of habitat on both detection and occupancy probabilities. 
 
 ```{r occupancy-data-sites-wide}
 # format for unmarked
@@ -126,21 +126,17 @@ occ_wide <- format_unmarked_occu(occ,
                                  response = "species_observed",
                                  site_covs = c("n_observations", 
                                                "latitude", "longitude", 
-                                               # % deciduous forest
-                                               "pland_04", 
-                                               # % mixed forest
-                                               "pland_05",
-                                               # % cropland
-                                               "pland_12",
-                                               # % urban
-                                               "pland_13"),
+                                               "pland_04_deciduous_broadleaf", 
+                                               "pland_05_mixed_forest",
+                                               "pland_12_cropland",
+                                               "pland_13_urban"),
                                  obs_covs = c("time_observations_started", 
                                               "duration_minutes", 
                                               "effort_distance_km", 
                                               "number_observers", 
                                               "protocol_type",
-                                              "pland_04", 
-                                              "pland_05"))
+                                              "pland_04_deciduous_broadleaf", 
+                                              "pland_05_mixed_forest"))
 ```
 
 ### Spatial subsampling {#encounter-data-sss}
@@ -185,8 +181,12 @@ occ_model <- occu(~ time_observations_started +
                     effort_distance_km + 
                     number_observers + 
                     protocol_type +
-                    pland_04 + pland_05
-                  ~ pland_04 + pland_05 + pland_12 + pland_13, 
+                    pland_04_deciduous_broadleaf + 
+                    pland_05_mixed_forest
+                  ~ pland_04_deciduous_broadleaf + 
+                    pland_05_mixed_forest + 
+                    pland_12_cropland + 
+                    pland_13_urban, 
                   data = occ_um)
 # look at the regression coefficients from the model
 summary(occ_model)
@@ -228,12 +228,18 @@ det_terms <- getAllTerms(occ_model) %>%
 occ_dredge <- dredge(occ_model, fixed = det_terms)
 
 # model comparison
-select(occ_dredge, starts_with("psi(p"), df, AICc, delta, weight) %>% 
+mc <- select(occ_dredge, starts_with("psi(p"), df, AICc, delta, weight)
+# shorten names for printing
+names(mc) <- names(mc) %>% 
+  str_extract("(?<=psi\\(pland_[0-9]{2}_)[a-z_]+") %>% 
+  coalesce(names(mc))
+
+mc %>% 
   mutate_all(~ round(., 3)) %>% 
   knitr::kable()
 ```
 
-The corrected [Akaike Information Criterion (AICc)](https://en.wikipedia.org/wiki/Akaike_information_criterion#AICc) measures the likelihood of each model to have generated the data we observed, adjusted for the number of parameters in the model. Lower values indicate models with a better fit to the data, penalizing for the added number of parameters. Delta is the difference in AICc values between the given model and the model that is most likely to have generated the data (i.e. the one with the lowest AICc), and is a relative measure conditional on the candidate set of models. Finally, the AIC weight is a transformation of delta that can be interpreted as the probability that the given model is the most likely one of the candidate models to have generated the data, and is also conditional on the candidate model set. The columns beginning with `psi(` give the model coefficients for each of the habitat covariates in the occupancy submodel; missing values indicate that that covariate was not included in the given model.
+The corrected [Akaike Information Criterion (AICc)](https://en.wikipedia.org/wiki/Akaike_information_criterion#AICc) measures the likelihood of each model to have generated the data we observed, adjusted for the number of parameters in the model. Lower values indicate models with a better fit to the data, penalizing for the added number of parameters. Delta is the difference in AICc values between the given model and the model that is most likely to have generated the data (i.e. the one with the lowest AICc), and is a relative measure conditional on the candidate set of models. Finally, the AIC weight is a transformation of delta that can be interpreted as the probability that the given model is the most likely one of the candidate models to have generated the data, and is also conditional on the candidate model set. The first four columns give the model coefficients for each of the habitat covariates in the occupancy submodel; missing values indicate that that covariate was not included in the given model.
 
 A quick look at the results of dredging reveals that for the Wood Thrush example there is not a clear single model, or even a small set of models, that are most likely to have generated our data. This is evident from the low AIC weight for the top model and the large number of models with moderate AIC weights. Given this, and the fact that all of our effects are linear and use the same family and link function, we'll average across all models, weighted by AICc, to produce a model-averaged prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the `get.models()` function to extract just these models prior to averaging. For the sake of efficiency, we'll only average the top models, which we'll define as those cumulatively comprising 95% of the weights. This will trivially impact the results since the models with lower support have very small weights and therefore contribute little to the weighted-average predictions.
 
@@ -259,14 +265,21 @@ det_mod <- ~ time_observations_started +
   effort_distance_km + 
   number_observers + 
   protocol_type ~
-  pland_04 + pland_05 + pland_12 + pland_13
+  pland_04_deciduous_broadleaf + 
+  pland_05_mixed_forest + 
+  pland_12_cropland + 
+  pland_13_urban
 
 # define and fit candidate models
 mods <- list(det_mod_null = det_mod, 
-             det_mod_dec = update.formula(det_mod, ~ . + pland_04 ~ .),
-             det_mod_mix = update.formula(det_mod, ~ . + pland_05 ~ .),
+             det_mod_dec = update.formula(det_mod, ~ . + 
+                                            pland_04_deciduous_broadleaf ~ .),
+             det_mod_mix = update.formula(det_mod, ~ . + 
+                                            pland_05_mixed_forest ~ .),
              global = update.formula(det_mod, 
-                                     ~ . + pland_04 + pland_05 ~ .)) %>% 
+                                     ~ . + 
+                                       pland_04_deciduous_broadleaf + 
+                                       pland_05_mixed_forest ~ .)) %>% 
   map(occu, data = occ_um)
 ```
 

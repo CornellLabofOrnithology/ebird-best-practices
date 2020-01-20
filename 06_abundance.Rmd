@@ -101,18 +101,13 @@ ebird_ss <- checklist_cell %>%
 
 ### Test-train split {#abundance-data-tt}
 
-Before we fit the abundance models, we randomly split the data into 80% of checklists for training and 20% for testing. We'll hold this 20% aside when we fit the model, then use it as an independent data set with which to test the predictive performance of the model. Here we select a random 20% of the data, but there are a variety of strategies to select data for testing that may be appropriate in different situations. At this stage, we'll also retain only the variables that we'll use as covariates in the models. In particular, we'll use the full suite of effort covariates and the same four habitat covariates we used in Chapter \@ref(occupancy). Deciduous broadleaf forest (`pland_04`) and mixed forest (`pland_05`) are known Wood Thrush breeding habitat, and these thrushes are known to avoid croplands (`pland_12`) and urban (`pland_13`). The specific set of habit covariates you use will be specific for your species and should be informed by *a priori* ecological knowledge of the species. See Section \@ref(covariates-intro) for a list of the habitat covariates available in this data set.
+Before we fit the abundance models, we randomly split the data into 80% of checklists for training and 20% for testing. We'll hold this 20% aside when we fit the model, then use it as an independent data set with which to test the predictive performance of the model. Here we select a random 20% of the data, but there are a variety of strategies to select data for testing that may be appropriate in different situations. At this stage, we'll also retain only the variables that we'll use as covariates in the models. In particular, we'll use the full suite of effort covariates and the same four habitat covariates we used in Chapter \@ref(occupancy). Deciduous broadleaf forest and mixed forest are known Wood Thrush breeding habitat, and these thrushes are known to avoid croplands and urban. The specific set of habit covariates you use will be specific for your species and should be informed by *a priori* ecological knowledge of the species. See Section \@ref(covariates-intro) for a list of the habitat covariates available in this data set.
 
 ```{r encounter-models-tt}
-hab_covs <- c(
-  # % deciduous forest
-  "pland_04",
-  # % mixed forest
-  "pland_05",
-  # % cropland
-  "pland_12",
-  # % urban
-  "pland_13")
+hab_covs <- c("pland_04_deciduous_broadleaf", 
+              "pland_05_mixed_forest",
+              "pland_12_cropland",
+              "pland_13_urban")
 ebird_split <- ebird_ss %>% 
   # select only the columns to be used in the model
   select(observation_count,
@@ -190,10 +185,10 @@ gam_formula <- observation_count ~ s(day_of_year, k = 5) +
   s(duration_minutes, k = 5) + 
   s(effort_distance_km, k = 5) + 
   s(number_observers, k = 5) + 
-  s(pland_04, k = 5) + 
-  s(pland_05, k = 5) + 
-  s(pland_12, k = 5) + 
-  s(pland_13, k = 5) + 
+  s(pland_04_deciduous_broadleaf, k = 5) + 
+  s(pland_05_mixed_forest, k = 5) + 
+  s(pland_12_cropland, k = 5) + 
+  s(pland_13_urban, k = 5) + 
   protocol_type + 
   s(time_observations_started, bs = "cc", k = 7)
 ```
