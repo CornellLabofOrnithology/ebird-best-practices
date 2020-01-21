@@ -5,15 +5,15 @@ Authors@R: c(
   person("Matthew", "Strimas-Mackey", , email = "mes335@cornell.edu",
          c("aut", "cre"), 
          comment = c(ORCID = "0000-0001-8929-7776"),
-  person("Alison", "Johnston", , "aj327@cornell.edu", "aut",
-         comment = c(ORCID = "0000-0001-8221-013X")),
   person("Wesley", Hochachka", "M.", "wmh6@cornell.edu", "aut"),
   person("Viviana", "Ruiz-Gutierrez", , "vr45@cornell.edu", "aut"),
   person("Orin", "Robinson", "J.", "ojr7@cornell.edu", "aut"),
   person("Eliot", "Miller", "T."", "etm45@cornell.edu", "aut"),
   person("Tom", "Auer", , "mta45@cornell.edu", "aut"),
   person("Steve", "Kelling", , "stk2@cornell.edu", "aut"),
-  person("Daniel", "Fink", , "garrett@cornell.edu", "aut")
+  person("Daniel", "Fink", , "garrett@cornell.edu", "aut"),
+  person("Alison", "Johnston", , "aj327@cornell.edu", "aut",
+         comment = c(ORCID = "0000-0001-8221-013X"))
   )
 URL: https://github.com/CornellLabOfOrnithology/ebird-best-practices
 License: GPL-3
