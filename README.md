@@ -1,6 +1,6 @@
 # Best Practices for Using eBird Data
 
-[![Status](https://img.shields.io/badge/Status%20stable-green.svg?style=flat-square)]()
+[![Status](https://img.shields.io/badge/Status-stable-green.svg?style=flat-square)]()
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](http://www.gnu.org/licenses/gpl-3.0)
 
