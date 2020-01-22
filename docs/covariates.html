@@ -652,7 +652,7 @@ brew link --force osgeo-gdal</code></pre>
 <a class="sourceLine" id="cb33-17" data-line-number="17"><span class="st">  </span><span class="kw">group_by</span>(locality_id) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb33-18" data-line-number="18"><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">elevation_median =</span> <span class="kw">median</span>(elevation, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),</a>
 <a class="sourceLine" id="cb33-19" data-line-number="19">            <span class="dt">elevation_sd =</span> <span class="kw">sd</span>(elevation, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</a></code></pre></div>
-<p>We’ll need to do repeat this process to calculate the elevation covariates for the prediction surface.</p>
+<p>We’ll need to repeat this process to calculate the elevation covariates for the prediction surface.</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="co"># extract using velox and calculate median and sd</span></a>
 <a class="sourceLine" id="cb34-2" data-line-number="2">elev_pred &lt;-<span class="st"> </span><span class="kw">velox</span>(elev)<span class="op">$</span><span class="kw">extract</span>(r_cells, <span class="dt">df =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb34-3" data-line-number="3"><span class="st">  </span><span class="co"># velox doesn&#39;t properly name columns, fix that</span></a>

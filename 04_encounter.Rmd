@@ -307,7 +307,7 @@ ggplot(cal_pred) +
        title = "Calibration model")
 ```
 
-Using this as a diagnostic tool, we can clearly see that the estimated encounter rates are mostly much larger than the observed encounter rates. So we see that the model is not well calibrated. However, we do see from the points that the relative ranking of predictions is largely good. Sites with estimated higher encounter rate, do mostly have higher encounter rates. 
+Using this as a diagnostic tool, we can clearly see that the estimated encounter rates are mostly much larger than the observed encounter rates. So we see that the model is not well calibrated. However, we do see from the points that the relative ranking of predictions is largely good. Sites with estimated higher encounter rate do mostly have higher encounter rates. 
 
 From this we have learnt that the model is good at distinguishing sites with high rates from those with low rates. For those readers familiar with using AUC scores to assess the quality of species distribution models, the graph is telling us that the model should have a high AUC value. However, the model is not so good at estimating encounter rates accurately.
 

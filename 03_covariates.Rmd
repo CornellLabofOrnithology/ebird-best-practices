@@ -383,7 +383,7 @@ elev_checklists <- velox(elev)$extract(ebird_buff_noyear, df = TRUE) %>%
             elevation_sd = sd(elevation, na.rm = TRUE))
 ```
 
-We'll need to do repeat this process to calculate the elevation covariates for the prediction surface.
+We'll need to repeat this process to calculate the elevation covariates for the prediction surface.
 
 ```{r covariates-elevation-pred}
 # extract using velox and calculate median and sd
