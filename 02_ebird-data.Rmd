@@ -156,11 +156,11 @@ ebird <- ebd_zf_filtered %>%
 write_csv(ebird, "data/ebd_woothr_june_bcr27_zf.csv", na = "")
 ```
 
-If you'd like to ensure you're using exactly the same data as was used to generate this book, download the [data package](https://raw.githubusercontent.com/cornelllabofornithology/ebird-best-practices/master/data.zip) mentioned in the [setup instructions](#intro-setup-data) and place the contents in the `data/` subdirectory of your project directory.
+If you'd like to ensure you're using exactly the same data as was used to generate this book, download the [data package](https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip) mentioned in the [setup instructions](#intro-setup-data) and place the contents in the `data/` subdirectory of your project directory.
 
 ## Exploratory analysis and visualization {#ebird-explore}
 
-Before proceeding to fitting species distribution models with these data, it's worth exploring the dataset to see what we're working with. Let's start by making a simple map of the observations. This map uses GIS data available for [download in the data package](https://raw.githubusercontent.com/cornelllabofornithology/ebird-best-practices/master/data.zip). Place the contents of the zip file in the `data/` subdirectory of your project directory. 
+Before proceeding to fitting species distribution models with these data, it's worth exploring the dataset to see what we're working with. Let's start by making a simple map of the observations. This map uses GIS data available for [download in the data package](https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip). Place the contents of the zip file in the `data/` subdirectory of your project directory. 
 
 ```{r ebird-explore-map}
 # load and project gis data
