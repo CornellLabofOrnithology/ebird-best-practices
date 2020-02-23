@@ -346,7 +346,7 @@ mse_cal <- mean((rf_pred_test$obs - rf_pred_test$cal)^2, na.rm = TRUE)
 # pick threshold to maximize kappa
 opt_thresh <- optimal.thresholds(rf_pred_test, opt.methods = "MaxKappa")
 
-# calculate accuracy metrics: auc, kappa, sensitivity, specificity, brier
+# calculate accuracy metrics: auc, kappa, sensitivity, specificity,
 metrics_fit <- rf_pred_test %>% 
   select(id, obs, fit) %>% 
   presence.absence.accuracy(threshold = opt_thresh$fit, 

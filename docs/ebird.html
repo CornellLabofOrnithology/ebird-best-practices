@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
 <head>
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 2 eBird Data | Best Practices for Using eBird Data</title>
   <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 2 eBird Data | Best Practices for Using eBird Data" />
   <meta property="og:type" content="book" />
@@ -638,22 +638,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The EBD contains a lot of columns (46 to be precise), many of which are redundant or not useful in most scenarios. For example, country, state, and county each have two columns, one for the name and one for the code. Other columns, such as the Important Bird Area (IBA) that a checklist belong to and the checklist comments, are rarely useful. By removing these columns we can drastically reduce the size of the EBD.</p>
 <p>The available columns in the EBD are listed and defined in the PDF metadata that comes with the EBD (<code>eBird_Basic_Dataset_Metadata_v1.12.pdf</code>). Alternatively, there’s a useful trick to get a list of column names from an <code>auk_ebd</code> object.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">ebd<span class="op">$</span>col_idx<span class="op">$</span>name</a>
-<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="co">#&gt;  [1] &quot;global unique identifier&quot;     &quot;last edited date&quot;             &quot;taxonomic order&quot;             </span></a>
-<a class="sourceLine" id="cb18-3" data-line-number="3"><span class="co">#&gt;  [4] &quot;category&quot;                     &quot;common name&quot;                  &quot;scientific name&quot;             </span></a>
-<a class="sourceLine" id="cb18-4" data-line-number="4"><span class="co">#&gt;  [7] &quot;subspecies common name&quot;       &quot;subspecies scientific name&quot;   &quot;observation count&quot;           </span></a>
-<a class="sourceLine" id="cb18-5" data-line-number="5"><span class="co">#&gt; [10] &quot;breeding bird atlas code&quot;     &quot;breeding bird atlas category&quot; &quot;age sex&quot;                     </span></a>
-<a class="sourceLine" id="cb18-6" data-line-number="6"><span class="co">#&gt; [13] &quot;country&quot;                      &quot;country code&quot;                 &quot;state&quot;                       </span></a>
-<a class="sourceLine" id="cb18-7" data-line-number="7"><span class="co">#&gt; [16] &quot;state code&quot;                   &quot;county&quot;                       &quot;county code&quot;                 </span></a>
-<a class="sourceLine" id="cb18-8" data-line-number="8"><span class="co">#&gt; [19] &quot;iba code&quot;                     &quot;bcr code&quot;                     &quot;usfws code&quot;                  </span></a>
-<a class="sourceLine" id="cb18-9" data-line-number="9"><span class="co">#&gt; [22] &quot;atlas block&quot;                  &quot;locality&quot;                     &quot;locality id&quot;                 </span></a>
-<a class="sourceLine" id="cb18-10" data-line-number="10"><span class="co">#&gt; [25] &quot;locality type&quot;                &quot;latitude&quot;                     &quot;longitude&quot;                   </span></a>
-<a class="sourceLine" id="cb18-11" data-line-number="11"><span class="co">#&gt; [28] &quot;observation date&quot;             &quot;time observations started&quot;    &quot;observer id&quot;                 </span></a>
-<a class="sourceLine" id="cb18-12" data-line-number="12"><span class="co">#&gt; [31] &quot;sampling event identifier&quot;    &quot;protocol type&quot;                &quot;protocol code&quot;               </span></a>
-<a class="sourceLine" id="cb18-13" data-line-number="13"><span class="co">#&gt; [34] &quot;project code&quot;                 &quot;duration minutes&quot;             &quot;effort distance km&quot;          </span></a>
-<a class="sourceLine" id="cb18-14" data-line-number="14"><span class="co">#&gt; [37] &quot;effort area ha&quot;               &quot;number observers&quot;             &quot;all species reported&quot;        </span></a>
-<a class="sourceLine" id="cb18-15" data-line-number="15"><span class="co">#&gt; [40] &quot;group identifier&quot;             &quot;has media&quot;                    &quot;approved&quot;                    </span></a>
-<a class="sourceLine" id="cb18-16" data-line-number="16"><span class="co">#&gt; [43] &quot;reviewed&quot;                     &quot;reason&quot;                       &quot;trip comments&quot;               </span></a>
-<a class="sourceLine" id="cb18-17" data-line-number="17"><span class="co">#&gt; [46] &quot;species comments&quot;</span></a></code></pre></div>
+<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="co">#&gt;  [1] &quot;global unique identifier&quot;     &quot;last edited date&quot;            </span></a>
+<a class="sourceLine" id="cb18-3" data-line-number="3"><span class="co">#&gt;  [3] &quot;taxonomic order&quot;              &quot;category&quot;                    </span></a>
+<a class="sourceLine" id="cb18-4" data-line-number="4"><span class="co">#&gt;  [5] &quot;common name&quot;                  &quot;scientific name&quot;             </span></a>
+<a class="sourceLine" id="cb18-5" data-line-number="5"><span class="co">#&gt;  [7] &quot;subspecies common name&quot;       &quot;subspecies scientific name&quot;  </span></a>
+<a class="sourceLine" id="cb18-6" data-line-number="6"><span class="co">#&gt;  [9] &quot;observation count&quot;            &quot;breeding bird atlas code&quot;    </span></a>
+<a class="sourceLine" id="cb18-7" data-line-number="7"><span class="co">#&gt; [11] &quot;breeding bird atlas category&quot; &quot;age sex&quot;                     </span></a>
+<a class="sourceLine" id="cb18-8" data-line-number="8"><span class="co">#&gt; [13] &quot;country&quot;                      &quot;country code&quot;                </span></a>
+<a class="sourceLine" id="cb18-9" data-line-number="9"><span class="co">#&gt; [15] &quot;state&quot;                        &quot;state code&quot;                  </span></a>
+<a class="sourceLine" id="cb18-10" data-line-number="10"><span class="co">#&gt; [17] &quot;county&quot;                       &quot;county code&quot;                 </span></a>
+<a class="sourceLine" id="cb18-11" data-line-number="11"><span class="co">#&gt; [19] &quot;iba code&quot;                     &quot;bcr code&quot;                    </span></a>
+<a class="sourceLine" id="cb18-12" data-line-number="12"><span class="co">#&gt; [21] &quot;usfws code&quot;                   &quot;atlas block&quot;                 </span></a>
+<a class="sourceLine" id="cb18-13" data-line-number="13"><span class="co">#&gt; [23] &quot;locality&quot;                     &quot;locality id&quot;                 </span></a>
+<a class="sourceLine" id="cb18-14" data-line-number="14"><span class="co">#&gt; [25] &quot;locality type&quot;                &quot;latitude&quot;                    </span></a>
+<a class="sourceLine" id="cb18-15" data-line-number="15"><span class="co">#&gt; [27] &quot;longitude&quot;                    &quot;observation date&quot;            </span></a>
+<a class="sourceLine" id="cb18-16" data-line-number="16"><span class="co">#&gt; [29] &quot;time observations started&quot;    &quot;observer id&quot;                 </span></a>
+<a class="sourceLine" id="cb18-17" data-line-number="17"><span class="co">#&gt; [31] &quot;sampling event identifier&quot;    &quot;protocol type&quot;               </span></a>
+<a class="sourceLine" id="cb18-18" data-line-number="18"><span class="co">#&gt; [33] &quot;protocol code&quot;                &quot;project code&quot;                </span></a>
+<a class="sourceLine" id="cb18-19" data-line-number="19"><span class="co">#&gt; [35] &quot;duration minutes&quot;             &quot;effort distance km&quot;          </span></a>
+<a class="sourceLine" id="cb18-20" data-line-number="20"><span class="co">#&gt; [37] &quot;effort area ha&quot;               &quot;number observers&quot;            </span></a>
+<a class="sourceLine" id="cb18-21" data-line-number="21"><span class="co">#&gt; [39] &quot;all species reported&quot;         &quot;group identifier&quot;            </span></a>
+<a class="sourceLine" id="cb18-22" data-line-number="22"><span class="co">#&gt; [41] &quot;has media&quot;                    &quot;approved&quot;                    </span></a>
+<a class="sourceLine" id="cb18-23" data-line-number="23"><span class="co">#&gt; [43] &quot;reviewed&quot;                     &quot;reason&quot;                      </span></a>
+<a class="sourceLine" id="cb18-24" data-line-number="24"><span class="co">#&gt; [45] &quot;trip comments&quot;                &quot;species comments&quot;</span></a></code></pre></div>
 <p>The function <code>auk_select()</code> will process the EBD to only keep the selected columns. For example, we can apply this to our Wood Thrush EBD extract to keep a minimal set of columns</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">cols &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>,</a>
 <a class="sourceLine" id="cb19-2" data-line-number="2">          <span class="st">&quot;group identifier&quot;</span>, <span class="st">&quot;sampling event identifier&quot;</span>, </a>
@@ -666,14 +673,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb19-9" data-line-number="9"><span class="kw">glimpse</span>(selected)</a>
 <a class="sourceLine" id="cb19-10" data-line-number="10"><span class="co">#&gt; Observations: 3,955</span></a>
 <a class="sourceLine" id="cb19-11" data-line-number="11"><span class="co">#&gt; Variables: 8</span></a>
-<a class="sourceLine" id="cb19-12" data-line-number="12"><span class="co">#&gt; $ checklist_id              &lt;chr&gt; &quot;S8861448&quot;, &quot;S11177008&quot;, &quot;S20926623&quot;, &quot;S14628278&quot;, &quot;S20926637&quot;, &quot;S10…</span></a>
-<a class="sourceLine" id="cb19-13" data-line-number="13"><span class="co">#&gt; $ scientific_name           &lt;chr&gt; &quot;Hylocichla mustelina&quot;, &quot;Hylocichla mustelina&quot;, &quot;Hylocichla mustelin…</span></a>
-<a class="sourceLine" id="cb19-14" data-line-number="14"><span class="co">#&gt; $ observation_count         &lt;chr&gt; &quot;45&quot;, &quot;4&quot;, &quot;1&quot;, &quot;6&quot;, &quot;1&quot;, &quot;4&quot;, &quot;1&quot;, &quot;1&quot;, &quot;7&quot;, &quot;2&quot;, &quot;1&quot;, &quot;X&quot;, &quot;1&quot;, &quot;X…</span></a>
-<a class="sourceLine" id="cb19-15" data-line-number="15"><span class="co">#&gt; $ latitude                  &lt;dbl&gt; 35.5, 35.1, 32.8, 35.3, 32.9, 35.3, 34.6, 32.7, 34.9, 34.5, 32.9, 32…</span></a>
-<a class="sourceLine" id="cb19-16" data-line-number="16"><span class="co">#&gt; $ longitude                 &lt;dbl&gt; -89.2, -90.1, -87.2, -90.1, -87.2, -90.0, -88.2, -87.2, -88.1, -80.2…</span></a>
-<a class="sourceLine" id="cb19-17" data-line-number="17"><span class="co">#&gt; $ observer_id               &lt;chr&gt; &quot;obsr245742&quot;, &quot;obsr245742&quot;, &quot;obsr35725&quot;, &quot;obsr245742&quot;, &quot;obsr35725&quot;, …</span></a>
-<a class="sourceLine" id="cb19-18" data-line-number="18"><span class="co">#&gt; $ sampling_event_identifier &lt;chr&gt; &quot;S8861448&quot;, &quot;S11177008&quot;, &quot;S20926623&quot;, &quot;S14628278&quot;, &quot;S20926637&quot;, &quot;S10…</span></a>
-<a class="sourceLine" id="cb19-19" data-line-number="19"><span class="co">#&gt; $ group_identifier          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></a>
+<a class="sourceLine" id="cb19-12" data-line-number="12"><span class="co">#&gt; $ checklist_id              &lt;chr&gt; &quot;S8861448&quot;, &quot;S11177008&quot;, &quot;S20926623&quot;, &quot;S14628278&quot;, &quot;S20…</span></a>
+<a class="sourceLine" id="cb19-13" data-line-number="13"><span class="co">#&gt; $ scientific_name           &lt;chr&gt; &quot;Hylocichla mustelina&quot;, &quot;Hylocichla mustelina&quot;, &quot;Hyloci…</span></a>
+<a class="sourceLine" id="cb19-14" data-line-number="14"><span class="co">#&gt; $ observation_count         &lt;chr&gt; &quot;45&quot;, &quot;4&quot;, &quot;1&quot;, &quot;6&quot;, &quot;1&quot;, &quot;4&quot;, &quot;1&quot;, &quot;1&quot;, &quot;7&quot;, &quot;2&quot;, &quot;1&quot;,…</span></a>
+<a class="sourceLine" id="cb19-15" data-line-number="15"><span class="co">#&gt; $ latitude                  &lt;dbl&gt; 35.5, 35.1, 32.8, 35.3, 32.9, 35.3, 34.6, 32.7, 34.9, 3…</span></a>
+<a class="sourceLine" id="cb19-16" data-line-number="16"><span class="co">#&gt; $ longitude                 &lt;dbl&gt; -89.2, -90.1, -87.2, -90.1, -87.2, -90.0, -88.2, -87.2,…</span></a>
+<a class="sourceLine" id="cb19-17" data-line-number="17"><span class="co">#&gt; $ observer_id               &lt;chr&gt; &quot;obsr245742&quot;, &quot;obsr245742&quot;, &quot;obsr35725&quot;, &quot;obsr245742&quot;, …</span></a>
+<a class="sourceLine" id="cb19-18" data-line-number="18"><span class="co">#&gt; $ sampling_event_identifier &lt;chr&gt; &quot;S8861448&quot;, &quot;S11177008&quot;, &quot;S20926623&quot;, &quot;S14628278&quot;, &quot;S20…</span></a>
+<a class="sourceLine" id="cb19-19" data-line-number="19"><span class="co">#&gt; $ group_identifier          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></a>
 <a class="sourceLine" id="cb19-20" data-line-number="20"><span class="co"># file size difference</span></a>
 <a class="sourceLine" id="cb19-21" data-line-number="21"><span class="kw">file.size</span>(f_ebd) <span class="op">/</span><span class="st"> </span><span class="kw">file.size</span>(f_select)</a>
 <a class="sourceLine" id="cb19-22" data-line-number="22"><span class="co">#&gt; [1] 5.72</span></a></code></pre></div>

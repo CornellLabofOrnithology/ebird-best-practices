@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
 <head>
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 3 Habitat Covariates | Best Practices for Using eBird Data</title>
   <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 3 Habitat Covariates | Best Practices for Using eBird Data" />
   <meta property="og:type" content="book" />
@@ -672,28 +672,28 @@ brew link --force osgeo-gdal</code></pre>
 <a class="sourceLine" id="cb35-8" data-line-number="8"><span class="kw">glimpse</span>(pland_elev_pred)</a>
 <a class="sourceLine" id="cb35-9" data-line-number="9"><span class="co">#&gt; Observations: 90,949</span></a>
 <a class="sourceLine" id="cb35-10" data-line-number="10"><span class="co">#&gt; Variables: 22</span></a>
-<a class="sourceLine" id="cb35-11" data-line-number="11"><span class="co">#&gt; $ id                            &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1…</span></a>
-<a class="sourceLine" id="cb35-12" data-line-number="12"><span class="co">#&gt; $ longitude                     &lt;dbl&gt; -77.3, -77.3, -77.3, -77.3, -77.3, -77.2, -77.4, -77.3, -77.3, -…</span></a>
-<a class="sourceLine" id="cb35-13" data-line-number="13"><span class="co">#&gt; $ latitude                      &lt;dbl&gt; 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2…</span></a>
-<a class="sourceLine" id="cb35-14" data-line-number="14"><span class="co">#&gt; $ year                          &lt;int&gt; 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018…</span></a>
-<a class="sourceLine" id="cb35-15" data-line-number="15"><span class="co">#&gt; $ pland_00_water                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></a>
-<a class="sourceLine" id="cb35-16" data-line-number="16"><span class="co">#&gt; $ pland_01_evergreen_needleleaf &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, …</span></a>
-<a class="sourceLine" id="cb35-17" data-line-number="17"><span class="co">#&gt; $ pland_02_evergreen_broadleaf  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></a>
-<a class="sourceLine" id="cb35-18" data-line-number="18"><span class="co">#&gt; $ pland_03_deciduous_needleleaf &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></a>
-<a class="sourceLine" id="cb35-19" data-line-number="19"><span class="co">#&gt; $ pland_04_deciduous_broadleaf  &lt;dbl&gt; 0.0000, 0.1429, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, …</span></a>
-<a class="sourceLine" id="cb35-20" data-line-number="20"><span class="co">#&gt; $ pland_05_mixed_forest         &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.1905, 0.0952, 0.2857, 0.0000, 0.0000, …</span></a>
-<a class="sourceLine" id="cb35-21" data-line-number="21"><span class="co">#&gt; $ pland_06_closed_shrubland     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></a>
-<a class="sourceLine" id="cb35-22" data-line-number="22"><span class="co">#&gt; $ pland_07_open_shrubland       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></a>
-<a class="sourceLine" id="cb35-23" data-line-number="23"><span class="co">#&gt; $ pland_08_woody_savanna        &lt;dbl&gt; 0.952, 0.857, 0.810, 0.619, 0.905, 0.714, 0.619, 1.000, 0.810, 0…</span></a>
-<a class="sourceLine" id="cb35-24" data-line-number="24"><span class="co">#&gt; $ pland_09_savanna              &lt;dbl&gt; 0.0000, 0.0000, 0.1905, 0.1905, 0.0000, 0.0000, 0.0000, 0.0000, …</span></a>
-<a class="sourceLine" id="cb35-25" data-line-number="25"><span class="co">#&gt; $ pland_10_grassland            &lt;dbl&gt; 0.0476, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, …</span></a>
-<a class="sourceLine" id="cb35-26" data-line-number="26"><span class="co">#&gt; $ pland_11_wetland              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></a>
-<a class="sourceLine" id="cb35-27" data-line-number="27"><span class="co">#&gt; $ pland_12_cropland             &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, …</span></a>
-<a class="sourceLine" id="cb35-28" data-line-number="28"><span class="co">#&gt; $ pland_13_urban                &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.3810, 0.0000, …</span></a>
-<a class="sourceLine" id="cb35-29" data-line-number="29"><span class="co">#&gt; $ pland_14_mosiac               &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, …</span></a>
-<a class="sourceLine" id="cb35-30" data-line-number="30"><span class="co">#&gt; $ pland_15_barren               &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></a>
-<a class="sourceLine" id="cb35-31" data-line-number="31"><span class="co">#&gt; $ elevation_median              &lt;dbl&gt; 40.7, 41.8, 42.5, 43.2, 42.6, 44.3, 45.5, 44.4, 43.7, 41.0, 40.9…</span></a>
-<a class="sourceLine" id="cb35-32" data-line-number="32"><span class="co">#&gt; $ elevation_sd                  &lt;dbl&gt; 4.347, 2.135, 3.059, 3.373, 1.331, 1.717, 2.020, 3.863, 2.705, 1…</span></a></code></pre></div>
+<a class="sourceLine" id="cb35-11" data-line-number="11"><span class="co">#&gt; $ id                            &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, …</span></a>
+<a class="sourceLine" id="cb35-12" data-line-number="12"><span class="co">#&gt; $ longitude                     &lt;dbl&gt; -77.3, -77.3, -77.3, -77.3, -77.3, -77.2, -77.4, -7…</span></a>
+<a class="sourceLine" id="cb35-13" data-line-number="13"><span class="co">#&gt; $ latitude                      &lt;dbl&gt; 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.…</span></a>
+<a class="sourceLine" id="cb35-14" data-line-number="14"><span class="co">#&gt; $ year                          &lt;int&gt; 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 201…</span></a>
+<a class="sourceLine" id="cb35-15" data-line-number="15"><span class="co">#&gt; $ pland_00_water                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
+<a class="sourceLine" id="cb35-16" data-line-number="16"><span class="co">#&gt; $ pland_01_evergreen_needleleaf &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0…</span></a>
+<a class="sourceLine" id="cb35-17" data-line-number="17"><span class="co">#&gt; $ pland_02_evergreen_broadleaf  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
+<a class="sourceLine" id="cb35-18" data-line-number="18"><span class="co">#&gt; $ pland_03_deciduous_needleleaf &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
+<a class="sourceLine" id="cb35-19" data-line-number="19"><span class="co">#&gt; $ pland_04_deciduous_broadleaf  &lt;dbl&gt; 0.0000, 0.1429, 0.0000, 0.0000, 0.0000, 0.0000, 0.0…</span></a>
+<a class="sourceLine" id="cb35-20" data-line-number="20"><span class="co">#&gt; $ pland_05_mixed_forest         &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.1905, 0.0952, 0.2857, 0.0…</span></a>
+<a class="sourceLine" id="cb35-21" data-line-number="21"><span class="co">#&gt; $ pland_06_closed_shrubland     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
+<a class="sourceLine" id="cb35-22" data-line-number="22"><span class="co">#&gt; $ pland_07_open_shrubland       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
+<a class="sourceLine" id="cb35-23" data-line-number="23"><span class="co">#&gt; $ pland_08_woody_savanna        &lt;dbl&gt; 0.952, 0.857, 0.810, 0.619, 0.905, 0.714, 0.619, 1.…</span></a>
+<a class="sourceLine" id="cb35-24" data-line-number="24"><span class="co">#&gt; $ pland_09_savanna              &lt;dbl&gt; 0.0000, 0.0000, 0.1905, 0.1905, 0.0000, 0.0000, 0.0…</span></a>
+<a class="sourceLine" id="cb35-25" data-line-number="25"><span class="co">#&gt; $ pland_10_grassland            &lt;dbl&gt; 0.0476, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0…</span></a>
+<a class="sourceLine" id="cb35-26" data-line-number="26"><span class="co">#&gt; $ pland_11_wetland              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
+<a class="sourceLine" id="cb35-27" data-line-number="27"><span class="co">#&gt; $ pland_12_cropland             &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0…</span></a>
+<a class="sourceLine" id="cb35-28" data-line-number="28"><span class="co">#&gt; $ pland_13_urban                &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.3…</span></a>
+<a class="sourceLine" id="cb35-29" data-line-number="29"><span class="co">#&gt; $ pland_14_mosiac               &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0…</span></a>
+<a class="sourceLine" id="cb35-30" data-line-number="30"><span class="co">#&gt; $ pland_15_barren               &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></a>
+<a class="sourceLine" id="cb35-31" data-line-number="31"><span class="co">#&gt; $ elevation_median              &lt;dbl&gt; 40.7, 41.8, 42.5, 43.2, 42.6, 44.3, 45.5, 44.4, 43.…</span></a>
+<a class="sourceLine" id="cb35-32" data-line-number="32"><span class="co">#&gt; $ elevation_sd                  &lt;dbl&gt; 4.347, 2.135, 3.059, 3.373, 1.331, 1.717, 2.020, 3.…</span></a></code></pre></div>
 <p>This completes the data preparation. The following chapters will focus on using these data to model species distributions.</p>
 
 </div>
