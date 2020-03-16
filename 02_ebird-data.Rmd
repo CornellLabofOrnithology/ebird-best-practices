@@ -32,7 +32,7 @@ eBird contains an impressive amount of data (over 600 million bird observations!
 
 Filtering the EBD using `auk` requires three steps. First, reference the EBD and SED using the function `auk_ebd()`. If you've followed the instruction in the [Introduction](#intro) for [downloading eBird data](#intro-setup-ebird), you'll have these files on your computer and will have pointed `auk` to the directory they're stored in using `auk_set_ebd_path()`. If you intend to zero-fill the data, you'll need to pass both the EBD and SED to `auk_ebd()`, this ensures that the same set of filters is applied to both files so they contain the same population of checklists. **It is critical that the EBD and SED are both from the same release of the eBird data.**
 
-If you don't have enough hard drive space to store the full eBird data set, which is more than 200GB, or don't have a fast enough internet connection to download it, consult the section on [using the Custom Download form](#ebird-size-custom) for an alternative approach to filtering eBird data.
+If you don't have enough hard drive space to store the full eBird data set, which is more than 200 GB, or don't have a fast enough internet connection to download it, consult the section on [using the Custom Download form](#ebird-size-custom) for an alternative approach to filtering eBird data.
 
 Before running any of the following code, create an [RStudio project](https://r4ds.had.co.nz/workflow-projects.html) for following along with this book. The project will be a self contained space for all the code, input data, and outputs that comprise the lessons in this book. In addition, using a project will ensure your working directory is set to the project directory.
 
@@ -83,6 +83,8 @@ if (!file.exists(f_ebd)) {
   auk_filter(ebd_filters, file = f_ebd, file_sampling = f_sampling)
 }
 ```
+
+Throughout this filtering process we've kept the EBD (i.e. the observation data) and the SED (i.e. the checklist data) together. This is because it's critical that the same set of filters get applied to both datasets to ensure that we're working with the same population of checklists when we zero-fill to produce presence-absence data. However, some filters don't apply to the checklist data, notably `auk_species()`, so these are simply skipped when the filters are compiled and run on the SED.
 
 These files are now a few megabytes rather than hundreds of gigabytes, which means they can easily be read into R! Don't feel like waiting for `auk_filter()` to run? [Download the data package](https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip) mentioned in the introduction to get a copy of the EBD subset for Wood Thrush in June in BCR27 and proceed to the next section; just make sure you load the packages in the first code chunk before proceeding.
 

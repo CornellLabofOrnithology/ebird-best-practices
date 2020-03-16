@@ -210,7 +210,7 @@ time_knots <- list(time_observations_started = seq(0, 24, length.out = k_time))
 # zero-inflated poisson
 m_ziplss <- gam(list(gam_formula,      # count model
                      gam_formula[-2]), # presence model
-                data = ebird_split$test, 
+                data = ebird_split$train, 
                 family = "ziplss", 
                 knots = time_knots)
 
