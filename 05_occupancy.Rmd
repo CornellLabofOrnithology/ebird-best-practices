@@ -109,15 +109,15 @@ nrow(occ)
 n_distinct(occ$site)
 ```
 
-This function `filter_repeat_visits()` added three new columns to the dataset: `site` is a unique site ID (here, location and observer), `closure_id` identifies the primary period of closure (in this example the year), and `n_observations` is the number of visits to each site. Our capture histories are now properly formatted for occupancy models and ready to be analyzed. Note that we've made a trade off in sample size, dropping from `r scales::comma(nrow(ebird_filtered))` checklists to `r scales::comma(nrow(occ))` checklists over `r scales::comma(n_distinct(occ$site))` sites.
+This function `filter_repeat_visits()` added three new columns to the dataset: `site` is a unique site ID (here, location and observer), `closure_id` identifies the primary period of closure (in this example the year), and `n_observations` is the number of visits to each site. Our capture histories are now properly formatted for a single-season occupancy model and ready to be analyzed. Note that we've made a trade off in sample size, dropping from `r scales::comma(nrow(ebird_filtered))` checklists to `r scales::comma(nrow(occ))` checklists over `r scales::comma(n_distinct(occ$site))` sites.
 
-We'll use our filtered observations to fit a single-season occupancy model using the `unmarked` R package. For additional details on the type of data format required for this package, consult the documentation for the `unmarked` function `formatWide()`. The `auk` function `format_unmarked_occu()` converts data from a vertical format in which each row is an observation (as in the EBD) to a horizontal detection history required by `unmarked`, where each row is a site.
+We'll use our filtered observations to fit a single-season occupancy model using the `unmarked` R package. For additional details on the type of data format required for this package, consult the documentation for the `unmarked` function `formatWide()`. The `auk` function `format_unmarked_occu()` converts data from a vertical format in which each row is an observation (as in the EBD) to a horizontal detection history where each row is a site. Under this format, each column represent a repeat visit- for this exmpale, we will have up to 10 detection event columns. This data format is commonly used for most applications of occupancy model, including `unmarked`.
 
-At this stage, we need to specify which variables will be ecological process (i.e. occupancy) covariates and which will be observational process (i.e. detection) covariates. Occupancy covariates (`site_covs`) will be unique at the level of the site, while detection covariates (`obs_covs`) will be unique for each site and sampling occasion (i.e. checklist).
+At this stage, we need to specify which variables will be ecological process (i.e. occupancy) covariates and which will be observational process (i.e. detection) covariates. Occupancy covariates (`site_covs`) will be unique at the level of the site, while detection covariates (`obs_covs`) can be also be unique for each site, as well as sampling occasion (i.e. checklist).
 
 For this example, we'll use MODIS land cover variables as habitat covariates for modeling the occupancy probability of Wood Thrush. Based on [predictor importance](#encounter-habitat-pi) measures from Chapter \@ref(encounter), we include deciduous broadleaf forest and mixed forest as habitat types for which we expect positive relationships with occupancy, and croplands and urban, for which we expect negative relationships. 
 
-To estimate detection probability, we include five effort variables that are related to the detection process. Habitat type has been shown to affect detectability, for example, some species are harder to detect in densely forested habitats relative to more open habitat types. So we also include deciduous broadleaf forest and mixed forest as variables in the detectability model. Occupancy models allow us to tease apart the differing effects of habitat on both detection and occupancy probabilities. 
+To estimate detection probability, we include three effort variables that are related to the detection process. Habitat type has been shown to influence detectability in bird species, for example, some species are harder to detect in densely forested habitats relative to more open habitat types. So we also include deciduous broadleaf forest and mixed forest as variables ias covariates for detection probability. Occupancy models allow us to tease apart the differing effects of habitat on both detection and occupancy probabilities. 
 
 ```{r occupancy-data-sites-wide}
 # format for unmarked
@@ -141,7 +141,7 @@ occ_wide <- format_unmarked_occu(occ,
 
 ### Spatial subsampling {#encounter-data-sss}
 
-As discussed in Section \@ref(encounter-sss), spatial subsampling of eBird observations reduces spatial bias. We'll use the same hexagonal subsampling approach as in Chapter \@ref(encounter); however, here we'll subsample at the level of sites rather than observations. For this example, we will sample one site per 5 km grid cell. Note, that because we included `observer_id` in the site definition, this subsampling process will only select one set of visits from *one observer* to *one site*, within each 5km cell. 
+As discussed in Section \@ref(encounter-sss), spatial subsampling of eBird observations reduces spatial bias. We'll use the same hexagonal subsampling approach as in Chapter \@ref(encounter); however, here we'll subsample at the level of sites rather than observations. For this example, we will sample one site per 5 km grid cell. Note, that because we included `observer_id` in the site definition, this subsampling process will only select one row, or set of visits from *one observer* to *one site*, within each 5km cell. 
 
 ```{r encounter-data-sss, results = "hide"}
 # generate hexagonal grid with ~ 5 km betweeen cells
@@ -216,18 +216,13 @@ For this example, the probability of getting the calculated chi-square statistic
 
 ### Model selection {#occupancy-model-select}
 
-So far, we have a single global model that includes all of the covariates we believe will influence the occupancy and detection probabilities. In general, we suggest that careful consideration be used when choosing the set of candidate models to be run and compared during model selection. In this example, we will use the `dredge()` function to generate a set of candidate models using different combinations of the covariates in the global model. Since we know from prior experience that the effort covariates are almost always important, we'll lock these variables in, and consider a candidate set consisting of all possible combinations of the ecological covariates in the occupancy submodel.
+So far, we have a single global model that includes all of the covariates we believe will influence the occupancy and detection probabilities. In general, we suggest that careful consideration be used when choosing the set of candidate models to be run and compared during model selection. In this example, we will use the `dredge()` function to generate a set of candidate models using different combinations of the covariates in the global model. This does take some time to run, and hence recommend choosing carefully candidate model sets instead of this approach.
 
 ```{r occupancy-model-select-dredge}
-# get list of all possible terms, then subset to those we want to keep
-det_terms <- getAllTerms(occ_model) %>% 
-  # retain the detection submodel covariates
-  discard(str_detect, pattern = "psi")
-
 # dredge all possibe combinations of the occupancy covariates
-occ_dredge <- dredge(occ_model, fixed = det_terms)
+occ_dredge <- dredge(occ_model)
 
-# model comparison
+# model comparison to explore the results for occupancy
 mc <- select(occ_dredge, starts_with("psi(p"), df, AICc, delta, weight)
 # shorten names for printing
 names(mc) <- names(mc) %>% 
@@ -237,11 +232,15 @@ names(mc) <- names(mc) %>%
 mc %>% 
   mutate_all(~ round(., 3)) %>% 
   knitr::kable()
+
+# take a quick peak at the model selection table
+mc[1:18,]
+
 ```
 
-The corrected [Akaike Information Criterion (AICc)](https://en.wikipedia.org/wiki/Akaike_information_criterion#AICc) measures the likelihood of each model to have generated the data we observed, adjusted for the number of parameters in the model. Lower values indicate models with a better fit to the data, penalizing for the added number of parameters. Delta is the difference in AICc values between the given model and the model that is most likely to have generated the data (i.e. the one with the lowest AICc), and is a relative measure conditional on the candidate set of models. Finally, the AIC weight is a transformation of delta that can be interpreted as the probability that the given model is the most likely one of the candidate models to have generated the data, and is also conditional on the candidate model set. The first four columns give the model coefficients for each of the habitat covariates in the occupancy submodel; missing values indicate that that covariate was not included in the given model.
+The corrected [Akaike Information Criterion (AICc)](https://en.wikipedia.org/wiki/Akaike_information_criterion#AICc) measures the likelihood of each model to have generated the data we observed, adjusted for the number of parameters in the model. Lower values indicate models with a better fit to the data, penalizing for the added number of parameters. Delta is the difference in AICc values between the given model and the model that is most likely to have generated the data (i.e. the one with the lowest AICc), and is a relative measure conditional on the candidate set of models. Finally, the AIC weight is a transformation of delta that can be interpreted as the probability that the given model is the most likely one of the candidate models to have generated the data, and is also conditional on the candidate model set. 
 
-A quick look at the results of dredging reveals that for the Wood Thrush example there is not a clear single model, or even a small set of models, that are most likely to have generated our data. This is evident from the low AIC weight for the top model and the large number of models with moderate AIC weights. Given this, and the fact that all of our effects are linear and use the same family and link function, we'll average across all models, weighted by AICc, to produce a model-averaged prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the `get.models()` function to extract just these models prior to averaging. For the sake of efficiency, we'll only average the top models, which we'll define as those cumulatively comprising 95% of the weights. This will trivially impact the results since the models with lower support have very small weights and therefore contribute little to the weighted-average predictions.
+A quick look at the results of dredging, focusing on visualizing what covariates most influence occupancy probability, reveals that for the Wood Thrush example there is not a clear single model, or even a small set of models, that are most likely to have generated our data. This is evident from the number of models that all fall within a delta AICc value of ~2-3, and the large number of models with moderate AIC weights. Given this, and the fact that all of our effects are linear and use the same family and link function, we'll average across all models, weighted by AICc, to produce a model-averaged prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the `get.models()` function to extract just these models prior to averaging. For the sake of efficiency, we'll only average the top models, which we'll define as those cumulatively comprising 95% of the weights. This will trivially impact the results since the models with lower support have very small weights and therefore contribute little to the weighted-average predictions.
 
 ```{r occupancy-model-select-average}
 # select models with the most suport for model averaging
@@ -250,62 +249,45 @@ occ_dredge_95 <- get.models(occ_dredge, subset = cumsum(weight) <= 0.95)
 # average models based on model weights 
 occ_avg <- model.avg(occ_dredge_95, fit = TRUE)
 
-# model coefficients
-t(occ_avg$coefficients)
+# model averaged coefficients for occupancy and detection probbility
+coef(occ_avg)
 ```
 
-### Exploring detection model submodel {#occupancy-model-detection}
+In this table, the `psi()` coefficients are from the occupancy submodel and the `p()` coefficients are from the detection submodel. based on these results, we see that an increase in decidious broadleaf forest has a much stronger effects on occupancy probability than an increase in mixed forest. As expected, an increase in percentage of urban area and cropland both decrease occupancy probability.
 
-A unique feature of occupancy models, is that we can investigate whether certain covariates influence detection separately from any influencing occurrence, which wasn't possible using the machine learning approach in Chapter \@ref(encounter). Specifically, we have already seen that the habitat covariates influence occupancy, but we can assess how these covariates affect detection probability, conditional on a bird being present and potentially detected. We included deciduous broadleaf forest (`pland_04`) and mixed forest (`pland_05`) as detection covariates in the global model, and we can compare a set of models with and without these covariates to assess their importance. Here we'll demonstrate how to manually define and compare a set of models rather than use the `dredge()` function as we did in the previous section. Let's start by defining the candidate model set. To do so, we explicitly define a null detection model with no habitat covariates, then add in additional terms using `update.formula()`.
+### Exploring the effects of covariates on detection probability {#occupancy-model-detection}
+
+A unique feature of occupancy models, is that we can investigate whether certain covariates specifically influence detection probability separately from any influencing occurrence, which wasn't possible using the machine learning approach in Chapter \@ref(encounter). Specifically, we have already seen that the habitat covariates influence occupancy, but we can assess how these covariates affect detection probability using the same model averaging results that we generated above, conditional on a bird being present and potentially detected. We included deciduous broadleaf forest (`pland_04`) and mixed forest (`pland_05`) as detection covariates in the global model.
 
 ```{r occupancy-select-detection-define}
-# define a null detection model
-det_mod <- ~ time_observations_started + 
-  duration_minutes + 
-  effort_distance_km + 
-  number_observers + 
-  protocol_type ~
-  pland_04_deciduous_broadleaf + 
-  pland_05_mixed_forest + 
-  pland_12_cropland + 
-  pland_13_urban
+# model comparison to explore the results for detection
+md <- select(occ_dredge, starts_with("p("), df, AICc, delta, weight)
+# shorten names for printing
 
-# define and fit candidate models
-mods <- list(det_mod_null = det_mod, 
-             det_mod_dec = update.formula(det_mod, ~ . + 
-                                            pland_04_deciduous_broadleaf ~ .),
-             det_mod_mix = update.formula(det_mod, ~ . + 
-                                            pland_05_mixed_forest ~ .),
-             global = update.formula(det_mod, 
-                                     ~ . + 
-                                       pland_04_deciduous_broadleaf + 
-                                       pland_05_mixed_forest ~ .)) %>% 
-  map(occu, data = occ_um)
+names(md) <- names(md) %>% 
+  str_extract("(?<=p\\(pland_[0-9]{2}_)[a-z_]+") %>% 
+  coalesce(names(md))
+
+
+# take a quick peak at the model selection table
+md[1:18,]
+
+
 ```
 
-Now we can perform model selection on this set to compare the different candidate models.
-
-```{r occupancy-select-detection-compare}
-mod_sel <- fitList(fits = mods) %>% 
-  modSel()
-mod_sel
-```
-
-From these results, it's clear that including these forest habitat covariates–especially deciduous broadleaf forest–leads to a marked improvement in model performance, as observed by the differences in AIC and the AIC weights. Let's look at the coefficients from the global model for these covariates to see how they're impacting detection and occupancy. 
+From these results, it's clear that several of our effort covariates did not influence detection probability- mainly protocol type and the number of observers. However, including habitat covariates–especially mixed forest–influenced detection probability, as observed by the differences in AIC and the AIC weights for the models that include this covariate. Let's look at the model averaged coefficients to see how they're impacting detection and occupancy. 
 
 ```{r occupancy-select-detection-coef}
-coef(occ_model) %>% 
-  enframe() %>% 
-  filter(str_detect(name, "pland_0"))
+coef(occ_avg) %>% 
+  enframe() 
 ```
 
-The `psi()` coefficients are from the occupancy submodel and the `p()` coefficients are from the detection submodel. With this in mind, we see that increasing forest cover increases occupancy probability, since Wood Thrush are forest-associated species, but it decreases detection probability, since birds are harder to see and hear in dense forest. The ability to tease apart the differing effects that covariates have on detection and occupancy is one of the strengths of occupancy modeling.
+Again, the `psi()` coefficients are from the occupancy submodel and the `p()` coefficients are from the detection submodel. For detection probability, we see that although decidious forest increases occupancy probaility for Wood Thrush, it decreases detection probability, since birds are harder to see and hear in dense forest. However, mixed forest positively influences both, occupancy and detection probability. The ability to tease apart the differing effects that covariates have on detection and occupancy is one of the strengths of occupancy modeling.
 
 ## Prediction {#occupancy-predict}
 
-In this section, we'll estimate the distribution of Wood Thrush in BCR 27. Similar to Section \@ref(covariates-prediction), we'll generate a prediction surface using the PLAND land cover covariates summarized on a regular grid of points across BCR 27. For this, we'll use the `predict()` function to estimate occupancy probabilities, standard errors, and confidence intervals. When we use `predict()` on the output of `get.models()` it will make predictions for each of the selected models, then average the predictions using the AIC weights to produce the final prediction for each location.
+In this section, we'll estimate the distribution of Wood Thrush in BCR 27. Similar to Section \@ref(covariates-prediction), we'll generate a prediction surface using the PLAND land cover covariates summarized on a regular grid of points across BCR 27. For this, we'll use the `predict()` function to estimate occupancy probabilities, standard errors, and confidence intervals. We will use `predict()` on the output of `model.avg()` to make predictions using the model averaged coefficients from the candidate model set with at least a 95% cummulative AIC weight.
 
-Recall that when we [predicted encouter rate](#encounter-predict), we had to include effort variables in our prediction surface. We don't need to do that here because the occupancy submodel doesn't depend on the effort covariates; these only occur in the detection submodel.
 
 ```{r occupancy-predict-predict, eval = FALSE, results = "hold", echo = 1:9}
 occ_pred <- predict(occ_avg, 
