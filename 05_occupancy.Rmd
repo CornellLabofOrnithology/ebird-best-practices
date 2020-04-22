@@ -243,11 +243,11 @@ The corrected [Akaike Information Criterion (AICc)](https://en.wikipedia.org/wik
 A quick look at the results of dredging, focusing on visualizing what covariates most influence occupancy probability, reveals that for the Wood Thrush example there is not a clear single model, or even a small set of models, that are most likely to have generated our data. This is evident from the number of models that all fall within a delta AICc value of ~2-3, and the large number of models with moderate AIC weights. Given this, and the fact that all of our effects are linear and use the same family and link function, we'll average across all models, weighted by AICc, to produce a model-averaged prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the `get.models()` function to extract just these models prior to averaging. For the sake of efficiency, we'll only average the top models, which we'll define as those cumulatively comprising 95% of the weights. This will trivially impact the results since the models with lower support have very small weights and therefore contribute little to the weighted-average predictions.
 
 ```{r occupancy-model-select-average}
-# select models with the most suport for model averaging
-occ_dredge_95 <- get.models(occ_dredge, subset = cumsum(weight) <= 0.95)
+# select models with the most suport for model averaging (less than 2.5 Delta AICc)
+occ_dredge_Delta <- get.models(occ_dredge, subset = delta <= 2.5)
 
 # average models based on model weights 
-occ_avg <- model.avg(occ_dredge_95, fit = TRUE)
+occ_avg <- model.avg(occ_dredge_Delta, fit = TRUE)
 
 # model averaged coefficients for occupancy and detection probbility
 coef(occ_avg)
@@ -290,6 +290,7 @@ In this section, we'll estimate the distribution of Wood Thrush in BCR 27. Simil
 
 
 ```{r occupancy-predict-predict, eval = FALSE, results = "hold", echo = 1:9}
+#NOTE: the code below can take up to an hour to run!
 occ_pred <- predict(occ_avg, 
                     newdata = as.data.frame(pred_surface), 
                     type = "state")
@@ -300,7 +301,7 @@ pred_occ <- bind_cols(pred_surface,
                       occ_se = occ_pred$se.fit) %>% 
   select(latitude, longitude, occ_prob, occ_se)
 saveRDS(pred_occ, "output/woothr_occupancy-model_predictions.rds")
-# above code takes 35 minutes to run
+
 ```
 
 ```{r occupancy-predict-predict-load, echo = FALSE}
