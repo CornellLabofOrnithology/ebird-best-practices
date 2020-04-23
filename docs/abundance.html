@@ -209,7 +209,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a><ul>
 <li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.3.1</b> Assessment</a></li>
 <li class="chapter" data-level="5.3.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.3.2</b> Model selection</a></li>
-<li class="chapter" data-level="5.3.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-detection"><i class="fa fa-check"></i><b>5.3.3</b> Exploring detection model submodel</a></li>
+<li class="chapter" data-level="5.3.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-detection"><i class="fa fa-check"></i><b>5.3.3</b> Exploring the effects of covariates on detection probability</a></li>
 </ul></li>
 <li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.4</b> Prediction</a></li>
 </ul></li>
@@ -258,116 +258,116 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="abundance-data" class="section level2">
 <h2><span class="header-section-number">6.2</span> Data preparation</h2>
 <p>Let’s start by loading the necessary packages and data. If you created or downloaded the files needed to follow the analyses in the previous chapters, you may want to <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip">download the data package</a> and unzip it to your project directory. Because we’re modeling abundance in this chapter, we’ll remove any records for which the observer reported that Wood Thrush was present, but didn’t report a count of the number of species (coded as ‘X’ records in the eBird database).</p>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="abundance.html#cb70-1"></a><span class="kw">library</span>(lubridate)</span>
-<span id="cb70-2"><a href="abundance.html#cb70-2"></a><span class="kw">library</span>(sf)</span>
-<span id="cb70-3"><a href="abundance.html#cb70-3"></a><span class="kw">library</span>(raster)</span>
-<span id="cb70-4"><a href="abundance.html#cb70-4"></a><span class="kw">library</span>(dggridR)</span>
-<span id="cb70-5"><a href="abundance.html#cb70-5"></a><span class="kw">library</span>(pdp)</span>
-<span id="cb70-6"><a href="abundance.html#cb70-6"></a><span class="kw">library</span>(edarf)</span>
-<span id="cb70-7"><a href="abundance.html#cb70-7"></a><span class="kw">library</span>(mgcv)</span>
-<span id="cb70-8"><a href="abundance.html#cb70-8"></a><span class="kw">library</span>(fitdistrplus)</span>
-<span id="cb70-9"><a href="abundance.html#cb70-9"></a><span class="kw">library</span>(viridis)</span>
-<span id="cb70-10"><a href="abundance.html#cb70-10"></a><span class="kw">library</span>(fields)</span>
-<span id="cb70-11"><a href="abundance.html#cb70-11"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb70-12"><a href="abundance.html#cb70-12"></a><span class="co"># resolve namespace conflicts</span></span>
-<span id="cb70-13"><a href="abundance.html#cb70-13"></a>select &lt;-<span class="st"> </span>dplyr<span class="op">::</span>select</span>
-<span id="cb70-14"><a href="abundance.html#cb70-14"></a>map &lt;-<span class="st"> </span>purrr<span class="op">::</span>map</span>
-<span id="cb70-15"><a href="abundance.html#cb70-15"></a>projection &lt;-<span class="st"> </span>raster<span class="op">::</span>projection</span>
-<span id="cb70-16"><a href="abundance.html#cb70-16"></a></span>
-<span id="cb70-17"><a href="abundance.html#cb70-17"></a><span class="co"># set random number seed to insure fully repeatable results</span></span>
-<span id="cb70-18"><a href="abundance.html#cb70-18"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb70-19"><a href="abundance.html#cb70-19"></a></span>
-<span id="cb70-20"><a href="abundance.html#cb70-20"></a><span class="co"># setup output directory for saved results</span></span>
-<span id="cb70-21"><a href="abundance.html#cb70-21"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">dir.exists</span>(<span class="st">&quot;output&quot;</span>)) {</span>
-<span id="cb70-22"><a href="abundance.html#cb70-22"></a>  <span class="kw">dir.create</span>(<span class="st">&quot;output&quot;</span>)</span>
-<span id="cb70-23"><a href="abundance.html#cb70-23"></a>}</span>
-<span id="cb70-24"><a href="abundance.html#cb70-24"></a></span>
-<span id="cb70-25"><a href="abundance.html#cb70-25"></a><span class="co"># ebird data</span></span>
-<span id="cb70-26"><a href="abundance.html#cb70-26"></a>ebird &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/ebd_woothr_june_bcr27_zf.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb70-27"><a href="abundance.html#cb70-27"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">protocol_type =</span> <span class="kw">factor</span>(protocol_type, </span>
-<span id="cb70-28"><a href="abundance.html#cb70-28"></a>                                <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Stationary&quot;</span> , <span class="st">&quot;Traveling&quot;</span>))) <span class="op">%&gt;%</span></span>
-<span id="cb70-29"><a href="abundance.html#cb70-29"></a><span class="st">  </span><span class="co"># remove observations with no count</span></span>
-<span id="cb70-30"><a href="abundance.html#cb70-30"></a><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(observation_count))</span>
-<span id="cb70-31"><a href="abundance.html#cb70-31"></a></span>
-<span id="cb70-32"><a href="abundance.html#cb70-32"></a><span class="co"># modis habitat covariates</span></span>
-<span id="cb70-33"><a href="abundance.html#cb70-33"></a>habitat &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/pland-elev_location-year.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb70-34"><a href="abundance.html#cb70-34"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">as.integer</span>(year))</span>
-<span id="cb70-35"><a href="abundance.html#cb70-35"></a></span>
-<span id="cb70-36"><a href="abundance.html#cb70-36"></a><span class="co"># combine ebird and habitat data</span></span>
-<span id="cb70-37"><a href="abundance.html#cb70-37"></a>ebird_habitat &lt;-<span class="st"> </span><span class="kw">inner_join</span>(ebird, habitat, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;locality_id&quot;</span>, <span class="st">&quot;year&quot;</span>))</span>
-<span id="cb70-38"><a href="abundance.html#cb70-38"></a></span>
-<span id="cb70-39"><a href="abundance.html#cb70-39"></a><span class="co"># prediction surface</span></span>
-<span id="cb70-40"><a href="abundance.html#cb70-40"></a>pred_surface &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/pland-elev_prediction-surface.csv&quot;</span>)</span>
-<span id="cb70-41"><a href="abundance.html#cb70-41"></a><span class="co"># latest year of landcover data</span></span>
-<span id="cb70-42"><a href="abundance.html#cb70-42"></a>max_lc_year &lt;-<span class="st"> </span>pred_surface<span class="op">$</span>year[<span class="dv">1</span>]</span>
-<span id="cb70-43"><a href="abundance.html#cb70-43"></a>r &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="st">&quot;data/prediction-surface.tif&quot;</span>)</span>
-<span id="cb70-44"><a href="abundance.html#cb70-44"></a></span>
-<span id="cb70-45"><a href="abundance.html#cb70-45"></a><span class="co"># load gis data for making maps</span></span>
-<span id="cb70-46"><a href="abundance.html#cb70-46"></a>map_proj &lt;-<span class="st"> </span><span class="kw">st_crs</span>(<span class="dv">102003</span>)</span>
-<span id="cb70-47"><a href="abundance.html#cb70-47"></a>ne_land &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_land&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb70-48"><a href="abundance.html#cb70-48"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb70-49"><a href="abundance.html#cb70-49"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span>
-<span id="cb70-50"><a href="abundance.html#cb70-50"></a>bcr &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;bcr&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb70-51"><a href="abundance.html#cb70-51"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb70-52"><a href="abundance.html#cb70-52"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span>
-<span id="cb70-53"><a href="abundance.html#cb70-53"></a>ne_country_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_country_lines&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb70-54"><a href="abundance.html#cb70-54"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb70-55"><a href="abundance.html#cb70-55"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span>
-<span id="cb70-56"><a href="abundance.html#cb70-56"></a>ne_state_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_state_lines&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb70-57"><a href="abundance.html#cb70-57"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb70-58"><a href="abundance.html#cb70-58"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="abundance.html#cb69-1"></a><span class="kw">library</span>(lubridate)</span>
+<span id="cb69-2"><a href="abundance.html#cb69-2"></a><span class="kw">library</span>(sf)</span>
+<span id="cb69-3"><a href="abundance.html#cb69-3"></a><span class="kw">library</span>(raster)</span>
+<span id="cb69-4"><a href="abundance.html#cb69-4"></a><span class="kw">library</span>(dggridR)</span>
+<span id="cb69-5"><a href="abundance.html#cb69-5"></a><span class="kw">library</span>(pdp)</span>
+<span id="cb69-6"><a href="abundance.html#cb69-6"></a><span class="kw">library</span>(edarf)</span>
+<span id="cb69-7"><a href="abundance.html#cb69-7"></a><span class="kw">library</span>(mgcv)</span>
+<span id="cb69-8"><a href="abundance.html#cb69-8"></a><span class="kw">library</span>(fitdistrplus)</span>
+<span id="cb69-9"><a href="abundance.html#cb69-9"></a><span class="kw">library</span>(viridis)</span>
+<span id="cb69-10"><a href="abundance.html#cb69-10"></a><span class="kw">library</span>(fields)</span>
+<span id="cb69-11"><a href="abundance.html#cb69-11"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb69-12"><a href="abundance.html#cb69-12"></a><span class="co"># resolve namespace conflicts</span></span>
+<span id="cb69-13"><a href="abundance.html#cb69-13"></a>select &lt;-<span class="st"> </span>dplyr<span class="op">::</span>select</span>
+<span id="cb69-14"><a href="abundance.html#cb69-14"></a>map &lt;-<span class="st"> </span>purrr<span class="op">::</span>map</span>
+<span id="cb69-15"><a href="abundance.html#cb69-15"></a>projection &lt;-<span class="st"> </span>raster<span class="op">::</span>projection</span>
+<span id="cb69-16"><a href="abundance.html#cb69-16"></a></span>
+<span id="cb69-17"><a href="abundance.html#cb69-17"></a><span class="co"># set random number seed to insure fully repeatable results</span></span>
+<span id="cb69-18"><a href="abundance.html#cb69-18"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb69-19"><a href="abundance.html#cb69-19"></a></span>
+<span id="cb69-20"><a href="abundance.html#cb69-20"></a><span class="co"># setup output directory for saved results</span></span>
+<span id="cb69-21"><a href="abundance.html#cb69-21"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">dir.exists</span>(<span class="st">&quot;output&quot;</span>)) {</span>
+<span id="cb69-22"><a href="abundance.html#cb69-22"></a>  <span class="kw">dir.create</span>(<span class="st">&quot;output&quot;</span>)</span>
+<span id="cb69-23"><a href="abundance.html#cb69-23"></a>}</span>
+<span id="cb69-24"><a href="abundance.html#cb69-24"></a></span>
+<span id="cb69-25"><a href="abundance.html#cb69-25"></a><span class="co"># ebird data</span></span>
+<span id="cb69-26"><a href="abundance.html#cb69-26"></a>ebird &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/ebd_woothr_june_bcr27_zf.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-27"><a href="abundance.html#cb69-27"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">protocol_type =</span> <span class="kw">factor</span>(protocol_type, </span>
+<span id="cb69-28"><a href="abundance.html#cb69-28"></a>                                <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Stationary&quot;</span> , <span class="st">&quot;Traveling&quot;</span>))) <span class="op">%&gt;%</span></span>
+<span id="cb69-29"><a href="abundance.html#cb69-29"></a><span class="st">  </span><span class="co"># remove observations with no count</span></span>
+<span id="cb69-30"><a href="abundance.html#cb69-30"></a><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(observation_count))</span>
+<span id="cb69-31"><a href="abundance.html#cb69-31"></a></span>
+<span id="cb69-32"><a href="abundance.html#cb69-32"></a><span class="co"># modis habitat covariates</span></span>
+<span id="cb69-33"><a href="abundance.html#cb69-33"></a>habitat &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/pland-elev_location-year.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-34"><a href="abundance.html#cb69-34"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">as.integer</span>(year))</span>
+<span id="cb69-35"><a href="abundance.html#cb69-35"></a></span>
+<span id="cb69-36"><a href="abundance.html#cb69-36"></a><span class="co"># combine ebird and habitat data</span></span>
+<span id="cb69-37"><a href="abundance.html#cb69-37"></a>ebird_habitat &lt;-<span class="st"> </span><span class="kw">inner_join</span>(ebird, habitat, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;locality_id&quot;</span>, <span class="st">&quot;year&quot;</span>))</span>
+<span id="cb69-38"><a href="abundance.html#cb69-38"></a></span>
+<span id="cb69-39"><a href="abundance.html#cb69-39"></a><span class="co"># prediction surface</span></span>
+<span id="cb69-40"><a href="abundance.html#cb69-40"></a>pred_surface &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/pland-elev_prediction-surface.csv&quot;</span>)</span>
+<span id="cb69-41"><a href="abundance.html#cb69-41"></a><span class="co"># latest year of landcover data</span></span>
+<span id="cb69-42"><a href="abundance.html#cb69-42"></a>max_lc_year &lt;-<span class="st"> </span>pred_surface<span class="op">$</span>year[<span class="dv">1</span>]</span>
+<span id="cb69-43"><a href="abundance.html#cb69-43"></a>r &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="st">&quot;data/prediction-surface.tif&quot;</span>)</span>
+<span id="cb69-44"><a href="abundance.html#cb69-44"></a></span>
+<span id="cb69-45"><a href="abundance.html#cb69-45"></a><span class="co"># load gis data for making maps</span></span>
+<span id="cb69-46"><a href="abundance.html#cb69-46"></a>map_proj &lt;-<span class="st"> </span><span class="kw">st_crs</span>(<span class="dv">102003</span>)</span>
+<span id="cb69-47"><a href="abundance.html#cb69-47"></a>ne_land &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_land&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-48"><a href="abundance.html#cb69-48"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-49"><a href="abundance.html#cb69-49"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span>
+<span id="cb69-50"><a href="abundance.html#cb69-50"></a>bcr &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;bcr&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-51"><a href="abundance.html#cb69-51"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-52"><a href="abundance.html#cb69-52"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span>
+<span id="cb69-53"><a href="abundance.html#cb69-53"></a>ne_country_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_country_lines&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-54"><a href="abundance.html#cb69-54"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-55"><a href="abundance.html#cb69-55"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span>
+<span id="cb69-56"><a href="abundance.html#cb69-56"></a>ne_state_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_state_lines&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-57"><a href="abundance.html#cb69-57"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-58"><a href="abundance.html#cb69-58"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span></code></pre></div>
 <div id="abundance-data-sss" class="section level3">
 <h3><span class="header-section-number">6.2.1</span> Spatiotemporal subsampling</h3>
 <p>As discussed in Section <a href="encounter.html#encounter-sss">4.3</a>, spatiotemporal subsampling detection and non-detection observations reduces both spatial and temporal bias and the class imbalance. We’ll use exactly the same hexagonal subsampling approach as in Chapter <a href="encounter.html#encounter">4</a>.</p>
-<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="abundance.html#cb71-1"></a><span class="co"># generate hexagonal grid with ~ 5 km betweeen cells</span></span>
-<span id="cb71-2"><a href="abundance.html#cb71-2"></a>dggs &lt;-<span class="st"> </span><span class="kw">dgconstruct</span>(<span class="dt">spacing =</span> <span class="dv">5</span>)</span>
-<span id="cb71-3"><a href="abundance.html#cb71-3"></a><span class="co"># get hexagonal cell id and week number for each checklist</span></span>
-<span id="cb71-4"><a href="abundance.html#cb71-4"></a>checklist_cell &lt;-<span class="st"> </span>ebird_habitat <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb71-5"><a href="abundance.html#cb71-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cell =</span> <span class="kw">dgGEO_to_SEQNUM</span>(dggs, longitude, latitude)<span class="op">$</span>seqnum,</span>
-<span id="cb71-6"><a href="abundance.html#cb71-6"></a>         <span class="dt">week =</span> <span class="kw">week</span>(observation_date))</span>
-<span id="cb71-7"><a href="abundance.html#cb71-7"></a><span class="co"># sample one checklist per grid cell per week</span></span>
-<span id="cb71-8"><a href="abundance.html#cb71-8"></a><span class="co"># sample detection/non-detection independently </span></span>
-<span id="cb71-9"><a href="abundance.html#cb71-9"></a>ebird_ss &lt;-<span class="st"> </span>checklist_cell <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb71-10"><a href="abundance.html#cb71-10"></a><span class="st">  </span><span class="kw">group_by</span>(species_observed, year, week, cell) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb71-11"><a href="abundance.html#cb71-11"></a><span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb71-12"><a href="abundance.html#cb71-12"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb71-13"><a href="abundance.html#cb71-13"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>cell, <span class="op">-</span>week)</span></code></pre></div>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="abundance.html#cb70-1"></a><span class="co"># generate hexagonal grid with ~ 5 km betweeen cells</span></span>
+<span id="cb70-2"><a href="abundance.html#cb70-2"></a>dggs &lt;-<span class="st"> </span><span class="kw">dgconstruct</span>(<span class="dt">spacing =</span> <span class="dv">5</span>)</span>
+<span id="cb70-3"><a href="abundance.html#cb70-3"></a><span class="co"># get hexagonal cell id and week number for each checklist</span></span>
+<span id="cb70-4"><a href="abundance.html#cb70-4"></a>checklist_cell &lt;-<span class="st"> </span>ebird_habitat <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb70-5"><a href="abundance.html#cb70-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cell =</span> <span class="kw">dgGEO_to_SEQNUM</span>(dggs, longitude, latitude)<span class="op">$</span>seqnum,</span>
+<span id="cb70-6"><a href="abundance.html#cb70-6"></a>         <span class="dt">week =</span> <span class="kw">week</span>(observation_date))</span>
+<span id="cb70-7"><a href="abundance.html#cb70-7"></a><span class="co"># sample one checklist per grid cell per week</span></span>
+<span id="cb70-8"><a href="abundance.html#cb70-8"></a><span class="co"># sample detection/non-detection independently </span></span>
+<span id="cb70-9"><a href="abundance.html#cb70-9"></a>ebird_ss &lt;-<span class="st"> </span>checklist_cell <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb70-10"><a href="abundance.html#cb70-10"></a><span class="st">  </span><span class="kw">group_by</span>(species_observed, year, week, cell) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb70-11"><a href="abundance.html#cb70-11"></a><span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb70-12"><a href="abundance.html#cb70-12"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb70-13"><a href="abundance.html#cb70-13"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>cell, <span class="op">-</span>week)</span></code></pre></div>
 </div>
 <div id="abundance-data-tt" class="section level3">
 <h3><span class="header-section-number">6.2.2</span> Test-train split</h3>
 <p>Before we fit the abundance models, we randomly split the data into 80% of checklists for training and 20% for testing. We’ll hold this 20% aside when we fit the model, then use it as an independent data set with which to test the predictive performance of the model. Here we select a random 20% of the data, but there are a variety of strategies to select data for testing that may be appropriate in different situations. At this stage, we’ll also retain only the variables that we’ll use as covariates in the models. In particular, we’ll use the full suite of effort covariates and the same four habitat covariates we used in Chapter <a href="occupancy.html#occupancy">5</a>. Deciduous broadleaf forest and mixed forest are known Wood Thrush breeding habitat, and these thrushes are known to avoid croplands and urban. The specific set of habit covariates you use will be specific for your species and should be informed by <em>a priori</em> ecological knowledge of the species. See Section <a href="covariates.html#covariates-intro">3.1</a> for a list of the habitat covariates available in this data set.</p>
-<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="abundance.html#cb72-1"></a>hab_covs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;pland_04_deciduous_broadleaf&quot;</span>, </span>
-<span id="cb72-2"><a href="abundance.html#cb72-2"></a>              <span class="st">&quot;pland_05_mixed_forest&quot;</span>,</span>
-<span id="cb72-3"><a href="abundance.html#cb72-3"></a>              <span class="st">&quot;pland_12_cropland&quot;</span>,</span>
-<span id="cb72-4"><a href="abundance.html#cb72-4"></a>              <span class="st">&quot;pland_13_urban&quot;</span>)</span>
-<span id="cb72-5"><a href="abundance.html#cb72-5"></a>ebird_split &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb72-6"><a href="abundance.html#cb72-6"></a><span class="st">  </span><span class="co"># select only the columns to be used in the model</span></span>
-<span id="cb72-7"><a href="abundance.html#cb72-7"></a><span class="st">  </span><span class="kw">select</span>(observation_count,</span>
-<span id="cb72-8"><a href="abundance.html#cb72-8"></a>         <span class="co"># effort covariates</span></span>
-<span id="cb72-9"><a href="abundance.html#cb72-9"></a>         day_of_year, time_observations_started, duration_minutes,</span>
-<span id="cb72-10"><a href="abundance.html#cb72-10"></a>         effort_distance_km, number_observers, protocol_type,</span>
-<span id="cb72-11"><a href="abundance.html#cb72-11"></a>         <span class="co"># habitat covariates</span></span>
-<span id="cb72-12"><a href="abundance.html#cb72-12"></a>         hab_covs) </span>
-<span id="cb72-13"><a href="abundance.html#cb72-13"></a><span class="co"># split 80/20</span></span>
-<span id="cb72-14"><a href="abundance.html#cb72-14"></a>ebird_split &lt;-<span class="st"> </span>ebird_split <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb72-15"><a href="abundance.html#cb72-15"></a><span class="st">  </span><span class="kw">split</span>(<span class="kw">if_else</span>(<span class="kw">runif</span>(<span class="kw">nrow</span>(.)) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.8</span>, <span class="st">&quot;train&quot;</span>, <span class="st">&quot;test&quot;</span>))</span>
-<span id="cb72-16"><a href="abundance.html#cb72-16"></a><span class="kw">map_int</span>(ebird_split, nrow)</span>
-<span id="cb72-17"><a href="abundance.html#cb72-17"></a><span class="co">#&gt;  test train </span></span>
-<span id="cb72-18"><a href="abundance.html#cb72-18"></a><span class="co">#&gt;  3941 16142</span></span></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="abundance.html#cb71-1"></a>hab_covs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;pland_04_deciduous_broadleaf&quot;</span>, </span>
+<span id="cb71-2"><a href="abundance.html#cb71-2"></a>              <span class="st">&quot;pland_05_mixed_forest&quot;</span>,</span>
+<span id="cb71-3"><a href="abundance.html#cb71-3"></a>              <span class="st">&quot;pland_12_cropland&quot;</span>,</span>
+<span id="cb71-4"><a href="abundance.html#cb71-4"></a>              <span class="st">&quot;pland_13_urban&quot;</span>)</span>
+<span id="cb71-5"><a href="abundance.html#cb71-5"></a>ebird_split &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb71-6"><a href="abundance.html#cb71-6"></a><span class="st">  </span><span class="co"># select only the columns to be used in the model</span></span>
+<span id="cb71-7"><a href="abundance.html#cb71-7"></a><span class="st">  </span><span class="kw">select</span>(observation_count,</span>
+<span id="cb71-8"><a href="abundance.html#cb71-8"></a>         <span class="co"># effort covariates</span></span>
+<span id="cb71-9"><a href="abundance.html#cb71-9"></a>         day_of_year, time_observations_started, duration_minutes,</span>
+<span id="cb71-10"><a href="abundance.html#cb71-10"></a>         effort_distance_km, number_observers, protocol_type,</span>
+<span id="cb71-11"><a href="abundance.html#cb71-11"></a>         <span class="co"># habitat covariates</span></span>
+<span id="cb71-12"><a href="abundance.html#cb71-12"></a>         hab_covs) </span>
+<span id="cb71-13"><a href="abundance.html#cb71-13"></a><span class="co"># split 80/20</span></span>
+<span id="cb71-14"><a href="abundance.html#cb71-14"></a>ebird_split &lt;-<span class="st"> </span>ebird_split <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb71-15"><a href="abundance.html#cb71-15"></a><span class="st">  </span><span class="kw">split</span>(<span class="kw">if_else</span>(<span class="kw">runif</span>(<span class="kw">nrow</span>(.)) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.8</span>, <span class="st">&quot;train&quot;</span>, <span class="st">&quot;test&quot;</span>))</span>
+<span id="cb71-16"><a href="abundance.html#cb71-16"></a><span class="kw">map_int</span>(ebird_split, nrow)</span>
+<span id="cb71-17"><a href="abundance.html#cb71-17"></a><span class="co">#&gt;  test train </span></span>
+<span id="cb71-18"><a href="abundance.html#cb71-18"></a><span class="co">#&gt;  3941 16142</span></span></code></pre></div>
 </div>
 </div>
 <div id="abundance-explore" class="section level2">
 <h2><span class="header-section-number">6.3</span> Exploratory data analysis</h2>
 <p>Before we embark on modelling the counts, we’ll start by examining the distribution of the count data. This will help give us an idea of which distributions may be appropriate for modeling the counts of this species. Looking at the distribution of counts with and without the zeros can help reveal evidence of zero-inflation. eBird data often have a very high number of zero counts, since even common bird species are not seen on every checklist. Large numbers of zeros can also arise when the study extent borders on the species’ range boundary.</p>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="abundance.html#cb73-1"></a>p &lt;-<span class="st"> </span><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb73-2"><a href="abundance.html#cb73-2"></a><span class="co"># counts with zeros</span></span>
-<span id="cb73-3"><a href="abundance.html#cb73-3"></a><span class="kw">hist</span>(ebird_ss<span class="op">$</span>observation_count, <span class="dt">main =</span> <span class="st">&quot;Histogram of counts&quot;</span>, </span>
-<span id="cb73-4"><a href="abundance.html#cb73-4"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Observed count&quot;</span>)</span>
-<span id="cb73-5"><a href="abundance.html#cb73-5"></a><span class="co"># counts without zeros</span></span>
-<span id="cb73-6"><a href="abundance.html#cb73-6"></a>pos_counts &lt;-<span class="st"> </span><span class="kw">keep</span>(ebird_ss<span class="op">$</span>observation_count, <span class="op">~</span><span class="st"> </span>. <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)</span>
-<span id="cb73-7"><a href="abundance.html#cb73-7"></a><span class="kw">hist</span>(pos_counts, <span class="dt">main =</span> <span class="st">&quot;Histogram of counts &gt; 0&quot;</span>, </span>
-<span id="cb73-8"><a href="abundance.html#cb73-8"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Observed non-zero count&quot;</span>)</span>
-<span id="cb73-9"><a href="abundance.html#cb73-9"></a><span class="kw">par</span>(p)</span></code></pre></div>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="abundance.html#cb72-1"></a>p &lt;-<span class="st"> </span><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb72-2"><a href="abundance.html#cb72-2"></a><span class="co"># counts with zeros</span></span>
+<span id="cb72-3"><a href="abundance.html#cb72-3"></a><span class="kw">hist</span>(ebird_ss<span class="op">$</span>observation_count, <span class="dt">main =</span> <span class="st">&quot;Histogram of counts&quot;</span>, </span>
+<span id="cb72-4"><a href="abundance.html#cb72-4"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Observed count&quot;</span>)</span>
+<span id="cb72-5"><a href="abundance.html#cb72-5"></a><span class="co"># counts without zeros</span></span>
+<span id="cb72-6"><a href="abundance.html#cb72-6"></a>pos_counts &lt;-<span class="st"> </span><span class="kw">keep</span>(ebird_ss<span class="op">$</span>observation_count, <span class="op">~</span><span class="st"> </span>. <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)</span>
+<span id="cb72-7"><a href="abundance.html#cb72-7"></a><span class="kw">hist</span>(pos_counts, <span class="dt">main =</span> <span class="st">&quot;Histogram of counts &gt; 0&quot;</span>, </span>
+<span id="cb72-8"><a href="abundance.html#cb72-8"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Observed non-zero count&quot;</span>)</span>
+<span id="cb72-9"><a href="abundance.html#cb72-9"></a><span class="kw">par</span>(p)</span></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/abundance-model-dist-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>The plot that includes zeros (left) shows an extremely zero-inflated and skewed distribution, due to the large number of zero-counts (checklists with no Wood Thrush detections). For the counts only (right), the data still show a highly skewed distribution, with lots of checklists with low numbers and only a few checklists with more than five Wood Thrush.</p>
 <p>These plots and conclusions are only indicative—they provide some information about what we can expect for distributions at the next step. Overall, for Wood Thrush we can conclude that the counts are highly skewed with many zero observations.</p>
@@ -377,115 +377,115 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Prior to fitting our GAM models, let’s construct the model formula that we’ll use when we call the fitting function. In a GLM where the relationship between a covariate and the response is linear, whereas a GAM allows smooth non-linear relationships. The degree of variation (wiggliness) allowed in each covariate relationship is controlled by the degrees of freedom. The <code>k</code> parameter determines the <em>maximum</em> wiggliness of the smooth, with higher values allowing for more potential wiggliness. GAMs use a data-driven approach to adaptively reduce the wiggliness (degrees of freedom) based on the training data.</p>
 <p>There are a wide variety of different types of smooth relationships. We use a different different type of smooth for the checklist start time relationship. We want to joins the ends of the relationship, i.e. 0 and 24 are both midnight, so the smooth should be the same value at these points. To accomplish this we’ll use a cubic cyclic spline (<code>bs = "cc"</code>).</p>
 <p>The following code builds the GAM model formula, using only the covariates chosen in the <a href="abundance.html#abundance-data-tt">previous section</a>. Using this approach allows the formula to be automatically re-built in order to match any changes that one might make in the habitat types represented in the <code>ebird_split</code> data frame. If, for example, you decide to explore using a different set of covariates when modeling the abundance for a different species then the model formula will be built appropriately for your species.</p>
-<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="abundance.html#cb74-1"></a><span class="co"># gam parameters</span></span>
-<span id="cb74-2"><a href="abundance.html#cb74-2"></a><span class="co"># degrees of freedom for smoothing</span></span>
-<span id="cb74-3"><a href="abundance.html#cb74-3"></a>k &lt;-<span class="st"> </span><span class="dv">5</span></span>
-<span id="cb74-4"><a href="abundance.html#cb74-4"></a><span class="co"># degrees of freedom for cyclic time of day smooth</span></span>
-<span id="cb74-5"><a href="abundance.html#cb74-5"></a>k_time &lt;-<span class="st"> </span><span class="dv">7</span> </span>
-<span id="cb74-6"><a href="abundance.html#cb74-6"></a></span>
-<span id="cb74-7"><a href="abundance.html#cb74-7"></a><span class="co"># continuous predictors</span></span>
-<span id="cb74-8"><a href="abundance.html#cb74-8"></a><span class="co"># hold out time to treat seperately since it&#39;s cyclic</span></span>
-<span id="cb74-9"><a href="abundance.html#cb74-9"></a>continuous_covs &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb74-10"><a href="abundance.html#cb74-10"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>observation_count, <span class="op">-</span>protocol_type, <span class="op">-</span>time_observations_started) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb74-11"><a href="abundance.html#cb74-11"></a><span class="st">  </span><span class="kw">names</span>()</span>
-<span id="cb74-12"><a href="abundance.html#cb74-12"></a></span>
-<span id="cb74-13"><a href="abundance.html#cb74-13"></a><span class="co"># create model formula for predictors</span></span>
-<span id="cb74-14"><a href="abundance.html#cb74-14"></a>gam_formula_rhs &lt;-<span class="st"> </span><span class="kw">str_glue</span>(<span class="st">&quot;s({var}, k = {k})&quot;</span>, </span>
-<span id="cb74-15"><a href="abundance.html#cb74-15"></a>                            <span class="dt">var =</span> continuous_covs, <span class="dt">k =</span> k) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb74-16"><a href="abundance.html#cb74-16"></a><span class="st">  </span><span class="kw">str_flatten</span>(<span class="dt">collapse =</span> <span class="st">&quot; + &quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb74-17"><a href="abundance.html#cb74-17"></a><span class="st">  </span><span class="kw">str_glue</span>(<span class="st">&quot; ~ &quot;</span>, .,</span>
-<span id="cb74-18"><a href="abundance.html#cb74-18"></a>           <span class="st">&quot; + protocol_type + &quot;</span>,</span>
-<span id="cb74-19"><a href="abundance.html#cb74-19"></a>           <span class="st">&quot;s(time_observations_started, bs = </span><span class="ch">\&quot;</span><span class="st">cc</span><span class="ch">\&quot;</span><span class="st">, k = {k})&quot;</span>, </span>
-<span id="cb74-20"><a href="abundance.html#cb74-20"></a>           <span class="dt">k =</span> k_time) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb74-21"><a href="abundance.html#cb74-21"></a><span class="st">  </span><span class="kw">as.formula</span>()</span>
-<span id="cb74-22"><a href="abundance.html#cb74-22"></a></span>
-<span id="cb74-23"><a href="abundance.html#cb74-23"></a><span class="co"># model formula including response</span></span>
-<span id="cb74-24"><a href="abundance.html#cb74-24"></a>gam_formula &lt;-<span class="st"> </span><span class="kw">update.formula</span>(observation_count <span class="op">~</span><span class="st"> </span>., gam_formula_rhs)</span>
-<span id="cb74-25"><a href="abundance.html#cb74-25"></a>gam_formula</span>
-<span id="cb74-26"><a href="abundance.html#cb74-26"></a><span class="co">#&gt; observation_count ~ s(day_of_year, k = 5) + s(duration_minutes, </span></span>
-<span id="cb74-27"><a href="abundance.html#cb74-27"></a><span class="co">#&gt;     k = 5) + s(effort_distance_km, k = 5) + s(number_observers, </span></span>
-<span id="cb74-28"><a href="abundance.html#cb74-28"></a><span class="co">#&gt;     k = 5) + s(pland_04_deciduous_broadleaf, k = 5) + s(pland_05_mixed_forest, </span></span>
-<span id="cb74-29"><a href="abundance.html#cb74-29"></a><span class="co">#&gt;     k = 5) + s(pland_12_cropland, k = 5) + s(pland_13_urban, </span></span>
-<span id="cb74-30"><a href="abundance.html#cb74-30"></a><span class="co">#&gt;     k = 5) + protocol_type + s(time_observations_started, bs = &quot;cc&quot;, </span></span>
-<span id="cb74-31"><a href="abundance.html#cb74-31"></a><span class="co">#&gt;     k = 7)</span></span></code></pre></div>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="abundance.html#cb73-1"></a><span class="co"># gam parameters</span></span>
+<span id="cb73-2"><a href="abundance.html#cb73-2"></a><span class="co"># degrees of freedom for smoothing</span></span>
+<span id="cb73-3"><a href="abundance.html#cb73-3"></a>k &lt;-<span class="st"> </span><span class="dv">5</span></span>
+<span id="cb73-4"><a href="abundance.html#cb73-4"></a><span class="co"># degrees of freedom for cyclic time of day smooth</span></span>
+<span id="cb73-5"><a href="abundance.html#cb73-5"></a>k_time &lt;-<span class="st"> </span><span class="dv">7</span> </span>
+<span id="cb73-6"><a href="abundance.html#cb73-6"></a></span>
+<span id="cb73-7"><a href="abundance.html#cb73-7"></a><span class="co"># continuous predictors</span></span>
+<span id="cb73-8"><a href="abundance.html#cb73-8"></a><span class="co"># hold out time to treat seperately since it&#39;s cyclic</span></span>
+<span id="cb73-9"><a href="abundance.html#cb73-9"></a>continuous_covs &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb73-10"><a href="abundance.html#cb73-10"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>observation_count, <span class="op">-</span>protocol_type, <span class="op">-</span>time_observations_started) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb73-11"><a href="abundance.html#cb73-11"></a><span class="st">  </span><span class="kw">names</span>()</span>
+<span id="cb73-12"><a href="abundance.html#cb73-12"></a></span>
+<span id="cb73-13"><a href="abundance.html#cb73-13"></a><span class="co"># create model formula for predictors</span></span>
+<span id="cb73-14"><a href="abundance.html#cb73-14"></a>gam_formula_rhs &lt;-<span class="st"> </span><span class="kw">str_glue</span>(<span class="st">&quot;s({var}, k = {k})&quot;</span>, </span>
+<span id="cb73-15"><a href="abundance.html#cb73-15"></a>                            <span class="dt">var =</span> continuous_covs, <span class="dt">k =</span> k) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb73-16"><a href="abundance.html#cb73-16"></a><span class="st">  </span><span class="kw">str_flatten</span>(<span class="dt">collapse =</span> <span class="st">&quot; + &quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb73-17"><a href="abundance.html#cb73-17"></a><span class="st">  </span><span class="kw">str_glue</span>(<span class="st">&quot; ~ &quot;</span>, .,</span>
+<span id="cb73-18"><a href="abundance.html#cb73-18"></a>           <span class="st">&quot; + protocol_type + &quot;</span>,</span>
+<span id="cb73-19"><a href="abundance.html#cb73-19"></a>           <span class="st">&quot;s(time_observations_started, bs = </span><span class="ch">\&quot;</span><span class="st">cc</span><span class="ch">\&quot;</span><span class="st">, k = {k})&quot;</span>, </span>
+<span id="cb73-20"><a href="abundance.html#cb73-20"></a>           <span class="dt">k =</span> k_time) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb73-21"><a href="abundance.html#cb73-21"></a><span class="st">  </span><span class="kw">as.formula</span>()</span>
+<span id="cb73-22"><a href="abundance.html#cb73-22"></a></span>
+<span id="cb73-23"><a href="abundance.html#cb73-23"></a><span class="co"># model formula including response</span></span>
+<span id="cb73-24"><a href="abundance.html#cb73-24"></a>gam_formula &lt;-<span class="st"> </span><span class="kw">update.formula</span>(observation_count <span class="op">~</span><span class="st"> </span>., gam_formula_rhs)</span>
+<span id="cb73-25"><a href="abundance.html#cb73-25"></a>gam_formula</span>
+<span id="cb73-26"><a href="abundance.html#cb73-26"></a><span class="co">#&gt; observation_count ~ s(day_of_year, k = 5) + s(duration_minutes, </span></span>
+<span id="cb73-27"><a href="abundance.html#cb73-27"></a><span class="co">#&gt;     k = 5) + s(effort_distance_km, k = 5) + s(number_observers, </span></span>
+<span id="cb73-28"><a href="abundance.html#cb73-28"></a><span class="co">#&gt;     k = 5) + s(pland_04_deciduous_broadleaf, k = 5) + s(pland_05_mixed_forest, </span></span>
+<span id="cb73-29"><a href="abundance.html#cb73-29"></a><span class="co">#&gt;     k = 5) + s(pland_12_cropland, k = 5) + s(pland_13_urban, </span></span>
+<span id="cb73-30"><a href="abundance.html#cb73-30"></a><span class="co">#&gt;     k = 5) + protocol_type + s(time_observations_started, bs = &quot;cc&quot;, </span></span>
+<span id="cb73-31"><a href="abundance.html#cb73-31"></a><span class="co">#&gt;     k = 7)</span></span></code></pre></div>
 <p>Alternatively, the formula can be defined manually:</p>
-<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="abundance.html#cb75-1"></a>gam_formula &lt;-<span class="st"> </span>observation_count <span class="op">~</span><span class="st"> </span><span class="kw">s</span>(day_of_year, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb75-2"><a href="abundance.html#cb75-2"></a><span class="st">  </span><span class="kw">s</span>(duration_minutes, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb75-3"><a href="abundance.html#cb75-3"></a><span class="st">  </span><span class="kw">s</span>(effort_distance_km, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb75-4"><a href="abundance.html#cb75-4"></a><span class="st">  </span><span class="kw">s</span>(number_observers, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb75-5"><a href="abundance.html#cb75-5"></a><span class="st">  </span><span class="kw">s</span>(pland_<span class="dv">04</span>_deciduous_broadleaf, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb75-6"><a href="abundance.html#cb75-6"></a><span class="st">  </span><span class="kw">s</span>(pland_<span class="dv">05</span>_mixed_forest, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb75-7"><a href="abundance.html#cb75-7"></a><span class="st">  </span><span class="kw">s</span>(pland_<span class="dv">12</span>_cropland, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb75-8"><a href="abundance.html#cb75-8"></a><span class="st">  </span><span class="kw">s</span>(pland_<span class="dv">13</span>_urban, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb75-9"><a href="abundance.html#cb75-9"></a><span class="st">  </span>protocol_type <span class="op">+</span><span class="st"> </span></span>
-<span id="cb75-10"><a href="abundance.html#cb75-10"></a><span class="st">  </span><span class="kw">s</span>(time_observations_started, <span class="dt">bs =</span> <span class="st">&quot;cc&quot;</span>, <span class="dt">k =</span> <span class="dv">7</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="abundance.html#cb74-1"></a>gam_formula &lt;-<span class="st"> </span>observation_count <span class="op">~</span><span class="st"> </span><span class="kw">s</span>(day_of_year, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb74-2"><a href="abundance.html#cb74-2"></a><span class="st">  </span><span class="kw">s</span>(duration_minutes, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb74-3"><a href="abundance.html#cb74-3"></a><span class="st">  </span><span class="kw">s</span>(effort_distance_km, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb74-4"><a href="abundance.html#cb74-4"></a><span class="st">  </span><span class="kw">s</span>(number_observers, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb74-5"><a href="abundance.html#cb74-5"></a><span class="st">  </span><span class="kw">s</span>(pland_<span class="dv">04</span>_deciduous_broadleaf, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb74-6"><a href="abundance.html#cb74-6"></a><span class="st">  </span><span class="kw">s</span>(pland_<span class="dv">05</span>_mixed_forest, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb74-7"><a href="abundance.html#cb74-7"></a><span class="st">  </span><span class="kw">s</span>(pland_<span class="dv">12</span>_cropland, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb74-8"><a href="abundance.html#cb74-8"></a><span class="st">  </span><span class="kw">s</span>(pland_<span class="dv">13</span>_urban, <span class="dt">k =</span> <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb74-9"><a href="abundance.html#cb74-9"></a><span class="st">  </span>protocol_type <span class="op">+</span><span class="st"> </span></span>
+<span id="cb74-10"><a href="abundance.html#cb74-10"></a><span class="st">  </span><span class="kw">s</span>(time_observations_started, <span class="dt">bs =</span> <span class="st">&quot;cc&quot;</span>, <span class="dt">k =</span> <span class="dv">7</span>)</span></code></pre></div>
 <p>Now we’ll use this formula to fit GAM models, testing the following three count response distributions:</p>
 <ul>
 <li><p><strong>Zero-inflated Poisson:</strong> This distribution effectively fits the data in two parts: (1) a binomial model that determines the variables associated with species <em>presence</em> and (2) a Poisson count model for those places with species presence, that determines the variables associated with species <em>count</em>. This is an effective distribution when there are a large number of zero counts in the data and the positive counts approximate a Poisson distribution.</p></li>
 <li><p><strong>Negative binomial:</strong> The negative binomial distribution is related to the Poisson distribution. However, the variance can be considerably larger in the negative binomial distribution. This distribution is appropriate for data when the variance of the counts is much larger than the mean of the counts — a situation called <em>over-dispersion</em> that is very common in ecological count data.</p></li>
 <li><p><strong>Tweedie distribution:</strong> This is a very flexible distribution that encompasses a wide variety of shapes, including those with extremely high variance relative to the mean and extreme over-dispersion. The Tweedie distribution fit in GAM spans a range of distributions from the Poisson to the gamma, so it is a very flexible option.</p></li>
 </ul>
-<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="abundance.html#cb76-1"></a><span class="co"># explicitly specify where the knots should occur for time_observations_started</span></span>
-<span id="cb76-2"><a href="abundance.html#cb76-2"></a><span class="co"># this ensures that the cyclic spline joins the variable at midnight</span></span>
-<span id="cb76-3"><a href="abundance.html#cb76-3"></a><span class="co"># this won&#39;t happen by default if there are no data near midnight</span></span>
-<span id="cb76-4"><a href="abundance.html#cb76-4"></a>time_knots &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">time_observations_started =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">length.out =</span> k_time))</span>
-<span id="cb76-5"><a href="abundance.html#cb76-5"></a></span>
-<span id="cb76-6"><a href="abundance.html#cb76-6"></a><span class="co"># zero-inflated poisson</span></span>
-<span id="cb76-7"><a href="abundance.html#cb76-7"></a>m_ziplss &lt;-<span class="st"> </span><span class="kw">gam</span>(<span class="kw">list</span>(gam_formula,      <span class="co"># count model</span></span>
-<span id="cb76-8"><a href="abundance.html#cb76-8"></a>                     gam_formula[<span class="op">-</span><span class="dv">2</span>]), <span class="co"># presence model</span></span>
-<span id="cb76-9"><a href="abundance.html#cb76-9"></a>                <span class="dt">data =</span> ebird_split<span class="op">$</span>train, </span>
-<span id="cb76-10"><a href="abundance.html#cb76-10"></a>                <span class="dt">family =</span> <span class="st">&quot;ziplss&quot;</span>, </span>
-<span id="cb76-11"><a href="abundance.html#cb76-11"></a>                <span class="dt">knots =</span> time_knots)</span>
-<span id="cb76-12"><a href="abundance.html#cb76-12"></a></span>
-<span id="cb76-13"><a href="abundance.html#cb76-13"></a><span class="co"># negative binomial</span></span>
-<span id="cb76-14"><a href="abundance.html#cb76-14"></a>m_nb &lt;-<span class="st"> </span><span class="kw">gam</span>(gam_formula,</span>
-<span id="cb76-15"><a href="abundance.html#cb76-15"></a>            <span class="dt">data =</span> ebird_split<span class="op">$</span>train, </span>
-<span id="cb76-16"><a href="abundance.html#cb76-16"></a>            <span class="dt">family =</span> <span class="st">&quot;nb&quot;</span>,</span>
-<span id="cb76-17"><a href="abundance.html#cb76-17"></a>            <span class="dt">knots =</span> time_knots)</span>
-<span id="cb76-18"><a href="abundance.html#cb76-18"></a></span>
-<span id="cb76-19"><a href="abundance.html#cb76-19"></a><span class="co"># tweedie distribution</span></span>
-<span id="cb76-20"><a href="abundance.html#cb76-20"></a>m_tw &lt;-<span class="st"> </span><span class="kw">gam</span>(gam_formula,</span>
-<span id="cb76-21"><a href="abundance.html#cb76-21"></a>            <span class="dt">data =</span> ebird_split<span class="op">$</span>train, </span>
-<span id="cb76-22"><a href="abundance.html#cb76-22"></a>            <span class="dt">family =</span> <span class="st">&quot;tw&quot;</span>,</span>
-<span id="cb76-23"><a href="abundance.html#cb76-23"></a>            <span class="dt">knots =</span> time_knots)</span></code></pre></div>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="abundance.html#cb75-1"></a><span class="co"># explicitly specify where the knots should occur for time_observations_started</span></span>
+<span id="cb75-2"><a href="abundance.html#cb75-2"></a><span class="co"># this ensures that the cyclic spline joins the variable at midnight</span></span>
+<span id="cb75-3"><a href="abundance.html#cb75-3"></a><span class="co"># this won&#39;t happen by default if there are no data near midnight</span></span>
+<span id="cb75-4"><a href="abundance.html#cb75-4"></a>time_knots &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">time_observations_started =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">length.out =</span> k_time))</span>
+<span id="cb75-5"><a href="abundance.html#cb75-5"></a></span>
+<span id="cb75-6"><a href="abundance.html#cb75-6"></a><span class="co"># zero-inflated poisson</span></span>
+<span id="cb75-7"><a href="abundance.html#cb75-7"></a>m_ziplss &lt;-<span class="st"> </span><span class="kw">gam</span>(<span class="kw">list</span>(gam_formula,      <span class="co"># count model</span></span>
+<span id="cb75-8"><a href="abundance.html#cb75-8"></a>                     gam_formula[<span class="op">-</span><span class="dv">2</span>]), <span class="co"># presence model</span></span>
+<span id="cb75-9"><a href="abundance.html#cb75-9"></a>                <span class="dt">data =</span> ebird_split<span class="op">$</span>train, </span>
+<span id="cb75-10"><a href="abundance.html#cb75-10"></a>                <span class="dt">family =</span> <span class="st">&quot;ziplss&quot;</span>, </span>
+<span id="cb75-11"><a href="abundance.html#cb75-11"></a>                <span class="dt">knots =</span> time_knots)</span>
+<span id="cb75-12"><a href="abundance.html#cb75-12"></a></span>
+<span id="cb75-13"><a href="abundance.html#cb75-13"></a><span class="co"># negative binomial</span></span>
+<span id="cb75-14"><a href="abundance.html#cb75-14"></a>m_nb &lt;-<span class="st"> </span><span class="kw">gam</span>(gam_formula,</span>
+<span id="cb75-15"><a href="abundance.html#cb75-15"></a>            <span class="dt">data =</span> ebird_split<span class="op">$</span>train, </span>
+<span id="cb75-16"><a href="abundance.html#cb75-16"></a>            <span class="dt">family =</span> <span class="st">&quot;nb&quot;</span>,</span>
+<span id="cb75-17"><a href="abundance.html#cb75-17"></a>            <span class="dt">knots =</span> time_knots)</span>
+<span id="cb75-18"><a href="abundance.html#cb75-18"></a></span>
+<span id="cb75-19"><a href="abundance.html#cb75-19"></a><span class="co"># tweedie distribution</span></span>
+<span id="cb75-20"><a href="abundance.html#cb75-20"></a>m_tw &lt;-<span class="st"> </span><span class="kw">gam</span>(gam_formula,</span>
+<span id="cb75-21"><a href="abundance.html#cb75-21"></a>            <span class="dt">data =</span> ebird_split<span class="op">$</span>train, </span>
+<span id="cb75-22"><a href="abundance.html#cb75-22"></a>            <span class="dt">family =</span> <span class="st">&quot;tw&quot;</span>,</span>
+<span id="cb75-23"><a href="abundance.html#cb75-23"></a>            <span class="dt">knots =</span> time_knots)</span></code></pre></div>
 </div>
 <div id="abundance-assess" class="section level2">
 <h2><span class="header-section-number">6.5</span> Asssessment</h2>
 <p>Here we assess the predictive performance among the three models. Recall from Section <a href="encounter.html#encounter-rf-assess">4.4.2</a> that this involves making predictions for the test dataset, which wasn’t used to fit the models, then assessing how well these predictions relate to the actual observed counts in the test dataset.</p>
 <p>Care needs to be taken when making predictions from the zero-inflated Poisson model since it has two components: probability of presence and expected count given presence. As a result, the <code>predict()</code> function returns a two column matrix with the count and probability respectively, both on the scale of the link functions. So, we need to back-transform these values, then multiply them to get the expected counts. There may be situations in which you want to summarise these two values in different ways.</p>
-<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="abundance.html#cb77-1"></a>obs_count &lt;-<span class="st"> </span><span class="kw">select</span>(ebird_split<span class="op">$</span>test, <span class="dt">obs =</span> observation_count)</span>
-<span id="cb77-2"><a href="abundance.html#cb77-2"></a></span>
-<span id="cb77-3"><a href="abundance.html#cb77-3"></a><span class="co"># presence probability is on the complimentary log-log scale</span></span>
-<span id="cb77-4"><a href="abundance.html#cb77-4"></a><span class="co"># we can get the inverse link function with</span></span>
-<span id="cb77-5"><a href="abundance.html#cb77-5"></a>inv_link &lt;-<span class="st"> </span><span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;cloglog&quot;</span>)<span class="op">$</span>linkinv</span>
-<span id="cb77-6"><a href="abundance.html#cb77-6"></a><span class="co"># combine ziplss presence and count predictions</span></span>
-<span id="cb77-7"><a href="abundance.html#cb77-7"></a>m_ziplss_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(m_ziplss, ebird_split<span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;link&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb77-8"><a href="abundance.html#cb77-8"></a><span class="st">  </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span></span>
-<span id="cb77-9"><a href="abundance.html#cb77-9"></a><span class="st">  </span><span class="kw">transmute</span>(<span class="dt">family =</span> <span class="st">&quot;Zero-inflated Poisson&quot;</span>,</span>
-<span id="cb77-10"><a href="abundance.html#cb77-10"></a>            <span class="dt">pred =</span> <span class="kw">inv_link</span>(V2) <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(V1)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb77-11"><a href="abundance.html#cb77-11"></a><span class="st">  </span><span class="kw">bind_cols</span>(obs_count)</span>
-<span id="cb77-12"><a href="abundance.html#cb77-12"></a></span>
-<span id="cb77-13"><a href="abundance.html#cb77-13"></a>m_nb_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(m_nb, ebird_split<span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb77-14"><a href="abundance.html#cb77-14"></a><span class="st">  </span><span class="kw">tibble</span>(<span class="dt">family =</span> <span class="st">&quot;Negative Binomial&quot;</span>, <span class="dt">pred =</span> .) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb77-15"><a href="abundance.html#cb77-15"></a><span class="st">  </span><span class="kw">bind_cols</span>(obs_count)</span>
-<span id="cb77-16"><a href="abundance.html#cb77-16"></a></span>
-<span id="cb77-17"><a href="abundance.html#cb77-17"></a>m_tw_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(m_tw, ebird_split<span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb77-18"><a href="abundance.html#cb77-18"></a><span class="st">  </span><span class="kw">tibble</span>(<span class="dt">family =</span> <span class="st">&quot;Tweedie&quot;</span>, <span class="dt">pred =</span> .) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb77-19"><a href="abundance.html#cb77-19"></a><span class="st">  </span><span class="kw">bind_cols</span>(obs_count)</span>
-<span id="cb77-20"><a href="abundance.html#cb77-20"></a></span>
-<span id="cb77-21"><a href="abundance.html#cb77-21"></a><span class="co"># combine predictions from all three models</span></span>
-<span id="cb77-22"><a href="abundance.html#cb77-22"></a>test_pred &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(m_ziplss_pred, m_nb_pred, m_tw_pred) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb77-23"><a href="abundance.html#cb77-23"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">family =</span> <span class="kw">as_factor</span>(family))</span></code></pre></div>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="abundance.html#cb76-1"></a>obs_count &lt;-<span class="st"> </span><span class="kw">select</span>(ebird_split<span class="op">$</span>test, <span class="dt">obs =</span> observation_count)</span>
+<span id="cb76-2"><a href="abundance.html#cb76-2"></a></span>
+<span id="cb76-3"><a href="abundance.html#cb76-3"></a><span class="co"># presence probability is on the complimentary log-log scale</span></span>
+<span id="cb76-4"><a href="abundance.html#cb76-4"></a><span class="co"># we can get the inverse link function with</span></span>
+<span id="cb76-5"><a href="abundance.html#cb76-5"></a>inv_link &lt;-<span class="st"> </span><span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;cloglog&quot;</span>)<span class="op">$</span>linkinv</span>
+<span id="cb76-6"><a href="abundance.html#cb76-6"></a><span class="co"># combine ziplss presence and count predictions</span></span>
+<span id="cb76-7"><a href="abundance.html#cb76-7"></a>m_ziplss_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(m_ziplss, ebird_split<span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;link&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb76-8"><a href="abundance.html#cb76-8"></a><span class="st">  </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span></span>
+<span id="cb76-9"><a href="abundance.html#cb76-9"></a><span class="st">  </span><span class="kw">transmute</span>(<span class="dt">family =</span> <span class="st">&quot;Zero-inflated Poisson&quot;</span>,</span>
+<span id="cb76-10"><a href="abundance.html#cb76-10"></a>            <span class="dt">pred =</span> <span class="kw">inv_link</span>(V2) <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(V1)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb76-11"><a href="abundance.html#cb76-11"></a><span class="st">  </span><span class="kw">bind_cols</span>(obs_count)</span>
+<span id="cb76-12"><a href="abundance.html#cb76-12"></a></span>
+<span id="cb76-13"><a href="abundance.html#cb76-13"></a>m_nb_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(m_nb, ebird_split<span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb76-14"><a href="abundance.html#cb76-14"></a><span class="st">  </span><span class="kw">tibble</span>(<span class="dt">family =</span> <span class="st">&quot;Negative Binomial&quot;</span>, <span class="dt">pred =</span> .) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb76-15"><a href="abundance.html#cb76-15"></a><span class="st">  </span><span class="kw">bind_cols</span>(obs_count)</span>
+<span id="cb76-16"><a href="abundance.html#cb76-16"></a></span>
+<span id="cb76-17"><a href="abundance.html#cb76-17"></a>m_tw_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(m_tw, ebird_split<span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb76-18"><a href="abundance.html#cb76-18"></a><span class="st">  </span><span class="kw">tibble</span>(<span class="dt">family =</span> <span class="st">&quot;Tweedie&quot;</span>, <span class="dt">pred =</span> .) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb76-19"><a href="abundance.html#cb76-19"></a><span class="st">  </span><span class="kw">bind_cols</span>(obs_count)</span>
+<span id="cb76-20"><a href="abundance.html#cb76-20"></a></span>
+<span id="cb76-21"><a href="abundance.html#cb76-21"></a><span class="co"># combine predictions from all three models</span></span>
+<span id="cb76-22"><a href="abundance.html#cb76-22"></a>test_pred &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(m_ziplss_pred, m_nb_pred, m_tw_pred) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb76-23"><a href="abundance.html#cb76-23"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">family =</span> <span class="kw">as_factor</span>(family))</span></code></pre></div>
 <div id="abundance-assess-rank" class="section level3">
 <h3><span class="header-section-number">6.5.1</span> Predictive performance: Ranking</h3>
 <p>Assessing the fit of the models depends considerably on the goals of the model and hence on the most important aspects of the model fit for the intended use. For our motivating use-case, estimating a map of relative abundance for the purpose of identifying areas with higher or lower abundance, we will evaluate the models based on <a href="https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient">Spearman’s Rank Correlation</a>. This will assess how well the model estimated the ranking of the sites from highest to lowest abundance.</p>
-<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="abundance.html#cb78-1"></a><span class="co"># spearman’s rank correlation</span></span>
-<span id="cb78-2"><a href="abundance.html#cb78-2"></a>test_pred <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb78-3"><a href="abundance.html#cb78-3"></a><span class="st">  </span><span class="kw">group_by</span>(family) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb78-4"><a href="abundance.html#cb78-4"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">rank_cor =</span> <span class="kw">cor.test</span>(obs, pred, </span>
-<span id="cb78-5"><a href="abundance.html#cb78-5"></a>                                <span class="dt">method =</span> <span class="st">&quot;spearman&quot;</span>, </span>
-<span id="cb78-6"><a href="abundance.html#cb78-6"></a>                                <span class="dt">exact =</span> <span class="ot">FALSE</span>)<span class="op">$</span>estimate) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb78-7"><a href="abundance.html#cb78-7"></a><span class="st">  </span><span class="kw">ungroup</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="abundance.html#cb77-1"></a><span class="co"># spearman’s rank correlation</span></span>
+<span id="cb77-2"><a href="abundance.html#cb77-2"></a>test_pred <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb77-3"><a href="abundance.html#cb77-3"></a><span class="st">  </span><span class="kw">group_by</span>(family) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb77-4"><a href="abundance.html#cb77-4"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">rank_cor =</span> <span class="kw">cor.test</span>(obs, pred, </span>
+<span id="cb77-5"><a href="abundance.html#cb77-5"></a>                                <span class="dt">method =</span> <span class="st">&quot;spearman&quot;</span>, </span>
+<span id="cb77-6"><a href="abundance.html#cb77-6"></a>                                <span class="dt">exact =</span> <span class="ot">FALSE</span>)<span class="op">$</span>estimate) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb77-7"><a href="abundance.html#cb77-7"></a><span class="st">  </span><span class="kw">ungroup</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -514,36 +514,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3><span class="header-section-number">6.5.2</span> Predictive performance: Magnitude</h3>
 <p>For other applications, it may also be important to generate accurate estimates of the magnitude of the relative abundance. For example, when identifying migration hot-spots it may be important to estimate high counts accurately to distinguish between multiple stop over sites. Or, if the goal is to generate an index of the total population size, it may be more important to generate accurate estimates of small to medium counts, and place less emphasis on the relatively rare high counts.</p>
 <p>We begin the assessment of the quality of the magnitude of abundance estimates by looking at a plot of predicted and observerved counts from the test set. For illustrative purposes, lets assume for our situation that underestimated abundances are more problematic than overestimated abundances. We’ll highlight in red on these plots the regions where the predictions are underestimated by more than an order of magnitude. We’ll also overlay the line <span class="math inline">\(y = x\)</span>, which separates overestimates (above the line) from underestimates (below the line), and a blue smoothed fit showing the general trend through all the data.</p>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="abundance.html#cb79-1"></a><span class="co"># plot predicted vs. observed</span></span>
-<span id="cb79-2"><a href="abundance.html#cb79-2"></a>ticks &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>, <span class="dv">1000</span>)</span>
-<span id="cb79-3"><a href="abundance.html#cb79-3"></a>mx &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">max</span>(test_pred<span class="op">$</span>obs))</span>
-<span id="cb79-4"><a href="abundance.html#cb79-4"></a><span class="kw">ggplot</span>(test_pred) <span class="op">+</span></span>
-<span id="cb79-5"><a href="abundance.html#cb79-5"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">log10</span>(obs <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), </span>
-<span id="cb79-6"><a href="abundance.html#cb79-6"></a>      <span class="dt">y =</span> <span class="kw">log10</span>(pred <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)) <span class="op">+</span></span>
-<span id="cb79-7"><a href="abundance.html#cb79-7"></a><span class="st">  </span><span class="kw">geom_jitter</span>(<span class="dt">alpha =</span> <span class="fl">0.2</span>, <span class="dt">height =</span> <span class="dv">0</span>) <span class="op">+</span></span>
-<span id="cb79-8"><a href="abundance.html#cb79-8"></a><span class="st">  </span><span class="co"># y = x line</span></span>
-<span id="cb79-9"><a href="abundance.html#cb79-9"></a><span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">slope =</span> <span class="dv">1</span>, <span class="dt">intercept =</span> <span class="dv">0</span>, <span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span></span>
-<span id="cb79-10"><a href="abundance.html#cb79-10"></a><span class="st">  </span><span class="co"># area where counts off by a factor of 10</span></span>
-<span id="cb79-11"><a href="abundance.html#cb79-11"></a><span class="st">  </span><span class="kw">geom_area</span>(<span class="dt">data =</span> <span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">log10</span>(<span class="kw">seq</span>(<span class="dv">0</span>, mx <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), </span>
-<span id="cb79-12"><a href="abundance.html#cb79-12"></a>                          <span class="dt">y =</span> <span class="kw">log10</span>(<span class="kw">seq</span>(<span class="dv">0</span>, mx <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span><span class="st"> </span><span class="dv">10</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)),</span>
-<span id="cb79-13"><a href="abundance.html#cb79-13"></a>            <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y),</span>
-<span id="cb79-14"><a href="abundance.html#cb79-14"></a>            <span class="dt">fill =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.2</span>) <span class="op">+</span></span>
-<span id="cb79-15"><a href="abundance.html#cb79-15"></a><span class="st">  </span><span class="co"># loess fit</span></span>
-<span id="cb79-16"><a href="abundance.html#cb79-16"></a><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;loess&quot;</span>, </span>
-<span id="cb79-17"><a href="abundance.html#cb79-17"></a>              <span class="dt">method.args =</span> <span class="kw">list</span>(<span class="dt">span =</span> <span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">3</span>, <span class="dt">degree =</span> <span class="dv">1</span>)) <span class="op">+</span></span>
-<span id="cb79-18"><a href="abundance.html#cb79-18"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">log10</span>(ticks <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), <span class="dt">labels =</span> ticks) <span class="op">+</span></span>
-<span id="cb79-19"><a href="abundance.html#cb79-19"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks =</span> <span class="kw">log10</span>(ticks <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), <span class="dt">labels =</span> ticks) <span class="op">+</span></span>
-<span id="cb79-20"><a href="abundance.html#cb79-20"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Observed count&quot;</span>,</span>
-<span id="cb79-21"><a href="abundance.html#cb79-21"></a>       <span class="dt">y =</span> <span class="st">&quot;Predicted count&quot;</span>) <span class="op">+</span></span>
-<span id="cb79-22"><a href="abundance.html#cb79-22"></a><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>family, <span class="dt">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="abundance.html#cb78-1"></a><span class="co"># plot predicted vs. observed</span></span>
+<span id="cb78-2"><a href="abundance.html#cb78-2"></a>ticks &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>, <span class="dv">1000</span>)</span>
+<span id="cb78-3"><a href="abundance.html#cb78-3"></a>mx &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">max</span>(test_pred<span class="op">$</span>obs))</span>
+<span id="cb78-4"><a href="abundance.html#cb78-4"></a><span class="kw">ggplot</span>(test_pred) <span class="op">+</span></span>
+<span id="cb78-5"><a href="abundance.html#cb78-5"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">log10</span>(obs <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), </span>
+<span id="cb78-6"><a href="abundance.html#cb78-6"></a>      <span class="dt">y =</span> <span class="kw">log10</span>(pred <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)) <span class="op">+</span></span>
+<span id="cb78-7"><a href="abundance.html#cb78-7"></a><span class="st">  </span><span class="kw">geom_jitter</span>(<span class="dt">alpha =</span> <span class="fl">0.2</span>, <span class="dt">height =</span> <span class="dv">0</span>) <span class="op">+</span></span>
+<span id="cb78-8"><a href="abundance.html#cb78-8"></a><span class="st">  </span><span class="co"># y = x line</span></span>
+<span id="cb78-9"><a href="abundance.html#cb78-9"></a><span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">slope =</span> <span class="dv">1</span>, <span class="dt">intercept =</span> <span class="dv">0</span>, <span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span></span>
+<span id="cb78-10"><a href="abundance.html#cb78-10"></a><span class="st">  </span><span class="co"># area where counts off by a factor of 10</span></span>
+<span id="cb78-11"><a href="abundance.html#cb78-11"></a><span class="st">  </span><span class="kw">geom_area</span>(<span class="dt">data =</span> <span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">log10</span>(<span class="kw">seq</span>(<span class="dv">0</span>, mx <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), </span>
+<span id="cb78-12"><a href="abundance.html#cb78-12"></a>                          <span class="dt">y =</span> <span class="kw">log10</span>(<span class="kw">seq</span>(<span class="dv">0</span>, mx <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span><span class="st"> </span><span class="dv">10</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)),</span>
+<span id="cb78-13"><a href="abundance.html#cb78-13"></a>            <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y),</span>
+<span id="cb78-14"><a href="abundance.html#cb78-14"></a>            <span class="dt">fill =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.2</span>) <span class="op">+</span></span>
+<span id="cb78-15"><a href="abundance.html#cb78-15"></a><span class="st">  </span><span class="co"># loess fit</span></span>
+<span id="cb78-16"><a href="abundance.html#cb78-16"></a><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;loess&quot;</span>, </span>
+<span id="cb78-17"><a href="abundance.html#cb78-17"></a>              <span class="dt">method.args =</span> <span class="kw">list</span>(<span class="dt">span =</span> <span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">3</span>, <span class="dt">degree =</span> <span class="dv">1</span>)) <span class="op">+</span></span>
+<span id="cb78-18"><a href="abundance.html#cb78-18"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">log10</span>(ticks <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), <span class="dt">labels =</span> ticks) <span class="op">+</span></span>
+<span id="cb78-19"><a href="abundance.html#cb78-19"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks =</span> <span class="kw">log10</span>(ticks <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), <span class="dt">labels =</span> ticks) <span class="op">+</span></span>
+<span id="cb78-20"><a href="abundance.html#cb78-20"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Observed count&quot;</span>,</span>
+<span id="cb78-21"><a href="abundance.html#cb78-21"></a>       <span class="dt">y =</span> <span class="st">&quot;Predicted count&quot;</span>) <span class="op">+</span></span>
+<span id="cb78-22"><a href="abundance.html#cb78-22"></a><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>family, <span class="dt">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/abundance-assess-mag-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>Overall, we see that most of the counts are underestimated, since most points and the blue line are below the gray <span class="math inline">\(y = x\)</span> line.</p>
 <p>We also see that Wood Thrush was not observed on most of these checklists. Although most predictions for these checklists are also zero (since the blue line reaches 0 predicted abundance at 0 actual abundance), there are still many cases with predicted Wood Thrush occurrence where none were observed. It’s hard to say how much of problem this kind of “overestimation” is since detection is known to be imperfect.</p>
 <p>Finally, we see that there are also a large number of observations that are underestimated by an order of magnitude or more. How many of these cases are there?</p>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="abundance.html#cb80-1"></a>test_pred <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb80-2"><a href="abundance.html#cb80-2"></a><span class="st">  </span><span class="kw">group_by</span>(family) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb80-3"><a href="abundance.html#cb80-3"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">n =</span> <span class="kw">sum</span>(obs <span class="op">/</span><span class="st"> </span>pred <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>),</span>
-<span id="cb80-4"><a href="abundance.html#cb80-4"></a>            <span class="dt">pct =</span> <span class="kw">mean</span>(obs <span class="op">/</span><span class="st"> </span>pred <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="abundance.html#cb79-1"></a>test_pred <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb79-2"><a href="abundance.html#cb79-2"></a><span class="st">  </span><span class="kw">group_by</span>(family) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb79-3"><a href="abundance.html#cb79-3"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">n =</span> <span class="kw">sum</span>(obs <span class="op">/</span><span class="st"> </span>pred <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>),</span>
+<span id="cb79-4"><a href="abundance.html#cb79-4"></a>            <span class="dt">pct =</span> <span class="kw">mean</span>(obs <span class="op">/</span><span class="st"> </span>pred <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>))</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -572,11 +572,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </table>
 <p>Based on this metric, it appears that the zero-inflated Poisson model is performing worst in terms of these “large” underestimates.</p>
 <p>Finally, to get an overall sense of the quality of the magnitude of the predicted counts we will compute the test set <a href="https://en.wikipedia.org/wiki/Average_absolute_deviation">mean absolute deviation (MAD)</a>, a robust statistic that describes the average deviation between observation and prediction. Note, we are not using the mean squared error because it will place more emphasis on errors when counts are high.</p>
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="abundance.html#cb81-1"></a><span class="co"># mean absolute deviation</span></span>
-<span id="cb81-2"><a href="abundance.html#cb81-2"></a>test_pred <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb81-3"><a href="abundance.html#cb81-3"></a><span class="st">  </span><span class="kw">group_by</span>(family) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb81-4"><a href="abundance.html#cb81-4"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">mad =</span> <span class="kw">mean</span>(<span class="kw">abs</span>(obs <span class="op">-</span><span class="st"> </span>pred), <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb81-5"><a href="abundance.html#cb81-5"></a><span class="st">  </span><span class="kw">ungroup</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="abundance.html#cb80-1"></a><span class="co"># mean absolute deviation</span></span>
+<span id="cb80-2"><a href="abundance.html#cb80-2"></a>test_pred <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb80-3"><a href="abundance.html#cb80-3"></a><span class="st">  </span><span class="kw">group_by</span>(family) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb80-4"><a href="abundance.html#cb80-4"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">mad =</span> <span class="kw">mean</span>(<span class="kw">abs</span>(obs <span class="op">-</span><span class="st"> </span>pred), <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb80-5"><a href="abundance.html#cb80-5"></a><span class="st">  </span><span class="kw">ungroup</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -606,209 +606,209 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3><span class="header-section-number">6.5.3</span> Assessing covariate effects</h3>
 <p>We recommend also assessing the fitted covariate effects to see whether they show biologically plausible relationships between covariates and species counts. Splines can sometimes overfit, notably when sample sizes are very large, and in this cases it is appropriate to reduce the degrees of freedom.</p>
 <p>Calling <code>plot()</code> on the fitted GAM objects produces plots of the smooth functions for each of the separate predictors, which gives us a sense of the effect of each predictor on the count response. Unfortunately, for large numbers of predictors, plot() will produce a cramped, unreadable plot. Instead, we write a function to capture the data behind the plotting function, then plot them using <code>ggplot2</code> instead.</p>
-<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="abundance.html#cb82-1"></a><span class="co"># ggplot function</span></span>
-<span id="cb82-2"><a href="abundance.html#cb82-2"></a>plot_gam &lt;-<span class="st"> </span><span class="cf">function</span>(m, <span class="dt">title =</span> <span class="ot">NULL</span>, <span class="dt">ziplss =</span> <span class="kw">c</span>(<span class="st">&quot;presence&quot;</span>, <span class="st">&quot;abundance&quot;</span>)) {</span>
-<span id="cb82-3"><a href="abundance.html#cb82-3"></a>  <span class="co"># capture plot</span></span>
-<span id="cb82-4"><a href="abundance.html#cb82-4"></a>  tmp &lt;-<span class="st"> </span><span class="kw">tempfile</span>()</span>
-<span id="cb82-5"><a href="abundance.html#cb82-5"></a>  <span class="kw">png</span>(tmp)</span>
-<span id="cb82-6"><a href="abundance.html#cb82-6"></a>  p &lt;-<span class="st"> </span><span class="kw">plot</span>(m, <span class="dt">pages =</span> <span class="dv">1</span>)</span>
-<span id="cb82-7"><a href="abundance.html#cb82-7"></a>  <span class="kw">dev.off</span>()</span>
-<span id="cb82-8"><a href="abundance.html#cb82-8"></a>  <span class="kw">unlink</span>(tmp)</span>
-<span id="cb82-9"><a href="abundance.html#cb82-9"></a></span>
-<span id="cb82-10"><a href="abundance.html#cb82-10"></a>  <span class="co"># drop addition models in ziplss</span></span>
-<span id="cb82-11"><a href="abundance.html#cb82-11"></a>  <span class="cf">if</span> (m<span class="op">$</span>family<span class="op">$</span>family <span class="op">==</span><span class="st"> &quot;ziplss&quot;</span>) {</span>
-<span id="cb82-12"><a href="abundance.html#cb82-12"></a>    is_presence &lt;-<span class="st"> </span><span class="kw">map_lgl</span>(p, <span class="op">~</span><span class="st"> </span><span class="kw">str_detect</span>(.<span class="op">$</span>ylab, <span class="st">&quot;^s</span><span class="ch">\\</span><span class="st">.1&quot;</span>))</span>
-<span id="cb82-13"><a href="abundance.html#cb82-13"></a>    <span class="cf">if</span> (ziplss <span class="op">==</span><span class="st"> &quot;presence&quot;</span>) {</span>
-<span id="cb82-14"><a href="abundance.html#cb82-14"></a>      p &lt;-<span class="st"> </span>p[is_presence]  </span>
-<span id="cb82-15"><a href="abundance.html#cb82-15"></a>    } <span class="cf">else</span> {</span>
-<span id="cb82-16"><a href="abundance.html#cb82-16"></a>      p &lt;-<span class="st"> </span>p[<span class="op">!</span>is_presence]</span>
-<span id="cb82-17"><a href="abundance.html#cb82-17"></a>    }</span>
-<span id="cb82-18"><a href="abundance.html#cb82-18"></a>  }</span>
-<span id="cb82-19"><a href="abundance.html#cb82-19"></a>  </span>
-<span id="cb82-20"><a href="abundance.html#cb82-20"></a>  <span class="co"># extract data</span></span>
-<span id="cb82-21"><a href="abundance.html#cb82-21"></a>  p_df &lt;-<span class="st"> </span><span class="kw">map_df</span>(p, <span class="op">~</span><span class="st"> </span><span class="kw">tibble</span>(<span class="dt">cov =</span> <span class="kw">rep</span>(.<span class="op">$</span>xlab, <span class="kw">length</span>(.<span class="op">$</span>x)),</span>
-<span id="cb82-22"><a href="abundance.html#cb82-22"></a>                             <span class="dt">x =</span> .<span class="op">$</span>x, <span class="dt">fit =</span> .<span class="op">$</span>fit, <span class="dt">se =</span> .<span class="op">$</span>se))</span>
-<span id="cb82-23"><a href="abundance.html#cb82-23"></a></span>
-<span id="cb82-24"><a href="abundance.html#cb82-24"></a>  <span class="co"># plot</span></span>
-<span id="cb82-25"><a href="abundance.html#cb82-25"></a>  g &lt;-<span class="st"> </span><span class="kw">ggplot</span>(p_df) <span class="op">+</span></span>
-<span id="cb82-26"><a href="abundance.html#cb82-26"></a><span class="st">    </span><span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> fit,</span>
-<span id="cb82-27"><a href="abundance.html#cb82-27"></a>        <span class="dt">ymin =</span> fit <span class="op">-</span><span class="st"> </span>se, <span class="dt">ymax =</span> fit <span class="op">+</span><span class="st"> </span>se) <span class="op">+</span></span>
-<span id="cb82-28"><a href="abundance.html#cb82-28"></a><span class="st">    </span><span class="kw">geom_ribbon</span>(<span class="dt">fill =</span> <span class="st">&quot;grey80&quot;</span>) <span class="op">+</span></span>
-<span id="cb82-29"><a href="abundance.html#cb82-29"></a><span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>) <span class="op">+</span></span>
-<span id="cb82-30"><a href="abundance.html#cb82-30"></a><span class="st">    </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>cov, <span class="dt">scales =</span> <span class="st">&quot;free_x&quot;</span>) <span class="op">+</span></span>
-<span id="cb82-31"><a href="abundance.html#cb82-31"></a><span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="ot">NULL</span>,</span>
-<span id="cb82-32"><a href="abundance.html#cb82-32"></a>         <span class="dt">y =</span> <span class="st">&quot;Smooth function&quot;</span>,</span>
-<span id="cb82-33"><a href="abundance.html#cb82-33"></a>         <span class="dt">title =</span> title)</span>
-<span id="cb82-34"><a href="abundance.html#cb82-34"></a>  <span class="kw">print</span>(g)</span>
-<span id="cb82-35"><a href="abundance.html#cb82-35"></a>  <span class="kw">invisible</span>(p_df)</span>
-<span id="cb82-36"><a href="abundance.html#cb82-36"></a>}</span>
-<span id="cb82-37"><a href="abundance.html#cb82-37"></a></span>
-<span id="cb82-38"><a href="abundance.html#cb82-38"></a><span class="kw">plot_gam</span>(m_nb, <span class="dt">title =</span> <span class="st">&quot;Negative Binomial GAM&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="abundance.html#cb81-1"></a><span class="co"># ggplot function</span></span>
+<span id="cb81-2"><a href="abundance.html#cb81-2"></a>plot_gam &lt;-<span class="st"> </span><span class="cf">function</span>(m, <span class="dt">title =</span> <span class="ot">NULL</span>, <span class="dt">ziplss =</span> <span class="kw">c</span>(<span class="st">&quot;presence&quot;</span>, <span class="st">&quot;abundance&quot;</span>)) {</span>
+<span id="cb81-3"><a href="abundance.html#cb81-3"></a>  <span class="co"># capture plot</span></span>
+<span id="cb81-4"><a href="abundance.html#cb81-4"></a>  tmp &lt;-<span class="st"> </span><span class="kw">tempfile</span>()</span>
+<span id="cb81-5"><a href="abundance.html#cb81-5"></a>  <span class="kw">png</span>(tmp)</span>
+<span id="cb81-6"><a href="abundance.html#cb81-6"></a>  p &lt;-<span class="st"> </span><span class="kw">plot</span>(m, <span class="dt">pages =</span> <span class="dv">1</span>)</span>
+<span id="cb81-7"><a href="abundance.html#cb81-7"></a>  <span class="kw">dev.off</span>()</span>
+<span id="cb81-8"><a href="abundance.html#cb81-8"></a>  <span class="kw">unlink</span>(tmp)</span>
+<span id="cb81-9"><a href="abundance.html#cb81-9"></a></span>
+<span id="cb81-10"><a href="abundance.html#cb81-10"></a>  <span class="co"># drop addition models in ziplss</span></span>
+<span id="cb81-11"><a href="abundance.html#cb81-11"></a>  <span class="cf">if</span> (m<span class="op">$</span>family<span class="op">$</span>family <span class="op">==</span><span class="st"> &quot;ziplss&quot;</span>) {</span>
+<span id="cb81-12"><a href="abundance.html#cb81-12"></a>    is_presence &lt;-<span class="st"> </span><span class="kw">map_lgl</span>(p, <span class="op">~</span><span class="st"> </span><span class="kw">str_detect</span>(.<span class="op">$</span>ylab, <span class="st">&quot;^s</span><span class="ch">\\</span><span class="st">.1&quot;</span>))</span>
+<span id="cb81-13"><a href="abundance.html#cb81-13"></a>    <span class="cf">if</span> (ziplss <span class="op">==</span><span class="st"> &quot;presence&quot;</span>) {</span>
+<span id="cb81-14"><a href="abundance.html#cb81-14"></a>      p &lt;-<span class="st"> </span>p[is_presence]  </span>
+<span id="cb81-15"><a href="abundance.html#cb81-15"></a>    } <span class="cf">else</span> {</span>
+<span id="cb81-16"><a href="abundance.html#cb81-16"></a>      p &lt;-<span class="st"> </span>p[<span class="op">!</span>is_presence]</span>
+<span id="cb81-17"><a href="abundance.html#cb81-17"></a>    }</span>
+<span id="cb81-18"><a href="abundance.html#cb81-18"></a>  }</span>
+<span id="cb81-19"><a href="abundance.html#cb81-19"></a>  </span>
+<span id="cb81-20"><a href="abundance.html#cb81-20"></a>  <span class="co"># extract data</span></span>
+<span id="cb81-21"><a href="abundance.html#cb81-21"></a>  p_df &lt;-<span class="st"> </span><span class="kw">map_df</span>(p, <span class="op">~</span><span class="st"> </span><span class="kw">tibble</span>(<span class="dt">cov =</span> <span class="kw">rep</span>(.<span class="op">$</span>xlab, <span class="kw">length</span>(.<span class="op">$</span>x)),</span>
+<span id="cb81-22"><a href="abundance.html#cb81-22"></a>                             <span class="dt">x =</span> .<span class="op">$</span>x, <span class="dt">fit =</span> .<span class="op">$</span>fit, <span class="dt">se =</span> .<span class="op">$</span>se))</span>
+<span id="cb81-23"><a href="abundance.html#cb81-23"></a></span>
+<span id="cb81-24"><a href="abundance.html#cb81-24"></a>  <span class="co"># plot</span></span>
+<span id="cb81-25"><a href="abundance.html#cb81-25"></a>  g &lt;-<span class="st"> </span><span class="kw">ggplot</span>(p_df) <span class="op">+</span></span>
+<span id="cb81-26"><a href="abundance.html#cb81-26"></a><span class="st">    </span><span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> fit,</span>
+<span id="cb81-27"><a href="abundance.html#cb81-27"></a>        <span class="dt">ymin =</span> fit <span class="op">-</span><span class="st"> </span>se, <span class="dt">ymax =</span> fit <span class="op">+</span><span class="st"> </span>se) <span class="op">+</span></span>
+<span id="cb81-28"><a href="abundance.html#cb81-28"></a><span class="st">    </span><span class="kw">geom_ribbon</span>(<span class="dt">fill =</span> <span class="st">&quot;grey80&quot;</span>) <span class="op">+</span></span>
+<span id="cb81-29"><a href="abundance.html#cb81-29"></a><span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>) <span class="op">+</span></span>
+<span id="cb81-30"><a href="abundance.html#cb81-30"></a><span class="st">    </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>cov, <span class="dt">scales =</span> <span class="st">&quot;free_x&quot;</span>) <span class="op">+</span></span>
+<span id="cb81-31"><a href="abundance.html#cb81-31"></a><span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="ot">NULL</span>,</span>
+<span id="cb81-32"><a href="abundance.html#cb81-32"></a>         <span class="dt">y =</span> <span class="st">&quot;Smooth function&quot;</span>,</span>
+<span id="cb81-33"><a href="abundance.html#cb81-33"></a>         <span class="dt">title =</span> title)</span>
+<span id="cb81-34"><a href="abundance.html#cb81-34"></a>  <span class="kw">print</span>(g)</span>
+<span id="cb81-35"><a href="abundance.html#cb81-35"></a>  <span class="kw">invisible</span>(p_df)</span>
+<span id="cb81-36"><a href="abundance.html#cb81-36"></a>}</span>
+<span id="cb81-37"><a href="abundance.html#cb81-37"></a></span>
+<span id="cb81-38"><a href="abundance.html#cb81-38"></a><span class="kw">plot_gam</span>(m_nb, <span class="dt">title =</span> <span class="st">&quot;Negative Binomial GAM&quot;</span>)</span></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/abundance-model-cov-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>If these relationships seem too wiggly to be biologically realistic, you should reduce the degrees of freedom for the smooth until a biologically feasible relationship is achieved. Only use these graphs to assess the wiggliness of the predicted effects, as the values plotted on the y-axes of these graphs are standardized values. In this case, the relationships appear to be reasonable for the negative binomial model, so we will use it for prediction below.</p>
-<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="abundance.html#cb83-1"></a><span class="co"># set negative binomial model to be used for predictions</span></span>
-<span id="cb83-2"><a href="abundance.html#cb83-2"></a>pred_model &lt;-<span class="st"> </span>m_nb</span></code></pre></div>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="abundance.html#cb82-1"></a><span class="co"># set negative binomial model to be used for predictions</span></span>
+<span id="cb82-2"><a href="abundance.html#cb82-2"></a>pred_model &lt;-<span class="st"> </span>m_nb</span></code></pre></div>
 </div>
 </div>
 <div id="abundance-predict" class="section level2">
 <h2><span class="header-section-number">6.6</span> Prediction</h2>
 <p>Now that we’ve selected the negative binomial GAM, we can use this model to map Wood Thrush relative abundance in BCR 27! In Section <a href="covariates.html#covariates-prediction">3.4</a>, we created a prediction surface consisting of the PLAND habitat covariates summarized on a regular grid of points across BCR 27. In this section, we’ll make predictions of relative abundance at these points. However, first we need to bring effort variables into this prediction surface. We’ll use a <strong>standard eBird checklist</strong>: a 1 km, 1 hour traveling count at the peak time of day for detecting this species. To determine this peak time, we’ll predict abundance and its 95% confidence limits at a series of times throughout the day, then pick the time at which the lower confidence limit is at its maximum. By using the lower confidence limits, we select a time that we are confident has high detectability and thus avoid potentially unrealistic predictions from times of day for which few or no data existed.</p>
-<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="abundance.html#cb84-1"></a><span class="co"># create a dataframe of covariates with a range of start times</span></span>
-<span id="cb84-2"><a href="abundance.html#cb84-2"></a>seq_tod &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">length.out =</span> <span class="dv">300</span>)</span>
-<span id="cb84-3"><a href="abundance.html#cb84-3"></a>tod_df &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb84-4"><a href="abundance.html#cb84-4"></a><span class="st">  </span><span class="co"># find average pland habitat covariates</span></span>
-<span id="cb84-5"><a href="abundance.html#cb84-5"></a><span class="st">  </span><span class="kw">select</span>(<span class="kw">starts_with</span>(<span class="st">&quot;pland&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb84-6"><a href="abundance.html#cb84-6"></a><span class="st">  </span><span class="kw">summarize_all</span>(mean, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb84-7"><a href="abundance.html#cb84-7"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb84-8"><a href="abundance.html#cb84-8"></a><span class="st">  </span><span class="co"># use standard checklist</span></span>
-<span id="cb84-9"><a href="abundance.html#cb84-9"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">day_of_year =</span> <span class="kw">yday</span>(<span class="kw">ymd</span>(<span class="kw">str_glue</span>(<span class="st">&quot;{max_lc_year}-06-15&quot;</span>))),</span>
-<span id="cb84-10"><a href="abundance.html#cb84-10"></a>         <span class="dt">duration_minutes =</span> <span class="dv">60</span>,</span>
-<span id="cb84-11"><a href="abundance.html#cb84-11"></a>         <span class="dt">effort_distance_km =</span> <span class="dv">1</span>,</span>
-<span id="cb84-12"><a href="abundance.html#cb84-12"></a>         <span class="dt">number_observers =</span> <span class="dv">1</span>,</span>
-<span id="cb84-13"><a href="abundance.html#cb84-13"></a>         <span class="dt">protocol_type =</span> <span class="st">&quot;Traveling&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb84-14"><a href="abundance.html#cb84-14"></a><span class="st">  </span><span class="kw">cbind</span>(<span class="dt">time_observations_started =</span> seq_tod)</span>
-<span id="cb84-15"><a href="abundance.html#cb84-15"></a></span>
-<span id="cb84-16"><a href="abundance.html#cb84-16"></a><span class="co"># predict at different start times</span></span>
-<span id="cb84-17"><a href="abundance.html#cb84-17"></a>pred_tod &lt;-<span class="st"> </span><span class="kw">predict</span>(pred_model, <span class="dt">newdata =</span> tod_df, </span>
-<span id="cb84-18"><a href="abundance.html#cb84-18"></a>                    <span class="dt">type =</span> <span class="st">&quot;link&quot;</span>, </span>
-<span id="cb84-19"><a href="abundance.html#cb84-19"></a>                    <span class="dt">se.fit =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb84-20"><a href="abundance.html#cb84-20"></a><span class="st">  </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb84-21"><a href="abundance.html#cb84-21"></a><span class="st">  </span><span class="co"># calculate backtransformed confidence limits</span></span>
-<span id="cb84-22"><a href="abundance.html#cb84-22"></a><span class="st">  </span><span class="kw">transmute</span>(<span class="dt">time_observations_started =</span> seq_tod,</span>
-<span id="cb84-23"><a href="abundance.html#cb84-23"></a>            <span class="dt">pred =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit),</span>
-<span id="cb84-24"><a href="abundance.html#cb84-24"></a>            <span class="dt">pred_lcl =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se.fit),</span>
-<span id="cb84-25"><a href="abundance.html#cb84-25"></a>            <span class="dt">pred_ucl =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se.fit))</span>
-<span id="cb84-26"><a href="abundance.html#cb84-26"></a></span>
-<span id="cb84-27"><a href="abundance.html#cb84-27"></a><span class="co"># find optimal time of day</span></span>
-<span id="cb84-28"><a href="abundance.html#cb84-28"></a>t_peak &lt;-<span class="st"> </span>pred_tod<span class="op">$</span>time_observations_started[<span class="kw">which.max</span>(pred_tod<span class="op">$</span>pred_lcl)]</span>
-<span id="cb84-29"><a href="abundance.html#cb84-29"></a></span>
-<span id="cb84-30"><a href="abundance.html#cb84-30"></a><span class="co"># plot the partial dependence plot</span></span>
-<span id="cb84-31"><a href="abundance.html#cb84-31"></a><span class="kw">ggplot</span>(pred_tod) <span class="op">+</span></span>
-<span id="cb84-32"><a href="abundance.html#cb84-32"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> time_observations_started, <span class="dt">y =</span> pred,</span>
-<span id="cb84-33"><a href="abundance.html#cb84-33"></a>      <span class="dt">ymin =</span> pred_lcl, <span class="dt">ymax =</span> pred_ucl) <span class="op">+</span></span>
-<span id="cb84-34"><a href="abundance.html#cb84-34"></a><span class="st">  </span><span class="kw">geom_ribbon</span>(<span class="dt">fill =</span> <span class="st">&quot;grey80&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span></span>
-<span id="cb84-35"><a href="abundance.html#cb84-35"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></span>
-<span id="cb84-36"><a href="abundance.html#cb84-36"></a><span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> t_peak, <span class="dt">color =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="op">+</span></span>
-<span id="cb84-37"><a href="abundance.html#cb84-37"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Hours since midnight&quot;</span>,</span>
-<span id="cb84-38"><a href="abundance.html#cb84-38"></a>       <span class="dt">y =</span> <span class="st">&quot;Predicted relative abundance&quot;</span>,</span>
-<span id="cb84-39"><a href="abundance.html#cb84-39"></a>       <span class="dt">title =</span> <span class="st">&quot;Effect of observation start time on Wood Thrush reporting&quot;</span>,</span>
-<span id="cb84-40"><a href="abundance.html#cb84-40"></a>       <span class="dt">subtitle =</span> <span class="st">&quot;Peak detectability shown as dashed blue line&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="abundance.html#cb83-1"></a><span class="co"># create a dataframe of covariates with a range of start times</span></span>
+<span id="cb83-2"><a href="abundance.html#cb83-2"></a>seq_tod &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">length.out =</span> <span class="dv">300</span>)</span>
+<span id="cb83-3"><a href="abundance.html#cb83-3"></a>tod_df &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb83-4"><a href="abundance.html#cb83-4"></a><span class="st">  </span><span class="co"># find average pland habitat covariates</span></span>
+<span id="cb83-5"><a href="abundance.html#cb83-5"></a><span class="st">  </span><span class="kw">select</span>(<span class="kw">starts_with</span>(<span class="st">&quot;pland&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb83-6"><a href="abundance.html#cb83-6"></a><span class="st">  </span><span class="kw">summarize_all</span>(mean, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb83-7"><a href="abundance.html#cb83-7"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb83-8"><a href="abundance.html#cb83-8"></a><span class="st">  </span><span class="co"># use standard checklist</span></span>
+<span id="cb83-9"><a href="abundance.html#cb83-9"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">day_of_year =</span> <span class="kw">yday</span>(<span class="kw">ymd</span>(<span class="kw">str_glue</span>(<span class="st">&quot;{max_lc_year}-06-15&quot;</span>))),</span>
+<span id="cb83-10"><a href="abundance.html#cb83-10"></a>         <span class="dt">duration_minutes =</span> <span class="dv">60</span>,</span>
+<span id="cb83-11"><a href="abundance.html#cb83-11"></a>         <span class="dt">effort_distance_km =</span> <span class="dv">1</span>,</span>
+<span id="cb83-12"><a href="abundance.html#cb83-12"></a>         <span class="dt">number_observers =</span> <span class="dv">1</span>,</span>
+<span id="cb83-13"><a href="abundance.html#cb83-13"></a>         <span class="dt">protocol_type =</span> <span class="st">&quot;Traveling&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb83-14"><a href="abundance.html#cb83-14"></a><span class="st">  </span><span class="kw">cbind</span>(<span class="dt">time_observations_started =</span> seq_tod)</span>
+<span id="cb83-15"><a href="abundance.html#cb83-15"></a></span>
+<span id="cb83-16"><a href="abundance.html#cb83-16"></a><span class="co"># predict at different start times</span></span>
+<span id="cb83-17"><a href="abundance.html#cb83-17"></a>pred_tod &lt;-<span class="st"> </span><span class="kw">predict</span>(pred_model, <span class="dt">newdata =</span> tod_df, </span>
+<span id="cb83-18"><a href="abundance.html#cb83-18"></a>                    <span class="dt">type =</span> <span class="st">&quot;link&quot;</span>, </span>
+<span id="cb83-19"><a href="abundance.html#cb83-19"></a>                    <span class="dt">se.fit =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb83-20"><a href="abundance.html#cb83-20"></a><span class="st">  </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb83-21"><a href="abundance.html#cb83-21"></a><span class="st">  </span><span class="co"># calculate backtransformed confidence limits</span></span>
+<span id="cb83-22"><a href="abundance.html#cb83-22"></a><span class="st">  </span><span class="kw">transmute</span>(<span class="dt">time_observations_started =</span> seq_tod,</span>
+<span id="cb83-23"><a href="abundance.html#cb83-23"></a>            <span class="dt">pred =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit),</span>
+<span id="cb83-24"><a href="abundance.html#cb83-24"></a>            <span class="dt">pred_lcl =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se.fit),</span>
+<span id="cb83-25"><a href="abundance.html#cb83-25"></a>            <span class="dt">pred_ucl =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se.fit))</span>
+<span id="cb83-26"><a href="abundance.html#cb83-26"></a></span>
+<span id="cb83-27"><a href="abundance.html#cb83-27"></a><span class="co"># find optimal time of day</span></span>
+<span id="cb83-28"><a href="abundance.html#cb83-28"></a>t_peak &lt;-<span class="st"> </span>pred_tod<span class="op">$</span>time_observations_started[<span class="kw">which.max</span>(pred_tod<span class="op">$</span>pred_lcl)]</span>
+<span id="cb83-29"><a href="abundance.html#cb83-29"></a></span>
+<span id="cb83-30"><a href="abundance.html#cb83-30"></a><span class="co"># plot the partial dependence plot</span></span>
+<span id="cb83-31"><a href="abundance.html#cb83-31"></a><span class="kw">ggplot</span>(pred_tod) <span class="op">+</span></span>
+<span id="cb83-32"><a href="abundance.html#cb83-32"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> time_observations_started, <span class="dt">y =</span> pred,</span>
+<span id="cb83-33"><a href="abundance.html#cb83-33"></a>      <span class="dt">ymin =</span> pred_lcl, <span class="dt">ymax =</span> pred_ucl) <span class="op">+</span></span>
+<span id="cb83-34"><a href="abundance.html#cb83-34"></a><span class="st">  </span><span class="kw">geom_ribbon</span>(<span class="dt">fill =</span> <span class="st">&quot;grey80&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span></span>
+<span id="cb83-35"><a href="abundance.html#cb83-35"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></span>
+<span id="cb83-36"><a href="abundance.html#cb83-36"></a><span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> t_peak, <span class="dt">color =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="op">+</span></span>
+<span id="cb83-37"><a href="abundance.html#cb83-37"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Hours since midnight&quot;</span>,</span>
+<span id="cb83-38"><a href="abundance.html#cb83-38"></a>       <span class="dt">y =</span> <span class="st">&quot;Predicted relative abundance&quot;</span>,</span>
+<span id="cb83-39"><a href="abundance.html#cb83-39"></a>       <span class="dt">title =</span> <span class="st">&quot;Effect of observation start time on Wood Thrush reporting&quot;</span>,</span>
+<span id="cb83-40"><a href="abundance.html#cb83-40"></a>       <span class="dt">subtitle =</span> <span class="st">&quot;Peak detectability shown as dashed blue line&quot;</span>)</span></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/abundance-predict-peak-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>So, the peak time of day for detecting Wood Thrush is around 5:13 AM. Let’s generate the prediction surface and make predictions at all the points. In addition to relative abundance, we’ll estimate standard error and 95% confidence limits.</p>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="abundance.html#cb85-1"></a><span class="co"># add effort covariates to prediction surface</span></span>
-<span id="cb85-2"><a href="abundance.html#cb85-2"></a>pred_surface_eff &lt;-<span class="st"> </span>pred_surface <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb85-3"><a href="abundance.html#cb85-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">day_of_year =</span> <span class="kw">yday</span>(<span class="kw">ymd</span>(<span class="kw">str_glue</span>(<span class="st">&quot;{max_lc_year}-06-15&quot;</span>))),</span>
-<span id="cb85-4"><a href="abundance.html#cb85-4"></a>         <span class="dt">time_observations_started =</span> t_peak,</span>
-<span id="cb85-5"><a href="abundance.html#cb85-5"></a>         <span class="dt">duration_minutes =</span> <span class="dv">60</span>,</span>
-<span id="cb85-6"><a href="abundance.html#cb85-6"></a>         <span class="dt">effort_distance_km =</span> <span class="dv">1</span>,</span>
-<span id="cb85-7"><a href="abundance.html#cb85-7"></a>         <span class="dt">number_observers =</span> <span class="dv">1</span>,</span>
-<span id="cb85-8"><a href="abundance.html#cb85-8"></a>         <span class="dt">protocol_type =</span> <span class="st">&quot;Traveling&quot;</span>)</span>
-<span id="cb85-9"><a href="abundance.html#cb85-9"></a></span>
-<span id="cb85-10"><a href="abundance.html#cb85-10"></a><span class="co"># predict</span></span>
-<span id="cb85-11"><a href="abundance.html#cb85-11"></a>pred &lt;-<span class="st"> </span><span class="kw">predict</span>(pred_model, <span class="dt">newdata =</span> pred_surface_eff, </span>
-<span id="cb85-12"><a href="abundance.html#cb85-12"></a>                <span class="dt">type =</span> <span class="st">&quot;link&quot;</span>, </span>
-<span id="cb85-13"><a href="abundance.html#cb85-13"></a>                <span class="dt">se.fit =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb85-14"><a href="abundance.html#cb85-14"></a><span class="st">  </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb85-15"><a href="abundance.html#cb85-15"></a><span class="st">  </span><span class="co"># calculate confidence limits and back transform</span></span>
-<span id="cb85-16"><a href="abundance.html#cb85-16"></a><span class="st">  </span><span class="kw">transmute</span>(<span class="dt">abd =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit),</span>
-<span id="cb85-17"><a href="abundance.html#cb85-17"></a>            <span class="dt">abd_se =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(se.fit),</span>
-<span id="cb85-18"><a href="abundance.html#cb85-18"></a>            <span class="dt">abd_lcl =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se.fit),</span>
-<span id="cb85-19"><a href="abundance.html#cb85-19"></a>            <span class="dt">abd_ucl =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se.fit)) <span class="op">%&gt;%</span></span>
-<span id="cb85-20"><a href="abundance.html#cb85-20"></a><span class="st">  </span><span class="co"># add to prediction surface</span></span>
-<span id="cb85-21"><a href="abundance.html#cb85-21"></a><span class="st">  </span><span class="kw">bind_cols</span>(pred_surface_eff, .) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb85-22"><a href="abundance.html#cb85-22"></a><span class="st">  </span><span class="kw">select</span>(latitude, longitude, abd, abd_se, abd_lcl, abd_ucl)</span></code></pre></div>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="abundance.html#cb84-1"></a><span class="co"># add effort covariates to prediction surface</span></span>
+<span id="cb84-2"><a href="abundance.html#cb84-2"></a>pred_surface_eff &lt;-<span class="st"> </span>pred_surface <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb84-3"><a href="abundance.html#cb84-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">day_of_year =</span> <span class="kw">yday</span>(<span class="kw">ymd</span>(<span class="kw">str_glue</span>(<span class="st">&quot;{max_lc_year}-06-15&quot;</span>))),</span>
+<span id="cb84-4"><a href="abundance.html#cb84-4"></a>         <span class="dt">time_observations_started =</span> t_peak,</span>
+<span id="cb84-5"><a href="abundance.html#cb84-5"></a>         <span class="dt">duration_minutes =</span> <span class="dv">60</span>,</span>
+<span id="cb84-6"><a href="abundance.html#cb84-6"></a>         <span class="dt">effort_distance_km =</span> <span class="dv">1</span>,</span>
+<span id="cb84-7"><a href="abundance.html#cb84-7"></a>         <span class="dt">number_observers =</span> <span class="dv">1</span>,</span>
+<span id="cb84-8"><a href="abundance.html#cb84-8"></a>         <span class="dt">protocol_type =</span> <span class="st">&quot;Traveling&quot;</span>)</span>
+<span id="cb84-9"><a href="abundance.html#cb84-9"></a></span>
+<span id="cb84-10"><a href="abundance.html#cb84-10"></a><span class="co"># predict</span></span>
+<span id="cb84-11"><a href="abundance.html#cb84-11"></a>pred &lt;-<span class="st"> </span><span class="kw">predict</span>(pred_model, <span class="dt">newdata =</span> pred_surface_eff, </span>
+<span id="cb84-12"><a href="abundance.html#cb84-12"></a>                <span class="dt">type =</span> <span class="st">&quot;link&quot;</span>, </span>
+<span id="cb84-13"><a href="abundance.html#cb84-13"></a>                <span class="dt">se.fit =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb84-14"><a href="abundance.html#cb84-14"></a><span class="st">  </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb84-15"><a href="abundance.html#cb84-15"></a><span class="st">  </span><span class="co"># calculate confidence limits and back transform</span></span>
+<span id="cb84-16"><a href="abundance.html#cb84-16"></a><span class="st">  </span><span class="kw">transmute</span>(<span class="dt">abd =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit),</span>
+<span id="cb84-17"><a href="abundance.html#cb84-17"></a>            <span class="dt">abd_se =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(se.fit),</span>
+<span id="cb84-18"><a href="abundance.html#cb84-18"></a>            <span class="dt">abd_lcl =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se.fit),</span>
+<span id="cb84-19"><a href="abundance.html#cb84-19"></a>            <span class="dt">abd_ucl =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se.fit)) <span class="op">%&gt;%</span></span>
+<span id="cb84-20"><a href="abundance.html#cb84-20"></a><span class="st">  </span><span class="co"># add to prediction surface</span></span>
+<span id="cb84-21"><a href="abundance.html#cb84-21"></a><span class="st">  </span><span class="kw">bind_cols</span>(pred_surface_eff, .) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb84-22"><a href="abundance.html#cb84-22"></a><span class="st">  </span><span class="kw">select</span>(latitude, longitude, abd, abd_se, abd_lcl, abd_ucl)</span></code></pre></div>
 <p>Next, we’ll convert this data frame to spatial features using <code>sf</code>, then rasterize the points using the prediction surface raster template.</p>
-<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="abundance.html#cb86-1"></a>r_pred &lt;-<span class="st"> </span>pred <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb86-2"><a href="abundance.html#cb86-2"></a><span class="st">  </span><span class="co"># convert to spatial features</span></span>
-<span id="cb86-3"><a href="abundance.html#cb86-3"></a><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb86-4"><a href="abundance.html#cb86-4"></a><span class="st">  </span><span class="kw">select</span>(abd, abd_se) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb86-5"><a href="abundance.html#cb86-5"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb86-6"><a href="abundance.html#cb86-6"></a><span class="st">  </span><span class="co"># rasterize</span></span>
-<span id="cb86-7"><a href="abundance.html#cb86-7"></a><span class="st">  </span><span class="kw">rasterize</span>(r)</span>
-<span id="cb86-8"><a href="abundance.html#cb86-8"></a>r_pred &lt;-<span class="st"> </span>r_pred[[<span class="op">-</span><span class="dv">1</span>]]</span>
-<span id="cb86-9"><a href="abundance.html#cb86-9"></a></span>
-<span id="cb86-10"><a href="abundance.html#cb86-10"></a><span class="co"># save the rasters</span></span>
-<span id="cb86-11"><a href="abundance.html#cb86-11"></a>tif_dir &lt;-<span class="st"> &quot;output&quot;</span></span>
-<span id="cb86-12"><a href="abundance.html#cb86-12"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">dir.exists</span>(tif_dir)) {</span>
-<span id="cb86-13"><a href="abundance.html#cb86-13"></a>  <span class="kw">dir.create</span>(tif_dir)</span>
-<span id="cb86-14"><a href="abundance.html#cb86-14"></a>}</span>
-<span id="cb86-15"><a href="abundance.html#cb86-15"></a><span class="kw">writeRaster</span>(r_pred[[<span class="st">&quot;abd&quot;</span>]], </span>
-<span id="cb86-16"><a href="abundance.html#cb86-16"></a>            <span class="dt">filename =</span> <span class="kw">file.path</span>(tif_dir, <span class="st">&quot;abundance-model_abd_woothr.tif&quot;</span>),</span>
-<span id="cb86-17"><a href="abundance.html#cb86-17"></a>            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb86-18"><a href="abundance.html#cb86-18"></a><span class="kw">writeRaster</span>(r_pred[[<span class="st">&quot;abd_se&quot;</span>]], </span>
-<span id="cb86-19"><a href="abundance.html#cb86-19"></a>            <span class="dt">filename =</span> <span class="kw">file.path</span>(tif_dir, <span class="st">&quot;abundance-model_se_woothr.tif&quot;</span>), </span>
-<span id="cb86-20"><a href="abundance.html#cb86-20"></a>            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="abundance.html#cb85-1"></a>r_pred &lt;-<span class="st"> </span>pred <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-2"><a href="abundance.html#cb85-2"></a><span class="st">  </span><span class="co"># convert to spatial features</span></span>
+<span id="cb85-3"><a href="abundance.html#cb85-3"></a><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-4"><a href="abundance.html#cb85-4"></a><span class="st">  </span><span class="kw">select</span>(abd, abd_se) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-5"><a href="abundance.html#cb85-5"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-6"><a href="abundance.html#cb85-6"></a><span class="st">  </span><span class="co"># rasterize</span></span>
+<span id="cb85-7"><a href="abundance.html#cb85-7"></a><span class="st">  </span><span class="kw">rasterize</span>(r)</span>
+<span id="cb85-8"><a href="abundance.html#cb85-8"></a>r_pred &lt;-<span class="st"> </span>r_pred[[<span class="op">-</span><span class="dv">1</span>]]</span>
+<span id="cb85-9"><a href="abundance.html#cb85-9"></a></span>
+<span id="cb85-10"><a href="abundance.html#cb85-10"></a><span class="co"># save the rasters</span></span>
+<span id="cb85-11"><a href="abundance.html#cb85-11"></a>tif_dir &lt;-<span class="st"> &quot;output&quot;</span></span>
+<span id="cb85-12"><a href="abundance.html#cb85-12"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">dir.exists</span>(tif_dir)) {</span>
+<span id="cb85-13"><a href="abundance.html#cb85-13"></a>  <span class="kw">dir.create</span>(tif_dir)</span>
+<span id="cb85-14"><a href="abundance.html#cb85-14"></a>}</span>
+<span id="cb85-15"><a href="abundance.html#cb85-15"></a><span class="kw">writeRaster</span>(r_pred[[<span class="st">&quot;abd&quot;</span>]], </span>
+<span id="cb85-16"><a href="abundance.html#cb85-16"></a>            <span class="dt">filename =</span> <span class="kw">file.path</span>(tif_dir, <span class="st">&quot;abundance-model_abd_woothr.tif&quot;</span>),</span>
+<span id="cb85-17"><a href="abundance.html#cb85-17"></a>            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb85-18"><a href="abundance.html#cb85-18"></a><span class="kw">writeRaster</span>(r_pred[[<span class="st">&quot;abd_se&quot;</span>]], </span>
+<span id="cb85-19"><a href="abundance.html#cb85-19"></a>            <span class="dt">filename =</span> <span class="kw">file.path</span>(tif_dir, <span class="st">&quot;abundance-model_se_woothr.tif&quot;</span>), </span>
+<span id="cb85-20"><a href="abundance.html#cb85-20"></a>            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 <p>Finally, let’s make a map! For the relative abundance map, we’ll treat very small values of relative abundance as zero.</p>
 <p>The values shown on this map are the expected number of Wood Thrush seen by an average eBirder conducting a 1 hour, 1 km checklist for which counting started at about 5:13 AM. As detectability is not perfect, we expect true Wood Thrush abundance to be higher than these values, but without estimating the detection rate directly it’s difficult to say how much higher. Also remember at this point that there was a lot of variation in eBird counts that wasn’t explained by the model. So this map shows the best estimate of relative abundance, given the model and variables selected for modeling.</p>
-<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="abundance.html#cb87-1"></a><span class="co"># any expected abundances below this threshold are set to zero</span></span>
-<span id="cb87-2"><a href="abundance.html#cb87-2"></a>zero_threshold &lt;-<span class="st"> </span><span class="fl">0.05</span></span>
-<span id="cb87-3"><a href="abundance.html#cb87-3"></a></span>
-<span id="cb87-4"><a href="abundance.html#cb87-4"></a><span class="co"># project predictions</span></span>
-<span id="cb87-5"><a href="abundance.html#cb87-5"></a>r_pred_proj &lt;-<span class="st"> </span><span class="kw">projectRaster</span>(r_pred, <span class="dt">crs =</span> map_proj<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>)</span>
-<span id="cb87-6"><a href="abundance.html#cb87-6"></a></span>
-<span id="cb87-7"><a href="abundance.html#cb87-7"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
-<span id="cb87-8"><a href="abundance.html#cb87-8"></a><span class="cf">for</span> (nm <span class="cf">in</span> <span class="kw">names</span>(r_pred)) {</span>
-<span id="cb87-9"><a href="abundance.html#cb87-9"></a>  r_plot &lt;-<span class="st"> </span>r_pred_proj[[nm]]</span>
-<span id="cb87-10"><a href="abundance.html#cb87-10"></a>  </span>
-<span id="cb87-11"><a href="abundance.html#cb87-11"></a>  <span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">3.5</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))</span>
-<span id="cb87-12"><a href="abundance.html#cb87-12"></a>  <span class="co"># set up plot area</span></span>
-<span id="cb87-13"><a href="abundance.html#cb87-13"></a>  <span class="kw">plot</span>(bcr, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">border =</span> <span class="ot">NA</span>)</span>
-<span id="cb87-14"><a href="abundance.html#cb87-14"></a>  <span class="kw">plot</span>(ne_land, <span class="dt">col =</span> <span class="st">&quot;#dddddd&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;#888888&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb87-15"><a href="abundance.html#cb87-15"></a>  </span>
-<span id="cb87-16"><a href="abundance.html#cb87-16"></a>  <span class="co"># modified plasma palette</span></span>
-<span id="cb87-17"><a href="abundance.html#cb87-17"></a>  plasma_rev &lt;-<span class="st"> </span><span class="kw">rev</span>(<span class="kw">plasma</span>(<span class="dv">25</span>, <span class="dt">end =</span> <span class="fl">0.9</span>))</span>
-<span id="cb87-18"><a href="abundance.html#cb87-18"></a>  gray_int &lt;-<span class="st"> </span><span class="kw">colorRampPalette</span>(<span class="kw">c</span>(<span class="st">&quot;#dddddd&quot;</span>, plasma_rev[<span class="dv">1</span>]))</span>
-<span id="cb87-19"><a href="abundance.html#cb87-19"></a>  pal &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">gray_int</span>(<span class="dv">4</span>)[<span class="dv">2</span>], plasma_rev)</span>
-<span id="cb87-20"><a href="abundance.html#cb87-20"></a>  </span>
-<span id="cb87-21"><a href="abundance.html#cb87-21"></a>  <span class="co"># abundance vs. se</span></span>
-<span id="cb87-22"><a href="abundance.html#cb87-22"></a>  <span class="cf">if</span> (nm <span class="op">==</span><span class="st"> &quot;abd&quot;</span>) {</span>
-<span id="cb87-23"><a href="abundance.html#cb87-23"></a>    title &lt;-<span class="st"> &quot;Wood Thrush Relative Abundance&quot;</span></span>
-<span id="cb87-24"><a href="abundance.html#cb87-24"></a>    <span class="co"># set very low values to zero</span></span>
-<span id="cb87-25"><a href="abundance.html#cb87-25"></a>    r_plot[r_plot <span class="op">&lt;=</span><span class="st"> </span>zero_threshold] &lt;-<span class="st"> </span><span class="ot">NA</span></span>
-<span id="cb87-26"><a href="abundance.html#cb87-26"></a>    <span class="co"># log transform</span></span>
-<span id="cb87-27"><a href="abundance.html#cb87-27"></a>    r_plot &lt;-<span class="st"> </span><span class="kw">log10</span>(r_plot)</span>
-<span id="cb87-28"><a href="abundance.html#cb87-28"></a>    <span class="co"># breaks and legend</span></span>
-<span id="cb87-29"><a href="abundance.html#cb87-29"></a>    mx &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, max)) <span class="op">/</span><span class="st"> </span><span class="dv">100</span></span>
-<span id="cb87-30"><a href="abundance.html#cb87-30"></a>    mn &lt;-<span class="st"> </span><span class="kw">floor</span>(<span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, min)) <span class="op">/</span><span class="st"> </span><span class="dv">100</span></span>
-<span id="cb87-31"><a href="abundance.html#cb87-31"></a>    brks &lt;-<span class="st"> </span><span class="kw">seq</span>(mn, mx, <span class="dt">length.out =</span> <span class="kw">length</span>(pal) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</span>
-<span id="cb87-32"><a href="abundance.html#cb87-32"></a>    lbl_brks &lt;-<span class="st"> </span><span class="kw">sort</span>(<span class="kw">c</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>, mn, mx))</span>
-<span id="cb87-33"><a href="abundance.html#cb87-33"></a>    lbls &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="dv">10</span><span class="op">^</span>lbl_brks, <span class="dv">2</span>)</span>
-<span id="cb87-34"><a href="abundance.html#cb87-34"></a>  } <span class="cf">else</span> {</span>
-<span id="cb87-35"><a href="abundance.html#cb87-35"></a>    title &lt;-<span class="st"> &quot;Wood Thrush Abundance Uncertainty (SE)&quot;</span></span>
-<span id="cb87-36"><a href="abundance.html#cb87-36"></a>    <span class="co"># breaks and legend</span></span>
-<span id="cb87-37"><a href="abundance.html#cb87-37"></a>    mx &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="dv">1000</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, max)) <span class="op">/</span><span class="st"> </span><span class="dv">1000</span></span>
-<span id="cb87-38"><a href="abundance.html#cb87-38"></a>    mn &lt;-<span class="st"> </span><span class="kw">floor</span>(<span class="dv">1000</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, min)) <span class="op">/</span><span class="st"> </span><span class="dv">1000</span></span>
-<span id="cb87-39"><a href="abundance.html#cb87-39"></a>    brks &lt;-<span class="st"> </span><span class="kw">seq</span>(mn, mx, <span class="dt">length.out =</span> <span class="kw">length</span>(pal) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</span>
-<span id="cb87-40"><a href="abundance.html#cb87-40"></a>    lbl_brks &lt;-<span class="st"> </span><span class="kw">seq</span>(mn, mx, <span class="dt">length.out =</span> <span class="dv">5</span>)</span>
-<span id="cb87-41"><a href="abundance.html#cb87-41"></a>    lbls &lt;-<span class="st"> </span><span class="kw">round</span>(lbl_brks, <span class="dv">2</span>)</span>
-<span id="cb87-42"><a href="abundance.html#cb87-42"></a>  }</span>
-<span id="cb87-43"><a href="abundance.html#cb87-43"></a>  </span>
-<span id="cb87-44"><a href="abundance.html#cb87-44"></a>  <span class="co"># abundance</span></span>
-<span id="cb87-45"><a href="abundance.html#cb87-45"></a>  <span class="kw">plot</span>(r_plot, </span>
-<span id="cb87-46"><a href="abundance.html#cb87-46"></a>       <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks, </span>
-<span id="cb87-47"><a href="abundance.html#cb87-47"></a>       <span class="dt">maxpixels =</span> <span class="kw">ncell</span>(r_plot),</span>
-<span id="cb87-48"><a href="abundance.html#cb87-48"></a>       <span class="dt">legend =</span> <span class="ot">FALSE</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb87-49"><a href="abundance.html#cb87-49"></a>  </span>
-<span id="cb87-50"><a href="abundance.html#cb87-50"></a>  <span class="co"># borders</span></span>
-<span id="cb87-51"><a href="abundance.html#cb87-51"></a>  <span class="kw">plot</span>(bcr, <span class="dt">border =</span> <span class="st">&quot;#000000&quot;</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">lwd =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb87-52"><a href="abundance.html#cb87-52"></a>  <span class="kw">plot</span>(ne_state_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.75</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb87-53"><a href="abundance.html#cb87-53"></a>  <span class="kw">plot</span>(ne_country_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb87-54"><a href="abundance.html#cb87-54"></a>  <span class="kw">box</span>()</span>
-<span id="cb87-55"><a href="abundance.html#cb87-55"></a>  </span>
-<span id="cb87-56"><a href="abundance.html#cb87-56"></a>  <span class="co"># legend</span></span>
-<span id="cb87-57"><a href="abundance.html#cb87-57"></a>  <span class="kw">par</span>(<span class="dt">new =</span> <span class="ot">TRUE</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
-<span id="cb87-58"><a href="abundance.html#cb87-58"></a>  <span class="kw">image.plot</span>(<span class="dt">zlim =</span> <span class="kw">range</span>(brks), <span class="dt">legend.only =</span> <span class="ot">TRUE</span>, <span class="dt">col =</span> pal,</span>
-<span id="cb87-59"><a href="abundance.html#cb87-59"></a>             <span class="dt">smallplot =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.75</span>, <span class="fl">0.06</span>, <span class="fl">0.09</span>),</span>
-<span id="cb87-60"><a href="abundance.html#cb87-60"></a>             <span class="dt">horizontal =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb87-61"><a href="abundance.html#cb87-61"></a>             <span class="dt">axis.args =</span> <span class="kw">list</span>(<span class="dt">at =</span> lbl_brks, </span>
-<span id="cb87-62"><a href="abundance.html#cb87-62"></a>                              <span class="dt">labels =</span> lbls,</span>
-<span id="cb87-63"><a href="abundance.html#cb87-63"></a>                              <span class="dt">fg =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">col.axis =</span> <span class="st">&quot;black&quot;</span>,</span>
-<span id="cb87-64"><a href="abundance.html#cb87-64"></a>                              <span class="dt">cex.axis =</span> <span class="fl">0.75</span>, <span class="dt">lwd.ticks =</span> <span class="fl">0.5</span>,</span>
-<span id="cb87-65"><a href="abundance.html#cb87-65"></a>                              <span class="dt">padj =</span> <span class="fl">-1.5</span>),</span>
-<span id="cb87-66"><a href="abundance.html#cb87-66"></a>             <span class="dt">legend.args =</span> <span class="kw">list</span>(<span class="dt">text =</span> title,</span>
-<span id="cb87-67"><a href="abundance.html#cb87-67"></a>                                <span class="dt">side =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,</span>
-<span id="cb87-68"><a href="abundance.html#cb87-68"></a>                                <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">line =</span> <span class="dv">0</span>))</span>
-<span id="cb87-69"><a href="abundance.html#cb87-69"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="abundance.html#cb86-1"></a><span class="co"># any expected abundances below this threshold are set to zero</span></span>
+<span id="cb86-2"><a href="abundance.html#cb86-2"></a>zero_threshold &lt;-<span class="st"> </span><span class="fl">0.05</span></span>
+<span id="cb86-3"><a href="abundance.html#cb86-3"></a></span>
+<span id="cb86-4"><a href="abundance.html#cb86-4"></a><span class="co"># project predictions</span></span>
+<span id="cb86-5"><a href="abundance.html#cb86-5"></a>r_pred_proj &lt;-<span class="st"> </span><span class="kw">projectRaster</span>(r_pred, <span class="dt">crs =</span> map_proj<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>)</span>
+<span id="cb86-6"><a href="abundance.html#cb86-6"></a></span>
+<span id="cb86-7"><a href="abundance.html#cb86-7"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb86-8"><a href="abundance.html#cb86-8"></a><span class="cf">for</span> (nm <span class="cf">in</span> <span class="kw">names</span>(r_pred)) {</span>
+<span id="cb86-9"><a href="abundance.html#cb86-9"></a>  r_plot &lt;-<span class="st"> </span>r_pred_proj[[nm]]</span>
+<span id="cb86-10"><a href="abundance.html#cb86-10"></a>  </span>
+<span id="cb86-11"><a href="abundance.html#cb86-11"></a>  <span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">3.5</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))</span>
+<span id="cb86-12"><a href="abundance.html#cb86-12"></a>  <span class="co"># set up plot area</span></span>
+<span id="cb86-13"><a href="abundance.html#cb86-13"></a>  <span class="kw">plot</span>(bcr, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">border =</span> <span class="ot">NA</span>)</span>
+<span id="cb86-14"><a href="abundance.html#cb86-14"></a>  <span class="kw">plot</span>(ne_land, <span class="dt">col =</span> <span class="st">&quot;#dddddd&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;#888888&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb86-15"><a href="abundance.html#cb86-15"></a>  </span>
+<span id="cb86-16"><a href="abundance.html#cb86-16"></a>  <span class="co"># modified plasma palette</span></span>
+<span id="cb86-17"><a href="abundance.html#cb86-17"></a>  plasma_rev &lt;-<span class="st"> </span><span class="kw">rev</span>(<span class="kw">plasma</span>(<span class="dv">25</span>, <span class="dt">end =</span> <span class="fl">0.9</span>))</span>
+<span id="cb86-18"><a href="abundance.html#cb86-18"></a>  gray_int &lt;-<span class="st"> </span><span class="kw">colorRampPalette</span>(<span class="kw">c</span>(<span class="st">&quot;#dddddd&quot;</span>, plasma_rev[<span class="dv">1</span>]))</span>
+<span id="cb86-19"><a href="abundance.html#cb86-19"></a>  pal &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">gray_int</span>(<span class="dv">4</span>)[<span class="dv">2</span>], plasma_rev)</span>
+<span id="cb86-20"><a href="abundance.html#cb86-20"></a>  </span>
+<span id="cb86-21"><a href="abundance.html#cb86-21"></a>  <span class="co"># abundance vs. se</span></span>
+<span id="cb86-22"><a href="abundance.html#cb86-22"></a>  <span class="cf">if</span> (nm <span class="op">==</span><span class="st"> &quot;abd&quot;</span>) {</span>
+<span id="cb86-23"><a href="abundance.html#cb86-23"></a>    title &lt;-<span class="st"> &quot;Wood Thrush Relative Abundance&quot;</span></span>
+<span id="cb86-24"><a href="abundance.html#cb86-24"></a>    <span class="co"># set very low values to zero</span></span>
+<span id="cb86-25"><a href="abundance.html#cb86-25"></a>    r_plot[r_plot <span class="op">&lt;=</span><span class="st"> </span>zero_threshold] &lt;-<span class="st"> </span><span class="ot">NA</span></span>
+<span id="cb86-26"><a href="abundance.html#cb86-26"></a>    <span class="co"># log transform</span></span>
+<span id="cb86-27"><a href="abundance.html#cb86-27"></a>    r_plot &lt;-<span class="st"> </span><span class="kw">log10</span>(r_plot)</span>
+<span id="cb86-28"><a href="abundance.html#cb86-28"></a>    <span class="co"># breaks and legend</span></span>
+<span id="cb86-29"><a href="abundance.html#cb86-29"></a>    mx &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, max)) <span class="op">/</span><span class="st"> </span><span class="dv">100</span></span>
+<span id="cb86-30"><a href="abundance.html#cb86-30"></a>    mn &lt;-<span class="st"> </span><span class="kw">floor</span>(<span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, min)) <span class="op">/</span><span class="st"> </span><span class="dv">100</span></span>
+<span id="cb86-31"><a href="abundance.html#cb86-31"></a>    brks &lt;-<span class="st"> </span><span class="kw">seq</span>(mn, mx, <span class="dt">length.out =</span> <span class="kw">length</span>(pal) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb86-32"><a href="abundance.html#cb86-32"></a>    lbl_brks &lt;-<span class="st"> </span><span class="kw">sort</span>(<span class="kw">c</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>, mn, mx))</span>
+<span id="cb86-33"><a href="abundance.html#cb86-33"></a>    lbls &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="dv">10</span><span class="op">^</span>lbl_brks, <span class="dv">2</span>)</span>
+<span id="cb86-34"><a href="abundance.html#cb86-34"></a>  } <span class="cf">else</span> {</span>
+<span id="cb86-35"><a href="abundance.html#cb86-35"></a>    title &lt;-<span class="st"> &quot;Wood Thrush Abundance Uncertainty (SE)&quot;</span></span>
+<span id="cb86-36"><a href="abundance.html#cb86-36"></a>    <span class="co"># breaks and legend</span></span>
+<span id="cb86-37"><a href="abundance.html#cb86-37"></a>    mx &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="dv">1000</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, max)) <span class="op">/</span><span class="st"> </span><span class="dv">1000</span></span>
+<span id="cb86-38"><a href="abundance.html#cb86-38"></a>    mn &lt;-<span class="st"> </span><span class="kw">floor</span>(<span class="dv">1000</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, min)) <span class="op">/</span><span class="st"> </span><span class="dv">1000</span></span>
+<span id="cb86-39"><a href="abundance.html#cb86-39"></a>    brks &lt;-<span class="st"> </span><span class="kw">seq</span>(mn, mx, <span class="dt">length.out =</span> <span class="kw">length</span>(pal) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb86-40"><a href="abundance.html#cb86-40"></a>    lbl_brks &lt;-<span class="st"> </span><span class="kw">seq</span>(mn, mx, <span class="dt">length.out =</span> <span class="dv">5</span>)</span>
+<span id="cb86-41"><a href="abundance.html#cb86-41"></a>    lbls &lt;-<span class="st"> </span><span class="kw">round</span>(lbl_brks, <span class="dv">2</span>)</span>
+<span id="cb86-42"><a href="abundance.html#cb86-42"></a>  }</span>
+<span id="cb86-43"><a href="abundance.html#cb86-43"></a>  </span>
+<span id="cb86-44"><a href="abundance.html#cb86-44"></a>  <span class="co"># abundance</span></span>
+<span id="cb86-45"><a href="abundance.html#cb86-45"></a>  <span class="kw">plot</span>(r_plot, </span>
+<span id="cb86-46"><a href="abundance.html#cb86-46"></a>       <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks, </span>
+<span id="cb86-47"><a href="abundance.html#cb86-47"></a>       <span class="dt">maxpixels =</span> <span class="kw">ncell</span>(r_plot),</span>
+<span id="cb86-48"><a href="abundance.html#cb86-48"></a>       <span class="dt">legend =</span> <span class="ot">FALSE</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb86-49"><a href="abundance.html#cb86-49"></a>  </span>
+<span id="cb86-50"><a href="abundance.html#cb86-50"></a>  <span class="co"># borders</span></span>
+<span id="cb86-51"><a href="abundance.html#cb86-51"></a>  <span class="kw">plot</span>(bcr, <span class="dt">border =</span> <span class="st">&quot;#000000&quot;</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">lwd =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb86-52"><a href="abundance.html#cb86-52"></a>  <span class="kw">plot</span>(ne_state_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.75</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb86-53"><a href="abundance.html#cb86-53"></a>  <span class="kw">plot</span>(ne_country_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb86-54"><a href="abundance.html#cb86-54"></a>  <span class="kw">box</span>()</span>
+<span id="cb86-55"><a href="abundance.html#cb86-55"></a>  </span>
+<span id="cb86-56"><a href="abundance.html#cb86-56"></a>  <span class="co"># legend</span></span>
+<span id="cb86-57"><a href="abundance.html#cb86-57"></a>  <span class="kw">par</span>(<span class="dt">new =</span> <span class="ot">TRUE</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb86-58"><a href="abundance.html#cb86-58"></a>  <span class="kw">image.plot</span>(<span class="dt">zlim =</span> <span class="kw">range</span>(brks), <span class="dt">legend.only =</span> <span class="ot">TRUE</span>, <span class="dt">col =</span> pal,</span>
+<span id="cb86-59"><a href="abundance.html#cb86-59"></a>             <span class="dt">smallplot =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.75</span>, <span class="fl">0.06</span>, <span class="fl">0.09</span>),</span>
+<span id="cb86-60"><a href="abundance.html#cb86-60"></a>             <span class="dt">horizontal =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb86-61"><a href="abundance.html#cb86-61"></a>             <span class="dt">axis.args =</span> <span class="kw">list</span>(<span class="dt">at =</span> lbl_brks, </span>
+<span id="cb86-62"><a href="abundance.html#cb86-62"></a>                              <span class="dt">labels =</span> lbls,</span>
+<span id="cb86-63"><a href="abundance.html#cb86-63"></a>                              <span class="dt">fg =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">col.axis =</span> <span class="st">&quot;black&quot;</span>,</span>
+<span id="cb86-64"><a href="abundance.html#cb86-64"></a>                              <span class="dt">cex.axis =</span> <span class="fl">0.75</span>, <span class="dt">lwd.ticks =</span> <span class="fl">0.5</span>,</span>
+<span id="cb86-65"><a href="abundance.html#cb86-65"></a>                              <span class="dt">padj =</span> <span class="fl">-1.5</span>),</span>
+<span id="cb86-66"><a href="abundance.html#cb86-66"></a>             <span class="dt">legend.args =</span> <span class="kw">list</span>(<span class="dt">text =</span> title,</span>
+<span id="cb86-67"><a href="abundance.html#cb86-67"></a>                                <span class="dt">side =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,</span>
+<span id="cb86-68"><a href="abundance.html#cb86-68"></a>                                <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">line =</span> <span class="dv">0</span>))</span>
+<span id="cb86-69"><a href="abundance.html#cb86-69"></a>}</span></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/abundance-predict-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 </div>
 <div id="abundance-final" class="section level2">

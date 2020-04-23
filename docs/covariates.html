@@ -209,7 +209,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a><ul>
 <li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.3.1</b> Assessment</a></li>
 <li class="chapter" data-level="5.3.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.3.2</b> Model selection</a></li>
-<li class="chapter" data-level="5.3.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-detection"><i class="fa fa-check"></i><b>5.3.3</b> Exploring detection model submodel</a></li>
+<li class="chapter" data-level="5.3.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-detection"><i class="fa fa-check"></i><b>5.3.3</b> Exploring the effects of covariates on detection probability</a></li>
 </ul></li>
 <li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.4</b> Prediction</a></li>
 </ul></li>
@@ -672,30 +672,30 @@ brew link --force osgeo-gdal</code></pre>
 <span id="cb35-6"><a href="covariates.html#cb35-6"></a>pland_elev_pred &lt;-<span class="st"> </span><span class="kw">inner_join</span>(pland_coords, elev_pred, <span class="dt">by =</span> <span class="st">&quot;id&quot;</span>)</span>
 <span id="cb35-7"><a href="covariates.html#cb35-7"></a><span class="kw">write_csv</span>(pland_elev_pred, <span class="st">&quot;data/pland-elev_prediction-surface.csv&quot;</span>)</span>
 <span id="cb35-8"><a href="covariates.html#cb35-8"></a><span class="kw">glimpse</span>(pland_elev_pred)</span>
-<span id="cb35-9"><a href="covariates.html#cb35-9"></a><span class="co">#&gt; Observations: 90,949</span></span>
-<span id="cb35-10"><a href="covariates.html#cb35-10"></a><span class="co">#&gt; Variables: 22</span></span>
-<span id="cb35-11"><a href="covariates.html#cb35-11"></a><span class="co">#&gt; $ id                            &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21…</span></span>
-<span id="cb35-12"><a href="covariates.html#cb35-12"></a><span class="co">#&gt; $ longitude                     &lt;dbl&gt; -77.3, -77.3, -77.3, -77.3, -77.3, -77.2, -77.4, -77.3, -77.3, -77.3, -77…</span></span>
-<span id="cb35-13"><a href="covariates.html#cb35-13"></a><span class="co">#&gt; $ latitude                      &lt;dbl&gt; 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 3…</span></span>
-<span id="cb35-14"><a href="covariates.html#cb35-14"></a><span class="co">#&gt; $ year                          &lt;int&gt; 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2…</span></span>
-<span id="cb35-15"><a href="covariates.html#cb35-15"></a><span class="co">#&gt; $ pland_00_water                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
-<span id="cb35-16"><a href="covariates.html#cb35-16"></a><span class="co">#&gt; $ pland_01_evergreen_needleleaf &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0…</span></span>
-<span id="cb35-17"><a href="covariates.html#cb35-17"></a><span class="co">#&gt; $ pland_02_evergreen_broadleaf  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
-<span id="cb35-18"><a href="covariates.html#cb35-18"></a><span class="co">#&gt; $ pland_03_deciduous_needleleaf &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
-<span id="cb35-19"><a href="covariates.html#cb35-19"></a><span class="co">#&gt; $ pland_04_deciduous_broadleaf  &lt;dbl&gt; 0.0000, 0.1429, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0…</span></span>
-<span id="cb35-20"><a href="covariates.html#cb35-20"></a><span class="co">#&gt; $ pland_05_mixed_forest         &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.1905, 0.0952, 0.2857, 0.0000, 0.0000, 0.0476, 0…</span></span>
-<span id="cb35-21"><a href="covariates.html#cb35-21"></a><span class="co">#&gt; $ pland_06_closed_shrubland     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
-<span id="cb35-22"><a href="covariates.html#cb35-22"></a><span class="co">#&gt; $ pland_07_open_shrubland       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
-<span id="cb35-23"><a href="covariates.html#cb35-23"></a><span class="co">#&gt; $ pland_08_woody_savanna        &lt;dbl&gt; 0.952, 0.857, 0.810, 0.619, 0.905, 0.714, 0.619, 1.000, 0.810, 0.857, 0.7…</span></span>
-<span id="cb35-24"><a href="covariates.html#cb35-24"></a><span class="co">#&gt; $ pland_09_savanna              &lt;dbl&gt; 0.0000, 0.0000, 0.1905, 0.1905, 0.0000, 0.0000, 0.0000, 0.0000, 0.0952, 0…</span></span>
-<span id="cb35-25"><a href="covariates.html#cb35-25"></a><span class="co">#&gt; $ pland_10_grassland            &lt;dbl&gt; 0.0476, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0476, 0…</span></span>
-<span id="cb35-26"><a href="covariates.html#cb35-26"></a><span class="co">#&gt; $ pland_11_wetland              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
-<span id="cb35-27"><a href="covariates.html#cb35-27"></a><span class="co">#&gt; $ pland_12_cropland             &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0…</span></span>
-<span id="cb35-28"><a href="covariates.html#cb35-28"></a><span class="co">#&gt; $ pland_13_urban                &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.3810, 0.0000, 0.0000, 0…</span></span>
-<span id="cb35-29"><a href="covariates.html#cb35-29"></a><span class="co">#&gt; $ pland_14_mosiac               &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0…</span></span>
-<span id="cb35-30"><a href="covariates.html#cb35-30"></a><span class="co">#&gt; $ pland_15_barren               &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span></span>
-<span id="cb35-31"><a href="covariates.html#cb35-31"></a><span class="co">#&gt; $ elevation_median              &lt;dbl&gt; 40.7, 41.8, 42.5, 43.2, 42.6, 44.3, 45.5, 44.4, 43.7, 41.0, 40.9, 42.9, 4…</span></span>
-<span id="cb35-32"><a href="covariates.html#cb35-32"></a><span class="co">#&gt; $ elevation_sd                  &lt;dbl&gt; 4.347, 2.135, 3.059, 3.373, 1.331, 1.717, 2.020, 3.863, 2.705, 1.817, 1.8…</span></span></code></pre></div>
+<span id="cb35-9"><a href="covariates.html#cb35-9"></a><span class="co">#&gt; Rows: 90,949</span></span>
+<span id="cb35-10"><a href="covariates.html#cb35-10"></a><span class="co">#&gt; Columns: 22</span></span>
+<span id="cb35-11"><a href="covariates.html#cb35-11"></a><span class="co">#&gt; $ id                            &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 2…</span></span>
+<span id="cb35-12"><a href="covariates.html#cb35-12"></a><span class="co">#&gt; $ longitude                     &lt;dbl&gt; -77.3, -77.3, -77.3, -77.3, -77.3, -77.2, -77.4, -77.3, -77.3, -77.3, -7…</span></span>
+<span id="cb35-13"><a href="covariates.html#cb35-13"></a><span class="co">#&gt; $ latitude                      &lt;dbl&gt; 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, …</span></span>
+<span id="cb35-14"><a href="covariates.html#cb35-14"></a><span class="co">#&gt; $ year                          &lt;int&gt; 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, …</span></span>
+<span id="cb35-15"><a href="covariates.html#cb35-15"></a><span class="co">#&gt; $ pland_00_water                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span id="cb35-16"><a href="covariates.html#cb35-16"></a><span class="co">#&gt; $ pland_01_evergreen_needleleaf &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, …</span></span>
+<span id="cb35-17"><a href="covariates.html#cb35-17"></a><span class="co">#&gt; $ pland_02_evergreen_broadleaf  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span id="cb35-18"><a href="covariates.html#cb35-18"></a><span class="co">#&gt; $ pland_03_deciduous_needleleaf &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span id="cb35-19"><a href="covariates.html#cb35-19"></a><span class="co">#&gt; $ pland_04_deciduous_broadleaf  &lt;dbl&gt; 0.0000, 0.1429, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, …</span></span>
+<span id="cb35-20"><a href="covariates.html#cb35-20"></a><span class="co">#&gt; $ pland_05_mixed_forest         &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.1905, 0.0952, 0.2857, 0.0000, 0.0000, 0.0476, …</span></span>
+<span id="cb35-21"><a href="covariates.html#cb35-21"></a><span class="co">#&gt; $ pland_06_closed_shrubland     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span id="cb35-22"><a href="covariates.html#cb35-22"></a><span class="co">#&gt; $ pland_07_open_shrubland       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span id="cb35-23"><a href="covariates.html#cb35-23"></a><span class="co">#&gt; $ pland_08_woody_savanna        &lt;dbl&gt; 0.952, 0.857, 0.810, 0.619, 0.905, 0.714, 0.619, 1.000, 0.810, 0.857, 0.…</span></span>
+<span id="cb35-24"><a href="covariates.html#cb35-24"></a><span class="co">#&gt; $ pland_09_savanna              &lt;dbl&gt; 0.0000, 0.0000, 0.1905, 0.1905, 0.0000, 0.0000, 0.0000, 0.0000, 0.0952, …</span></span>
+<span id="cb35-25"><a href="covariates.html#cb35-25"></a><span class="co">#&gt; $ pland_10_grassland            &lt;dbl&gt; 0.0476, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0476, …</span></span>
+<span id="cb35-26"><a href="covariates.html#cb35-26"></a><span class="co">#&gt; $ pland_11_wetland              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span id="cb35-27"><a href="covariates.html#cb35-27"></a><span class="co">#&gt; $ pland_12_cropland             &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, …</span></span>
+<span id="cb35-28"><a href="covariates.html#cb35-28"></a><span class="co">#&gt; $ pland_13_urban                &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.3810, 0.0000, 0.0000, …</span></span>
+<span id="cb35-29"><a href="covariates.html#cb35-29"></a><span class="co">#&gt; $ pland_14_mosiac               &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, …</span></span>
+<span id="cb35-30"><a href="covariates.html#cb35-30"></a><span class="co">#&gt; $ pland_15_barren               &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span id="cb35-31"><a href="covariates.html#cb35-31"></a><span class="co">#&gt; $ elevation_median              &lt;dbl&gt; 40.7, 41.8, 42.5, 43.2, 42.6, 44.3, 45.5, 44.4, 43.7, 41.0, 40.9, 42.9, …</span></span>
+<span id="cb35-32"><a href="covariates.html#cb35-32"></a><span class="co">#&gt; $ elevation_sd                  &lt;dbl&gt; 4.347, 2.135, 3.059, 3.373, 1.331, 1.717, 2.020, 3.863, 2.705, 1.817, 1.…</span></span></code></pre></div>
 <p>This completes the data preparation. The following chapters will focus on using these data to model species distributions.</p>
 
 </div>

@@ -209,7 +209,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a><ul>
 <li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.3.1</b> Assessment</a></li>
 <li class="chapter" data-level="5.3.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.3.2</b> Model selection</a></li>
-<li class="chapter" data-level="5.3.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-detection"><i class="fa fa-check"></i><b>5.3.3</b> Exploring detection model submodel</a></li>
+<li class="chapter" data-level="5.3.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-detection"><i class="fa fa-check"></i><b>5.3.3</b> Exploring the effects of covariates on detection probability</a></li>
 </ul></li>
 <li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.4</b> Prediction</a></li>
 </ul></li>
@@ -251,9 +251,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 5</span> Modeling Occupancy</h1>
 <div id="occupancy-intro" class="section level2">
 <h2><span class="header-section-number">5.1</span> Introduction</h2>
-<p>In this chapter, we’ll cover the basic steps for applying <strong>occupancy models</strong> to eBird data. In Chapter <a href="encounter.html#encounter">4</a>, we used analytical approaches that accounted for variation in detectability. We included covariates that are known to influence detectability (e.g. duration, time of day) that we incorporated into the model alongside the covariates that influence occurrence. In contrast, occupancy models separate the ecological process of <em>species occurrence</em> and the <em>observation process</em> of species detection. These two processes are modeled together, but estimated as separate processes. This modeling framework allows us to account for detectabilty when estimating species occurrence. In this book, we won’t delve into the mechanics of occupancy models; however, there is a wealth of background literature on occupancy modeling and readers wishing to learn more about this field may want to consult the book on the topic by MacKenzie et al. <span class="citation">(<a href="#ref-mackenzieOccupancyEstimationModeling2017" role="doc-biblioref">2017</a>)</span>.</p>
-<p>The application of these models typically requires data from repeated sampling visits (occasions) to a single site during a time frame over which there is appearance or disappearance of birds from the site (the population is <em>closed</em>). Although eBird checklists do not naturally meet these requirements, it is possible to apply occupancy models to eBird data by extracting a subset of the data that do conform to a repeat-sampling data structure. Here, we present a simple example of how to process eBird data to meet the assumptions of occupancy models. To illustrate our example, we apply a single-season occupancy model to estimate occupancy and detection probabilities for Wood Thrush in the month of June for BCR 27.</p>
-<p>This chapter differs from the previous chapter on modeling encounter rate in two important ways. First, the random forest model used in Chapter <a href="encounter.html#encounter">4</a> is an example of a <a href="https://en.wikipedia.org/wiki/Machine_learning">machine learning</a> approach, while the occupancy models used in this chapter use a more traditional likelihood approach. This latter class of statistical models are widely used for addressing specific questions and hypotheses, while the goal of machine learning is primarily to identify patterns and make predictions <span class="citation">(Bzdok, Altman, and Krzywinski <a href="#ref-bzdokPointsSignificanceStatistics2018" role="doc-biblioref">2018</a>)</span>. Second, machine learning approaches can accommodate complex non-linear effects and interactions between covariates, and are useful when modeling habitat associations that can vary across large spatial and temporal scales. In contrast, occupancy models are well suited for describing linear effects and simpler interactions. In this example, we specifically focus on the mechanics of filtering and formatting the data to fit occupancy models, and less on the specifics of model selection and how to choose suitable predictor variables for estimating detection and occupancy probabilities. The predictors we do include are informed by our inferences on variable importance scores from the random forest model in Chapter <a href="encounter.html#encounter">4</a>, as well as our existing knowledge of the species being modeled.</p>
+<p>In this chapter, we’ll cover basic initial steps for applying <strong>occupancy models</strong> to eBird data. In Chapter <a href="encounter.html#encounter">4</a>, we used analytical approaches that accounted for variation in detectability. We modeled covariates that are known to influence detectability (e.g. duration, time of day) alongside covariates that influence occurrence. In contrast, occupancy models jointly model the ecological process of <em>species occurrence</em> and the <em>observation process</em> of species detection, but estimate these as separate processes. This modeling framework allows us to account for variation in detection probability when estimating species occurrence. In this chapter, we will not provide much detail on the theory and assumptions of occupancy models; however, there is a wealth of background literature and applications of occupancy models, and readers wishing to learn more about this field may want to consult the book on the topic by MacKenzie et al. <span class="citation">(<a href="#ref-mackenzieOccupancyEstimationModeling2017" role="doc-biblioref">2017</a>)</span>.</p>
+<p>The application of occupancy models typically requires data from repeated sampling visits (occasions) to a single site during a time frame over which the population is <em>closed</em> (e.g., no changes in occupancy between surveys). Although eBird checklists are not designed to meet these requirements, it is possible to apply occupancy models to eBird data by extracting a subset of the data that meet closure assumptions and conform to a repeat-sampling data structure. Here, we present a simple example of how to process eBird data to meet these requirements. To illustrate our example, we apply a single-season occupancy model to estimate occupancy and detection probabilities for Wood Thrush in the month of June for BCR 27.</p>
+<p>This chapter differs from the previous chapter on modeling encounter rate in two important ways. First, the random forest model used in Chapter <a href="encounter.html#encounter">4</a> is an example of a <a href="https://en.wikipedia.org/wiki/Machine_learning">machine learning</a> approach, while the occupancy models used in this chapter use a more traditional likelihood approach. This latter class of statistical models are widely used for addressing specific questions and hypotheses, while the goal of machine learning is primarily to identify patterns and make predictions <span class="citation">(Bzdok, Altman, and Krzywinski <a href="#ref-bzdokPointsSignificanceStatistics2018" role="doc-biblioref">2018</a>)</span>. Second, machine learning approaches can accommodate complex non-linear effects and interactions between covariates, and are useful when modeling habitat associations that can vary across large spatial and temporal scales. In contrast, occupancy models are well suited for describing linear effects and simpler interactions. In this example, we specifically focus on the mechanics of filtering and formatting the data to fit occupancy models, and less on the specifics of how to choose suitable predictor variables for estimating detection and occupancy probabilities to generate a candidate model set used for model selection. The predictors we do include are informed by our inferences on variable importance scores from the random forest model in Chapter <a href="encounter.html#encounter">4</a>, as well as our existing knowledge of the species being modeled.</p>
 <p>If you worked through the previous chapters, you should have all the data necessary for this chapter. You can also <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip">download the data package</a>, and unzip it to your project directory.</p>
 <div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="occupancy.html#cb53-1"></a><span class="kw">library</span>(auk)</span>
 <span id="cb53-2"><a href="occupancy.html#cb53-2"></a><span class="kw">library</span>(lubridate)</span>
@@ -314,17 +314,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="occupancy-data" class="section level2">
 <h2><span class="header-section-number">5.2</span> Data preparation</h2>
-<p>First, we need to extract a subset of the eBird data that meets the assumptions of occupancy models, then we perform spatiotemporal subsampling to deal with spatial bias in the data.</p>
+<p>First, will extract a subset of the eBird data that meets the assumptions of occupancy models, and then we perform spatiotemporal subsampling to deal with spatial bias in the data.</p>
 <p>Let’s start by filtering our data to include only checklists with 5 or fewer observers, to reduce sources of variation in detectability, and because there are very few checklists with more than 5 observers. In addition, we’ll subset observations to the most recent year for which we have data (2019) to fit a single-season occupancy model.</p>
 <div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="occupancy.html#cb54-1"></a><span class="co"># filter prior to creating occupancy model data</span></span>
 <span id="cb54-2"><a href="occupancy.html#cb54-2"></a>ebird_filtered &lt;-<span class="st"> </span><span class="kw">filter</span>(ebird_habitat, </span>
 <span id="cb54-3"><a href="occupancy.html#cb54-3"></a>                         number_observers <span class="op">&lt;=</span><span class="st"> </span><span class="dv">5</span>,</span>
 <span id="cb54-4"><a href="occupancy.html#cb54-4"></a>                         year <span class="op">==</span><span class="st"> </span><span class="kw">max</span>(year))</span></code></pre></div>
-<p>In some situations, you may want to further filter the data based on the results of an exploratory analysis similar to the one conducted in Section <a href="ebird.html#ebird-explore">2.5</a>. However, we won’t further filter the observations in eBird for our occupancy example. Given the extra constraints for data suitable for occupancy modeling, it may be useful to retain more checklists at this stage.</p>
+<p>In some situations, you may want to further filter the data based on the results of an exploratory analysis similar to the one conducted in Section <a href="ebird.html#ebird-explore">2.5</a>. Even though most of the checklists in this example are submitted by 2 or fewer observers, we won’t further filter the observations for our occupancy example. Given the extra constraints for data suitable for occupancy modeling, it may be useful to retain more checklists at this stage.</p>
 <div id="occupancy-data-sites" class="section level3">
 <h3><span class="header-section-number">5.2.1</span> Data formatting</h3>
-<p>Next, we need to generate detection histories for each location we define as a site. In this example, we define the month of June as the time period over which we assume that the population is closed for Wood Thrush in BCR 27, and a site is defined as a specific location (latitude/longitude) that is visited at least twice by the same observer within our defined period of closure (i.e. the month of June).</p>
-<p>The <code>auk</code> function <code>filter_repeat_visits()</code> is designed to extract a subset of eBird data suitable for occupancy modeling. Using the function, we first filter the data to only sites that have at least 2 visits (<code>min_obs</code>). We also define the maximum number of repeat visits (<code>max_obs</code>) as 10 visits or checklists. When a specific site has been visited more than 10 times, the function will randomly select 10 checklists from all the visits to that site. If we had data from more than one year, we would use <code>annual_closure = TRUE</code> to determine that populations are closed within years, but <em>not closed</em> between years (i.e. species occurrence can change between years). If we want to define periods of closure within years, we can define these in terms of the number of days using <code>n_days</code>. For example, <code>n_days = 10</code> would define contiguous sets of 10 days, starting with the earliest observation date in the data, and use these as consecutive periods of closure. Here we don’t define <code>n_days</code> so we are treating all the June 2019 checklists as a single season and with a closed population. Finally, <code>site_vars</code> specifies the set of variables that defines a site. In this example, a site is defined jointly by the location and observer IDs. Any set of variables in the data can be used to define sites. For example, <code>site_vars = "locality_id"</code> could be used to define sites using the location regardless of observer.</p>
+<p>Next, we need to create detection histories for each location we define as a site. In this example, we define the month of June as the time period over which we assume that there are no changes in occupancy between secondary sampling occasions for Wood Thrush in BCR 27. The time frame over which closure can be assumed will differ among species and localities, requires careful consideration. We define a site as a specific location (latitude/longitude) that is visited at least twice by the same observer within our defined period of closure (i.e. the month of June).</p>
+<p>The <code>auk</code> function <code>filter_repeat_visits()</code> is designed to extract a subset of eBird data suitable for occupancy modeling. Using the function, we first filter the data to only sites that have at least 2 visits (<code>min_obs</code>). We also define the maximum number of repeat visits (<code>max_obs</code>) as 10 visits or checklists. When a specific site has been visited more than 10 times, the function will randomly select 10 checklists from all the visits to that site. If we had data from more than one year, we would use <code>annual_closure = TRUE</code> to determine that populations are closed within the specified time frame for a given year, but <em>not closed</em> between years. In other words, species occurrence does not change from one repeat visit to the next for a given sampling event (e.g. year), but can change between years. If we want to define periods of closure within years, we can define these in terms of the number of days using <code>n_days</code>. For example, <code>n_days = 10</code> would define contiguous sets of 10 days, starting with the earliest observation date in the data, and use these as consecutive periods of closure. Here we don’t define <code>n_days</code> and treat all the June 2019 checklists as repeat visits during a single season. Finally, <code>site_vars</code> specifies the set of variables that defines a site. In this example, a site is defined jointly by the location and observer IDs. Any set of variables in the data can be used to define sites. For example, <code>site_vars = "locality_id"</code> could be used to define sites using the location regardless of observer.</p>
 <div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="occupancy.html#cb55-1"></a>occ &lt;-<span class="st"> </span><span class="kw">filter_repeat_visits</span>(ebird_filtered, </span>
 <span id="cb55-2"><a href="occupancy.html#cb55-2"></a>                            <span class="dt">min_obs =</span> <span class="dv">2</span>, <span class="dt">max_obs =</span> <span class="dv">10</span>,</span>
 <span id="cb55-3"><a href="occupancy.html#cb55-3"></a>                            <span class="dt">annual_closure =</span> <span class="ot">TRUE</span>,</span>
@@ -339,11 +339,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb55-12"><a href="occupancy.html#cb55-12"></a><span class="co"># number of individual sites</span></span>
 <span id="cb55-13"><a href="occupancy.html#cb55-13"></a><span class="kw">n_distinct</span>(occ<span class="op">$</span>site)</span>
 <span id="cb55-14"><a href="occupancy.html#cb55-14"></a><span class="co">#&gt; [1] 988</span></span></code></pre></div>
-<p>This function <code>filter_repeat_visits()</code> added three new columns to the dataset: <code>site</code> is a unique site ID (here, location and observer), <code>closure_id</code> identifies the primary period of closure (in this example the year), and <code>n_observations</code> is the number of visits to each site. Our capture histories are now properly formatted for occupancy models and ready to be analyzed. Note that we’ve made a trade off in sample size, dropping from 10,414 checklists to 3,724 checklists over 988 sites.</p>
-<p>We’ll use our filtered observations to fit a single-season occupancy model using the <code>unmarked</code> R package. For additional details on the type of data format required for this package, consult the documentation for the <code>unmarked</code> function <code>formatWide()</code>. The <code>auk</code> function <code>format_unmarked_occu()</code> converts data from a vertical format in which each row is an observation (as in the EBD) to a horizontal detection history required by <code>unmarked</code>, where each row is a site.</p>
-<p>At this stage, we need to specify which variables will be ecological process (i.e. occupancy) covariates and which will be observational process (i.e. detection) covariates. Occupancy covariates (<code>site_covs</code>) will be unique at the level of the site, while detection covariates (<code>obs_covs</code>) will be unique for each site and sampling occasion (i.e. checklist).</p>
+<p>This function <code>filter_repeat_visits()</code> added three new columns to the dataset: <code>site</code> is a unique site ID (here, location and observer), <code>closure_id</code> identifies the primary period of closure (in this example the year), and <code>n_observations</code> is the number of visits to each site. Our capture histories are now properly formatted for a single-season occupancy model and ready to be analyzed. Note that we’ve made a trade off in sample size, dropping from 10,414 checklists to 3,724 checklists over 988 sites.</p>
+<p>We’ll use our filtered observations to fit a single-season occupancy model using the <code>unmarked</code> R package. For additional details on the type of data format required for this package, consult the documentation for the <code>unmarked</code> function <code>formatWide()</code>. The <code>auk</code> function <code>format_unmarked_occu()</code> converts data from a vertical format in which each row is an observation (as in the EBD) to a horizontal detection history where each row is a site. Under this format, each column represent a repeat visit- for this example, we will have up to 10 detection event columns. This data format is commonly used for most applications of occupancy model, including <code>unmarked</code>.</p>
+<p>At this stage, we need to specify which variables will be ecological process (i.e. occupancy) covariates and which will be observational process (i.e. detection) covariates. Occupancy covariates (<code>site_covs</code>) will be unique at the level of the site, while detection covariates (<code>obs_covs</code>) can be also be unique for each site, as well as sampling occasion (i.e. checklist).</p>
 <p>For this example, we’ll use MODIS land cover variables as habitat covariates for modeling the occupancy probability of Wood Thrush. Based on <a href="encounter.html#encounter-habitat-pi">predictor importance</a> measures from Chapter <a href="encounter.html#encounter">4</a>, we include deciduous broadleaf forest and mixed forest as habitat types for which we expect positive relationships with occupancy, and croplands and urban, for which we expect negative relationships.</p>
-<p>To estimate detection probability, we include five effort variables that are related to the detection process. Habitat type has been shown to affect detectability, for example, some species are harder to detect in densely forested habitats relative to more open habitat types. So we also include deciduous broadleaf forest and mixed forest as variables in the detectability model. Occupancy models allow us to tease apart the differing effects of habitat on both detection and occupancy probabilities.</p>
+<p>To estimate detection probability, we include three effort variables that are related to the detection process. Habitat type has been shown to influence detectability in bird species, for example, some species are harder to detect in densely forested habitats relative to more open habitat types. So we also include deciduous broadleaf forest and mixed forest as covariates for detection probability. Occupancy models allow us to tease apart the differing effects of habitat on both detection and occupancy probabilities.</p>
 <div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="occupancy.html#cb56-1"></a><span class="co"># format for unmarked</span></span>
 <span id="cb56-2"><a href="occupancy.html#cb56-2"></a>occ_wide &lt;-<span class="st"> </span><span class="kw">format_unmarked_occu</span>(occ, </span>
 <span id="cb56-3"><a href="occupancy.html#cb56-3"></a>                                 <span class="dt">site_id =</span> <span class="st">&quot;site&quot;</span>, </span>
@@ -364,8 +364,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="encounter-data-sss" class="section level3">
 <h3><span class="header-section-number">5.2.2</span> Spatial subsampling</h3>
-<p>As discussed in Section <a href="encounter.html#encounter-sss">4.3</a>, spatial subsampling of eBird observations reduces spatial bias. We’ll use the same hexagonal subsampling approach as in Chapter <a href="encounter.html#encounter">4</a>; however, here we’ll subsample at the level of sites rather than observations. For this example, we will sample one site per 5 km grid cell. Note, that because we included <code>observer_id</code> in the site definition, this subsampling process will only select one set of visits from <em>one observer</em> to <em>one site</em>, within each 5km cell.</p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="occupancy.html#cb57-1"></a><span class="co"># generate hexagonal grid with ~ 5 km betweeen cells</span></span>
+<p>As discussed in Section <a href="encounter.html#encounter-sss">4.3</a>, spatial subsampling of eBird observations reduces spatial bias. We’ll use the same hexagonal subsampling approach as in Chapter <a href="encounter.html#encounter">4</a>; however, here we’ll subsample at the level of sites rather than observations. For this example, we will sample one site per 5 km grid cell. Note, that because we included <code>observer_id</code> in the site definition, this subsampling process will only select one row, or set of visits from <em>one observer</em> to <em>one site</em>, within each 5km cell.</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="occupancy.html#cb57-1"></a><span class="co"># generate hexagonal grid with ~ 5 km between cells</span></span>
 <span id="cb57-2"><a href="occupancy.html#cb57-2"></a>dggs &lt;-<span class="st"> </span><span class="kw">dgconstruct</span>(<span class="dt">spacing =</span> <span class="dv">5</span>)</span>
 <span id="cb57-3"><a href="occupancy.html#cb57-3"></a><span class="co"># get hexagonal cell id for each site</span></span>
 <span id="cb57-4"><a href="occupancy.html#cb57-4"></a>occ_wide_cell &lt;-<span class="st"> </span>occ_wide <span class="op">%&gt;%</span><span class="st"> </span></span>
@@ -482,7 +482,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb59-46"><a href="occupancy.html#cb59-46"></a><span class="co">#&gt; Bootstrap iterations: 0</span></span></code></pre></div>
 <div id="occupancy-model-assess" class="section level3">
 <h3><span class="header-section-number">5.3.1</span> Assessment</h3>
-<p>Although few goodness-of-fit tests exist for occupancy models, we demonstrate how to perform the MacKenzie and Bailey <span class="citation">(<a href="#ref-mackenzieAssessingFitSiteoccupancy2004" role="doc-biblioref">2004</a>)</span> goodness-of-fit test. This approach calculates a Pearson’s chi-square fit statistic from the observed and expected frequencies of detection histories for a given model. For this example, we use the <code>mb.gof.test()</code> test function in the <code>AICcmodavg</code> package, which can handle occupancy models produced by the <code>occu()</code> function in <code>unmarked</code>. Note that to produce accurate results, this process requires simulating a large number of bootstrap samples, which can take a long time to run. To keep the execution times reasonable, we set <code>nsim = 10</code> to simulate 10 samples for this example; however, when running this under regular circumstances, you should increase this to a much higer number of simulations (e.g., nsim = 1000).</p>
+<p>Although few goodness-of-fit tests exist for occupancy models, we demonstrate how to perform the MacKenzie and Bailey <span class="citation">(<a href="#ref-mackenzieAssessingFitSiteoccupancy2004" role="doc-biblioref">2004</a>)</span> goodness-of-fit test. This approach calculates a Pearson’s chi-square fit statistic from the observed and expected frequencies of detection histories for a given model. For this example, we use the <code>mb.gof.test()</code> test function in the <code>AICcmodavg</code> package, which can handle occupancy models produced by the <code>occu()</code> function in <code>unmarked</code>. Note that to produce accurate results, this process requires simulating a large number of bootstrap samples, which can take a long time to run. To keep the execution times reasonable, we set <code>nsim = 10</code> to simulate 10 samples for this example; however, when running this under regular circumstances, you should increase this to a much higher number of simulations (e.g., <code>nsim = 1000</code>).</p>
 <div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="occupancy.html#cb60-1"></a>occ_gof &lt;-<span class="st"> </span><span class="kw">mb.gof.test</span>(occ_model, <span class="dt">nsim =</span> <span class="dv">10</span>, <span class="dt">plot.hist =</span> <span class="ot">FALSE</span>)</span>
 <span id="cb60-2"><a href="occupancy.html#cb60-2"></a><span class="co"># hide the chisq table to give simpler output</span></span>
 <span id="cb60-3"><a href="occupancy.html#cb60-3"></a>occ_gof<span class="op">$</span>chisq.table &lt;-<span class="st"> </span><span class="ot">NULL</span></span>
@@ -503,25 +503,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="occupancy-model-select" class="section level3">
 <h3><span class="header-section-number">5.3.2</span> Model selection</h3>
-<p>So far, we have a single global model that includes all of the covariates we believe will influence the occupancy and detection probabilities. In general, we suggest that careful consideration be used when choosing the set of candidate models to be run and compared during model selection. In this example, we will use the <code>dredge()</code> function to generate a set of candidate models using different combinations of the covariates in the global model. Since we know from prior experience that the effort covariates are almost always important, we’ll lock these variables in, and consider a candidate set consisting of all possible combinations of the ecological covariates in the occupancy submodel.</p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="occupancy.html#cb62-1"></a><span class="co"># get list of all possible terms, then subset to those we want to keep</span></span>
-<span id="cb62-2"><a href="occupancy.html#cb62-2"></a>det_terms &lt;-<span class="st"> </span><span class="kw">getAllTerms</span>(occ_model) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb62-3"><a href="occupancy.html#cb62-3"></a><span class="st">  </span><span class="co"># retain the detection submodel covariates</span></span>
-<span id="cb62-4"><a href="occupancy.html#cb62-4"></a><span class="st">  </span><span class="kw">discard</span>(str_detect, <span class="dt">pattern =</span> <span class="st">&quot;psi&quot;</span>)</span>
-<span id="cb62-5"><a href="occupancy.html#cb62-5"></a></span>
-<span id="cb62-6"><a href="occupancy.html#cb62-6"></a><span class="co"># dredge all possibe combinations of the occupancy covariates</span></span>
-<span id="cb62-7"><a href="occupancy.html#cb62-7"></a>occ_dredge &lt;-<span class="st"> </span><span class="kw">dredge</span>(occ_model, <span class="dt">fixed =</span> det_terms)</span>
-<span id="cb62-8"><a href="occupancy.html#cb62-8"></a></span>
-<span id="cb62-9"><a href="occupancy.html#cb62-9"></a><span class="co"># model comparison</span></span>
-<span id="cb62-10"><a href="occupancy.html#cb62-10"></a>mc &lt;-<span class="st"> </span><span class="kw">select</span>(occ_dredge, <span class="kw">starts_with</span>(<span class="st">&quot;psi(p&quot;</span>), df, AICc, delta, weight)</span>
-<span id="cb62-11"><a href="occupancy.html#cb62-11"></a><span class="co"># shorten names for printing</span></span>
-<span id="cb62-12"><a href="occupancy.html#cb62-12"></a><span class="kw">names</span>(mc) &lt;-<span class="st"> </span><span class="kw">names</span>(mc) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb62-13"><a href="occupancy.html#cb62-13"></a><span class="st">  </span><span class="kw">str_extract</span>(<span class="st">&quot;(?&lt;=psi</span><span class="ch">\\</span><span class="st">(pland_[0-9]{2}_)[a-z_]+&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb62-14"><a href="occupancy.html#cb62-14"></a><span class="st">  </span><span class="kw">coalesce</span>(<span class="kw">names</span>(mc))</span>
-<span id="cb62-15"><a href="occupancy.html#cb62-15"></a></span>
-<span id="cb62-16"><a href="occupancy.html#cb62-16"></a>mc <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb62-17"><a href="occupancy.html#cb62-17"></a><span class="st">  </span><span class="kw">mutate_all</span>(<span class="op">~</span><span class="st"> </span><span class="kw">round</span>(., <span class="dv">3</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb62-18"><a href="occupancy.html#cb62-18"></a><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</span></code></pre></div>
+<p>So far, we have a single global model that includes all of the covariates we believe will influence the occupancy and detection probabilities. In general, we suggest that careful consideration be used when choosing the set of candidate models to be run and compared during model selection. In this example, we will use the <code>dredge()</code> function to generate a set of candidate models using different combinations of the covariates in the global model. This does take some time to run, and hence recommend choosing carefully candidate model sets instead of this approach.</p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="occupancy.html#cb62-1"></a><span class="co"># dredge all possible combinations of the occupancy covariates</span></span>
+<span id="cb62-2"><a href="occupancy.html#cb62-2"></a>occ_dredge &lt;-<span class="st"> </span><span class="kw">dredge</span>(occ_model)</span>
+<span id="cb62-3"><a href="occupancy.html#cb62-3"></a></span>
+<span id="cb62-4"><a href="occupancy.html#cb62-4"></a><span class="co"># model comparison to explore the results for occupancy</span></span>
+<span id="cb62-5"><a href="occupancy.html#cb62-5"></a>mc &lt;-<span class="st"> </span><span class="kw">select</span>(occ_dredge, <span class="kw">starts_with</span>(<span class="st">&quot;psi(p&quot;</span>), df, AICc, delta, weight)</span>
+<span id="cb62-6"><a href="occupancy.html#cb62-6"></a><span class="co"># shorten names for printing</span></span>
+<span id="cb62-7"><a href="occupancy.html#cb62-7"></a><span class="kw">names</span>(mc) &lt;-<span class="st"> </span><span class="kw">names</span>(mc) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb62-8"><a href="occupancy.html#cb62-8"></a><span class="st">  </span><span class="kw">str_extract</span>(<span class="st">&quot;(?&lt;=psi</span><span class="ch">\\</span><span class="st">(pland_[0-9]{2}_)[a-z_]+&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb62-9"><a href="occupancy.html#cb62-9"></a><span class="st">  </span><span class="kw">coalesce</span>(<span class="kw">names</span>(mc))</span>
+<span id="cb62-10"><a href="occupancy.html#cb62-10"></a></span>
+<span id="cb62-11"><a href="occupancy.html#cb62-11"></a><span class="co"># take a quick peak at the model selection table</span></span>
+<span id="cb62-12"><a href="occupancy.html#cb62-12"></a><span class="kw">mutate_all</span>(mc, <span class="op">~</span><span class="st"> </span><span class="kw">round</span>(., <span class="dv">3</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb62-13"><a href="occupancy.html#cb62-13"></a><span class="st">  </span><span class="kw">head</span>(<span class="dv">18</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb62-14"><a href="occupancy.html#cb62-14"></a><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -537,325 +533,361 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">7.08</td>
+<td align="right">6.07</td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right">-2.12</td>
+<td align="right">6</td>
+<td align="right">685</td>
+<td align="right">0.000</td>
+<td align="right">0.027</td>
+</tr>
+<tr class="even">
+<td align="right">5.91</td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right">-2.14</td>
+<td align="right">8</td>
+<td align="right">685</td>
+<td align="right">0.117</td>
+<td align="right">0.026</td>
+</tr>
+<tr class="odd">
+<td align="right">7.03</td>
 <td align="right"></td>
 <td align="right"></td>
 <td align="right">-2.09</td>
-<td align="right">11</td>
-<td align="right">689</td>
-<td align="right">0.000</td>
-<td align="right">0.366</td>
+<td align="right">9</td>
+<td align="right">685</td>
+<td align="right">0.304</td>
+<td align="right">0.023</td>
 </tr>
 <tr class="even">
-<td align="right">6.88</td>
-<td align="right">0.935</td>
+<td align="right">6.13</td>
 <td align="right"></td>
-<td align="right">-1.95</td>
-<td align="right">12</td>
-<td align="right">690</td>
-<td align="right">0.783</td>
-<td align="right">0.248</td>
+<td align="right"></td>
+<td align="right">-2.12</td>
+<td align="right">7</td>
+<td align="right">685</td>
+<td align="right">0.725</td>
+<td align="right">0.019</td>
 </tr>
 <tr class="odd">
-<td align="right">6.92</td>
+<td align="right">5.84</td>
+<td align="right">0.930</td>
 <td align="right"></td>
-<td align="right">-1.271</td>
-<td align="right">-2.15</td>
-<td align="right">12</td>
-<td align="right">690</td>
-<td align="right">1.543</td>
-<td align="right">0.169</td>
+<td align="right">-1.99</td>
+<td align="right">7</td>
+<td align="right">685</td>
+<td align="right">0.726</td>
+<td align="right">0.019</td>
 </tr>
 <tr class="even">
-<td align="right">6.74</td>
-<td align="right">0.889</td>
-<td align="right">-1.116</td>
-<td align="right">-2.01</td>
-<td align="right">13</td>
-<td align="right">691</td>
-<td align="right">2.459</td>
-<td align="right">0.107</td>
+<td align="right">5.61</td>
+<td align="right">0.901</td>
+<td align="right"></td>
+<td align="right">-2.02</td>
+<td align="right">9</td>
+<td align="right">686</td>
+<td align="right">0.936</td>
+<td align="right">0.017</td>
 </tr>
 <tr class="odd">
-<td align="right">7.97</td>
-<td align="right">1.262</td>
+<td align="right">6.83</td>
+<td align="right">0.920</td>
 <td align="right"></td>
-<td align="right"></td>
-<td align="right">11</td>
-<td align="right">693</td>
-<td align="right">4.335</td>
-<td align="right">0.042</td>
-</tr>
-<tr class="even">
-<td align="right">8.31</td>
-<td align="right"></td>
-<td align="right"></td>
-<td align="right"></td>
+<td align="right">-1.96</td>
 <td align="right">10</td>
-<td align="right">693</td>
-<td align="right">4.578</td>
-<td align="right">0.037</td>
-</tr>
-<tr class="odd">
-<td align="right">7.91</td>
-<td align="right">1.243</td>
-<td align="right">-0.598</td>
-<td align="right"></td>
-<td align="right">12</td>
-<td align="right">695</td>
-<td align="right">6.301</td>
+<td align="right">686</td>
+<td align="right">1.110</td>
 <td align="right">0.016</td>
 </tr>
 <tr class="even">
-<td align="right">8.23</td>
+<td align="right">6.71</td>
 <td align="right"></td>
-<td align="right">-0.759</td>
 <td align="right"></td>
-<td align="right">11</td>
-<td align="right">695</td>
-<td align="right">6.463</td>
+<td align="right">-2.09</td>
+<td align="right">7</td>
+<td align="right">686</td>
+<td align="right">1.392</td>
 <td align="right">0.014</td>
 </tr>
 <tr class="odd">
+<td align="right">6.03</td>
 <td align="right"></td>
 <td align="right"></td>
-<td align="right"></td>
-<td align="right">-3.06</td>
-<td align="right">10</td>
-<td align="right">717</td>
-<td align="right">28.051</td>
-<td align="right">0.000</td>
+<td align="right">-2.15</td>
+<td align="right">6</td>
+<td align="right">686</td>
+<td align="right">1.456</td>
+<td align="right">0.013</td>
 </tr>
 <tr class="even">
+<td align="right">5.91</td>
 <td align="right"></td>
-<td align="right"></td>
-<td align="right">-2.271</td>
-<td align="right">-3.14</td>
-<td align="right">11</td>
-<td align="right">717</td>
-<td align="right">28.324</td>
-<td align="right">0.000</td>
+<td align="right">-1.26</td>
+<td align="right">-2.18</td>
+<td align="right">7</td>
+<td align="right">686</td>
+<td align="right">1.518</td>
+<td align="right">0.013</td>
 </tr>
 <tr class="odd">
+<td align="right">5.73</td>
 <td align="right"></td>
-<td align="right">0.961</td>
-<td align="right"></td>
-<td align="right">-2.89</td>
-<td align="right">11</td>
-<td align="right">717</td>
-<td align="right">28.459</td>
-<td align="right">0.000</td>
-</tr>
-<tr class="even">
-<td align="right"></td>
-<td align="right">0.883</td>
-<td align="right">-2.098</td>
-<td align="right">-2.98</td>
-<td align="right">12</td>
-<td align="right">718</td>
-<td align="right">29.001</td>
-<td align="right">0.000</td>
-</tr>
-<tr class="odd">
-<td align="right"></td>
-<td align="right">1.446</td>
-<td align="right"></td>
-<td align="right"></td>
-<td align="right">10</td>
-<td align="right">729</td>
-<td align="right">40.192</td>
-<td align="right">0.000</td>
-</tr>
-<tr class="even">
-<td align="right"></td>
-<td align="right">1.404</td>
-<td align="right">-1.446</td>
-<td align="right"></td>
-<td align="right">11</td>
-<td align="right">730</td>
-<td align="right">41.535</td>
-<td align="right">0.000</td>
-</tr>
-<tr class="odd">
-<td align="right"></td>
-<td align="right"></td>
-<td align="right"></td>
-<td align="right"></td>
+<td align="right">-1.31</td>
+<td align="right">-2.21</td>
 <td align="right">9</td>
-<td align="right">731</td>
-<td align="right">41.922</td>
-<td align="right">0.000</td>
+<td align="right">686</td>
+<td align="right">1.605</td>
+<td align="right">0.012</td>
 </tr>
 <tr class="even">
+<td align="right">5.90</td>
+<td align="right">0.878</td>
+<td align="right"></td>
+<td align="right">-1.99</td>
+<td align="right">8</td>
+<td align="right">686</td>
+<td align="right">1.608</td>
+<td align="right">0.012</td>
+</tr>
+<tr class="odd">
+<td align="right">5.98</td>
 <td align="right"></td>
 <td align="right"></td>
-<td align="right">-1.649</td>
+<td align="right">-2.13</td>
+<td align="right">7</td>
+<td align="right">686</td>
+<td align="right">1.642</td>
+<td align="right">0.012</td>
+</tr>
+<tr class="even">
+<td align="right">6.94</td>
 <td align="right"></td>
+<td align="right"></td>
+<td align="right">-2.08</td>
+<td align="right">8</td>
+<td align="right">686</td>
+<td align="right">1.701</td>
+<td align="right">0.012</td>
+</tr>
+<tr class="odd">
+<td align="right">6.87</td>
+<td align="right"></td>
+<td align="right">-1.28</td>
+<td align="right">-2.15</td>
 <td align="right">10</td>
-<td align="right">732</td>
-<td align="right">43.041</td>
-<td align="right">0.000</td>
+<td align="right">686</td>
+<td align="right">1.825</td>
+<td align="right">0.011</td>
+</tr>
+<tr class="even">
+<td align="right">6.05</td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right">-2.12</td>
+<td align="right">7</td>
+<td align="right">687</td>
+<td align="right">2.018</td>
+<td align="right">0.010</td>
+</tr>
+<tr class="odd">
+<td align="right">6.06</td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right">-2.12</td>
+<td align="right">7</td>
+<td align="right">687</td>
+<td align="right">2.020</td>
+<td align="right">0.010</td>
+</tr>
+<tr class="even">
+<td align="right">5.90</td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right">-2.14</td>
+<td align="right">9</td>
+<td align="right">687</td>
+<td align="right">2.048</td>
+<td align="right">0.010</td>
 </tr>
 </tbody>
 </table>
-<p>The corrected <a href="https://en.wikipedia.org/wiki/Akaike_information_criterion#AICc">Akaike Information Criterion (AICc)</a> measures the likelihood of each model to have generated the data we observed, adjusted for the number of parameters in the model. Lower values indicate models with a better fit to the data, penalizing for the added number of parameters. Delta is the difference in AICc values between the given model and the model that is most likely to have generated the data (i.e. the one with the lowest AICc), and is a relative measure conditional on the candidate set of models. Finally, the AIC weight is a transformation of delta that can be interpreted as the probability that the given model is the most likely one of the candidate models to have generated the data, and is also conditional on the candidate model set. The first four columns give the model coefficients for each of the habitat covariates in the occupancy submodel; missing values indicate that that covariate was not included in the given model.</p>
-<p>A quick look at the results of dredging reveals that for the Wood Thrush example there is not a clear single model, or even a small set of models, that are most likely to have generated our data. This is evident from the low AIC weight for the top model and the large number of models with moderate AIC weights. Given this, and the fact that all of our effects are linear and use the same family and link function, we’ll average across all models, weighted by AICc, to produce a model-averaged prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the <code>get.models()</code> function to extract just these models prior to averaging. For the sake of efficiency, we’ll only average the top models, which we’ll define as those cumulatively comprising 95% of the weights. This will trivially impact the results since the models with lower support have very small weights and therefore contribute little to the weighted-average predictions.</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="occupancy.html#cb63-1"></a><span class="co"># select models with the most suport for model averaging</span></span>
-<span id="cb63-2"><a href="occupancy.html#cb63-2"></a>occ_dredge_<span class="dv">95</span> &lt;-<span class="st"> </span><span class="kw">get.models</span>(occ_dredge, <span class="dt">subset =</span> <span class="kw">cumsum</span>(weight) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.95</span>)</span>
+<p>The corrected <a href="https://en.wikipedia.org/wiki/Akaike_information_criterion#AICc">Akaike Information Criterion (AICc)</a> measures the likelihood of each model to have generated the data we observed, adjusted for the number of parameters in the model. Lower values indicate models with a better fit to the data, penalizing for the added number of parameters. Delta is the difference in AICc values between the given model and the model that is most likely to have generated the data (i.e. the one with the lowest AICc), and is a relative measure conditional on the candidate set of models. Finally, the AIC weight is a transformation of delta that can be interpreted as the probability that the given model is the most likely one of the candidate models to have generated the data, and is also conditional on the candidate model set.</p>
+<p>A quick look at the results of dredging, focusing on visualizing what covariates most influence occupancy probability, reveals that for the Wood Thrush example there is not a clear single model, or even a small set of models, that are most likely to have generated our data. This is evident from the number of models that all fall within a delta AICc value of ~2-3, and the large number of models with moderate AIC weights. Given this, and the fact that all of our effects are linear and use the same family and link function, we’ll average across all models, weighted by AICc, to produce a model-averaged prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the <code>get.models()</code> function to extract just these models prior to averaging. For the sake of efficiency, we’ll only average the top models, which we’ll define as those cumulatively comprising 95% of the weights. This will trivially impact the results since the models with lower support have very small weights and therefore contribute little to the weighted-average predictions.</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="occupancy.html#cb63-1"></a><span class="co"># select models with the most support for model averaging (less than 2.5 Delta AICc)</span></span>
+<span id="cb63-2"><a href="occupancy.html#cb63-2"></a>occ_dredge_Delta &lt;-<span class="st"> </span><span class="kw">get.models</span>(occ_dredge, <span class="dt">subset =</span> delta <span class="op">&lt;=</span><span class="st"> </span><span class="fl">2.5</span>)</span>
 <span id="cb63-3"><a href="occupancy.html#cb63-3"></a></span>
 <span id="cb63-4"><a href="occupancy.html#cb63-4"></a><span class="co"># average models based on model weights </span></span>
-<span id="cb63-5"><a href="occupancy.html#cb63-5"></a>occ_avg &lt;-<span class="st"> </span><span class="kw">model.avg</span>(occ_dredge_<span class="dv">95</span>, <span class="dt">fit =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb63-5"><a href="occupancy.html#cb63-5"></a>occ_avg &lt;-<span class="st"> </span><span class="kw">model.avg</span>(occ_dredge_Delta, <span class="dt">fit =</span> <span class="ot">TRUE</span>)</span>
 <span id="cb63-6"><a href="occupancy.html#cb63-6"></a></span>
-<span id="cb63-7"><a href="occupancy.html#cb63-7"></a><span class="co"># model coefficients</span></span>
-<span id="cb63-8"><a href="occupancy.html#cb63-8"></a><span class="kw">t</span>(occ_avg<span class="op">$</span>coefficients)</span>
-<span id="cb63-9"><a href="occupancy.html#cb63-9"></a><span class="co">#&gt;                                       full   subset</span></span>
-<span id="cb63-10"><a href="occupancy.html#cb63-10"></a><span class="co">#&gt; psi(Int)                          -2.01638 -2.01638</span></span>
-<span id="cb63-11"><a href="occupancy.html#cb63-11"></a><span class="co">#&gt; psi(pland_04_deciduous_broadleaf)  6.99654  6.99654</span></span>
-<span id="cb63-12"><a href="occupancy.html#cb63-12"></a><span class="co">#&gt; psi(pland_13_urban)               -1.95991 -2.05220</span></span>
-<span id="cb63-13"><a href="occupancy.html#cb63-13"></a><span class="co">#&gt; p(Int)                            -1.26469 -1.26469</span></span>
-<span id="cb63-14"><a href="occupancy.html#cb63-14"></a><span class="co">#&gt; p(duration_minutes)                0.00654  0.00654</span></span>
-<span id="cb63-15"><a href="occupancy.html#cb63-15"></a><span class="co">#&gt; p(effort_distance_km)             -0.25472 -0.25472</span></span>
-<span id="cb63-16"><a href="occupancy.html#cb63-16"></a><span class="co">#&gt; p(number_observers)                0.16099  0.16099</span></span>
-<span id="cb63-17"><a href="occupancy.html#cb63-17"></a><span class="co">#&gt; p(pland_04_deciduous_broadleaf)   -0.77321 -0.77321</span></span>
-<span id="cb63-18"><a href="occupancy.html#cb63-18"></a><span class="co">#&gt; p(pland_05_mixed_forest)           2.98243  2.98243</span></span>
-<span id="cb63-19"><a href="occupancy.html#cb63-19"></a><span class="co">#&gt; p(protocol_typeTraveling)          0.84620  0.84620</span></span>
-<span id="cb63-20"><a href="occupancy.html#cb63-20"></a><span class="co">#&gt; p(time_observations_started)      -0.00557 -0.00557</span></span>
-<span id="cb63-21"><a href="occupancy.html#cb63-21"></a><span class="co">#&gt; psi(pland_05_mixed_forest)         0.40717  0.95693</span></span>
-<span id="cb63-22"><a href="occupancy.html#cb63-22"></a><span class="co">#&gt; psi(pland_12_cropland)            -0.35917 -1.21116</span></span></code></pre></div>
+<span id="cb63-7"><a href="occupancy.html#cb63-7"></a><span class="co"># model averaged coefficients for occupancy and detection probability</span></span>
+<span id="cb63-8"><a href="occupancy.html#cb63-8"></a><span class="kw">coef</span>(occ_avg)</span>
+<span id="cb63-9"><a href="occupancy.html#cb63-9"></a><span class="co">#&gt;                          psi(Int) psi(pland_04_deciduous_broadleaf)               psi(pland_13_urban) </span></span>
+<span id="cb63-10"><a href="occupancy.html#cb63-10"></a><span class="co">#&gt;                          -1.93233                           6.22730                          -2.09076 </span></span>
+<span id="cb63-11"><a href="occupancy.html#cb63-11"></a><span class="co">#&gt;                            p(Int)               p(duration_minutes)          p(pland_05_mixed_forest) </span></span>
+<span id="cb63-12"><a href="occupancy.html#cb63-12"></a><span class="co">#&gt;                          -1.14106                           0.00605                           3.15134 </span></span>
+<span id="cb63-13"><a href="occupancy.html#cb63-13"></a><span class="co">#&gt;             p(effort_distance_km)         p(protocol_typeTraveling)   p(pland_04_deciduous_broadleaf) </span></span>
+<span id="cb63-14"><a href="occupancy.html#cb63-14"></a><span class="co">#&gt;                          -0.20838                           0.62231                          -0.64714 </span></span>
+<span id="cb63-15"><a href="occupancy.html#cb63-15"></a><span class="co">#&gt;        psi(pland_05_mixed_forest)            psi(pland_12_cropland)      p(time_observations_started) </span></span>
+<span id="cb63-16"><a href="occupancy.html#cb63-16"></a><span class="co">#&gt;                           0.91570                          -1.25987                          -0.00217 </span></span>
+<span id="cb63-17"><a href="occupancy.html#cb63-17"></a><span class="co">#&gt;               p(number_observers) </span></span>
+<span id="cb63-18"><a href="occupancy.html#cb63-18"></a><span class="co">#&gt;                           0.10505</span></span></code></pre></div>
+<p>In this table, the <code>psi()</code> coefficients are from the occupancy submodel and the <code>p()</code> coefficients are from the detection submodel. based on these results, we see that an increase in deciduous broadleaf forest has a much stronger effects on occupancy probability than an increase in mixed forest. As expected, an increase in percentage of urban area and cropland both decrease occupancy probability.</p>
 </div>
 <div id="occupancy-model-detection" class="section level3">
-<h3><span class="header-section-number">5.3.3</span> Exploring detection model submodel</h3>
-<p>A unique feature of occupancy models, is that we can investigate whether certain covariates influence detection separately from any influencing occurrence, which wasn’t possible using the machine learning approach in Chapter <a href="encounter.html#encounter">4</a>. Specifically, we have already seen that the habitat covariates influence occupancy, but we can assess how these covariates affect detection probability, conditional on a bird being present and potentially detected. We included deciduous broadleaf forest (<code>pland_04</code>) and mixed forest (<code>pland_05</code>) as detection covariates in the global model, and we can compare a set of models with and without these covariates to assess their importance. Here we’ll demonstrate how to manually define and compare a set of models rather than use the <code>dredge()</code> function as we did in the previous section. Let’s start by defining the candidate model set. To do so, we explicitly define a null detection model with no habitat covariates, then add in additional terms using <code>update.formula()</code>.</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="occupancy.html#cb64-1"></a><span class="co"># define a null detection model</span></span>
-<span id="cb64-2"><a href="occupancy.html#cb64-2"></a>det_mod &lt;-<span class="st"> </span><span class="er">~</span><span class="st"> </span>time_observations_started <span class="op">+</span><span class="st"> </span></span>
-<span id="cb64-3"><a href="occupancy.html#cb64-3"></a><span class="st">  </span>duration_minutes <span class="op">+</span><span class="st"> </span></span>
-<span id="cb64-4"><a href="occupancy.html#cb64-4"></a><span class="st">  </span>effort_distance_km <span class="op">+</span><span class="st"> </span></span>
-<span id="cb64-5"><a href="occupancy.html#cb64-5"></a><span class="st">  </span>number_observers <span class="op">+</span><span class="st"> </span></span>
-<span id="cb64-6"><a href="occupancy.html#cb64-6"></a><span class="st">  </span>protocol_type <span class="op">~</span></span>
-<span id="cb64-7"><a href="occupancy.html#cb64-7"></a><span class="st">  </span>pland_<span class="dv">04</span>_deciduous_broadleaf <span class="op">+</span><span class="st"> </span></span>
-<span id="cb64-8"><a href="occupancy.html#cb64-8"></a><span class="st">  </span>pland_<span class="dv">05</span>_mixed_forest <span class="op">+</span><span class="st"> </span></span>
-<span id="cb64-9"><a href="occupancy.html#cb64-9"></a><span class="st">  </span>pland_<span class="dv">12</span>_cropland <span class="op">+</span><span class="st"> </span></span>
-<span id="cb64-10"><a href="occupancy.html#cb64-10"></a><span class="st">  </span>pland_<span class="dv">13</span>_urban</span>
-<span id="cb64-11"><a href="occupancy.html#cb64-11"></a></span>
-<span id="cb64-12"><a href="occupancy.html#cb64-12"></a><span class="co"># define and fit candidate models</span></span>
-<span id="cb64-13"><a href="occupancy.html#cb64-13"></a>mods &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">det_mod_null =</span> det_mod, </span>
-<span id="cb64-14"><a href="occupancy.html#cb64-14"></a>             <span class="dt">det_mod_dec =</span> <span class="kw">update.formula</span>(det_mod, <span class="op">~</span><span class="st"> </span>. <span class="op">+</span><span class="st"> </span></span>
-<span id="cb64-15"><a href="occupancy.html#cb64-15"></a><span class="st">                                            </span>pland_<span class="dv">04</span>_deciduous_broadleaf <span class="op">~</span><span class="st"> </span>.),</span>
-<span id="cb64-16"><a href="occupancy.html#cb64-16"></a>             <span class="dt">det_mod_mix =</span> <span class="kw">update.formula</span>(det_mod, <span class="op">~</span><span class="st"> </span>. <span class="op">+</span><span class="st"> </span></span>
-<span id="cb64-17"><a href="occupancy.html#cb64-17"></a><span class="st">                                            </span>pland_<span class="dv">05</span>_mixed_forest <span class="op">~</span><span class="st"> </span>.),</span>
-<span id="cb64-18"><a href="occupancy.html#cb64-18"></a>             <span class="dt">global =</span> <span class="kw">update.formula</span>(det_mod, </span>
-<span id="cb64-19"><a href="occupancy.html#cb64-19"></a>                                     <span class="op">~</span><span class="st"> </span>. <span class="op">+</span><span class="st"> </span></span>
-<span id="cb64-20"><a href="occupancy.html#cb64-20"></a><span class="st">                                       </span>pland_<span class="dv">04</span>_deciduous_broadleaf <span class="op">+</span><span class="st"> </span></span>
-<span id="cb64-21"><a href="occupancy.html#cb64-21"></a><span class="st">                                       </span>pland_<span class="dv">05</span>_mixed_forest <span class="op">~</span><span class="st"> </span>.)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb64-22"><a href="occupancy.html#cb64-22"></a><span class="st">  </span><span class="kw">map</span>(occu, <span class="dt">data =</span> occ_um)</span></code></pre></div>
-<p>Now we can perform model selection on this set to compare the different candidate models.</p>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="occupancy.html#cb65-1"></a>mod_sel &lt;-<span class="st"> </span><span class="kw">fitList</span>(<span class="dt">fits =</span> mods) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb65-2"><a href="occupancy.html#cb65-2"></a><span class="st">  </span><span class="kw">modSel</span>()</span>
-<span id="cb65-3"><a href="occupancy.html#cb65-3"></a>mod_sel</span>
-<span id="cb65-4"><a href="occupancy.html#cb65-4"></a><span class="co">#&gt;              nPars    AIC   delta AICwt cumltvWt</span></span>
-<span id="cb65-5"><a href="occupancy.html#cb65-5"></a><span class="co">#&gt; global          13 690.60 0.00000 0.478     0.48</span></span>
-<span id="cb65-6"><a href="occupancy.html#cb65-6"></a><span class="co">#&gt; det_mod_mix     12 690.60 0.00057 0.478     0.96</span></span>
-<span id="cb65-7"><a href="occupancy.html#cb65-7"></a><span class="co">#&gt; det_mod_dec     12 696.58 5.98599 0.024     0.98</span></span>
-<span id="cb65-8"><a href="occupancy.html#cb65-8"></a><span class="co">#&gt; det_mod_null    11 696.99 6.39447 0.020     1.00</span></span></code></pre></div>
-<p>From these results, it’s clear that including these forest habitat covariates–especially deciduous broadleaf forest–leads to a marked improvement in model performance, as observed by the differences in AIC and the AIC weights. Let’s look at the coefficients from the global model for these covariates to see how they’re impacting detection and occupancy.</p>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="occupancy.html#cb66-1"></a><span class="kw">coef</span>(occ_model) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb66-2"><a href="occupancy.html#cb66-2"></a><span class="st">  </span><span class="kw">enframe</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb66-3"><a href="occupancy.html#cb66-3"></a><span class="st">  </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(name, <span class="st">&quot;pland_0&quot;</span>))</span>
-<span id="cb66-4"><a href="occupancy.html#cb66-4"></a><span class="co">#&gt; # A tibble: 4 x 2</span></span>
-<span id="cb66-5"><a href="occupancy.html#cb66-5"></a><span class="co">#&gt;   name                               value</span></span>
-<span id="cb66-6"><a href="occupancy.html#cb66-6"></a><span class="co">#&gt;   &lt;chr&gt;                              &lt;dbl&gt;</span></span>
-<span id="cb66-7"><a href="occupancy.html#cb66-7"></a><span class="co">#&gt; 1 psi(pland_04_deciduous_broadleaf)  6.74 </span></span>
-<span id="cb66-8"><a href="occupancy.html#cb66-8"></a><span class="co">#&gt; 2 psi(pland_05_mixed_forest)         0.889</span></span>
-<span id="cb66-9"><a href="occupancy.html#cb66-9"></a><span class="co">#&gt; 3 p(pland_04_deciduous_broadleaf)   -0.778</span></span>
-<span id="cb66-10"><a href="occupancy.html#cb66-10"></a><span class="co">#&gt; 4 p(pland_05_mixed_forest)           2.87</span></span></code></pre></div>
-<p>The <code>psi()</code> coefficients are from the occupancy submodel and the <code>p()</code> coefficients are from the detection submodel. With this in mind, we see that increasing forest cover increases occupancy probability, since Wood Thrush are forest-associated species, but it decreases detection probability, since birds are harder to see and hear in dense forest. The ability to tease apart the differing effects that covariates have on detection and occupancy is one of the strengths of occupancy modeling.</p>
+<h3><span class="header-section-number">5.3.3</span> Exploring the effects of covariates on detection probability</h3>
+<p>A unique feature of occupancy models, is that we can investigate whether certain covariates specifically influence detection probability separately from any influencing occurrence, which wasn’t possible using the machine learning approach in Chapter <a href="encounter.html#encounter">4</a>. Specifically, we have already seen that the habitat covariates influence occupancy, but we can assess how these covariates affect detection probability using the same model averaging results that we generated above, conditional on a bird being present and potentially detected. We included deciduous broadleaf forest (<code>pland_04</code>) and mixed forest (<code>pland_05</code>) as detection covariates in the global model.</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="occupancy.html#cb64-1"></a><span class="co"># model comparison to explore the results for detection</span></span>
+<span id="cb64-2"><a href="occupancy.html#cb64-2"></a>md &lt;-<span class="st"> </span><span class="kw">select</span>(occ_dredge, <span class="kw">starts_with</span>(<span class="st">&quot;p(&quot;</span>), df, AICc, delta, weight)</span>
+<span id="cb64-3"><a href="occupancy.html#cb64-3"></a><span class="co"># shorten names for printing</span></span>
+<span id="cb64-4"><a href="occupancy.html#cb64-4"></a></span>
+<span id="cb64-5"><a href="occupancy.html#cb64-5"></a><span class="kw">names</span>(md) &lt;-<span class="st"> </span><span class="kw">names</span>(md) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb64-6"><a href="occupancy.html#cb64-6"></a><span class="st">  </span><span class="kw">str_extract</span>(<span class="st">&quot;(?&lt;=p</span><span class="ch">\\</span><span class="st">(pland_[0-9]{2}_)[a-z_]+&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb64-7"><a href="occupancy.html#cb64-7"></a><span class="st">  </span><span class="kw">coalesce</span>(<span class="kw">names</span>(md))</span>
+<span id="cb64-8"><a href="occupancy.html#cb64-8"></a></span>
+<span id="cb64-9"><a href="occupancy.html#cb64-9"></a><span class="co"># take a quick peak at the model selection table</span></span>
+<span id="cb64-10"><a href="occupancy.html#cb64-10"></a>md[<span class="dv">1</span><span class="op">:</span><span class="dv">18</span>,]</span>
+<span id="cb64-11"><a href="occupancy.html#cb64-11"></a><span class="co">#&gt;      p(Int) p(duration_minutes) p(effort_distance_km) p(number_observers) deciduous_broadleaf mixed_forest</span></span>
+<span id="cb64-12"><a href="occupancy.html#cb64-12"></a><span class="co">#&gt; 1170 -1.079             0.00573                    NA                  NA                  NA         3.20</span></span>
+<span id="cb64-13"><a href="occupancy.html#cb64-13"></a><span class="co">#&gt; 1204 -1.294             0.00683               -0.2112                  NA                  NA         3.26</span></span>
+<span id="cb64-14"><a href="occupancy.html#cb64-14"></a><span class="co">#&gt; 1212 -1.181             0.00681               -0.2436                  NA              -0.734         3.15</span></span>
+<span id="cb64-15"><a href="occupancy.html#cb64-15"></a><span class="co">#&gt; 1202 -1.243             0.00465                    NA                  NA                  NA         3.36</span></span>
+<span id="cb64-16"><a href="occupancy.html#cb64-16"></a><span class="co">#&gt; 1426 -1.030             0.00561                    NA                  NA                  NA         3.00</span></span>
+<span id="cb64-17"><a href="occupancy.html#cb64-17"></a><span class="co">#&gt; 1460 -1.236             0.00680               -0.2152                  NA                  NA         3.06</span></span>
+<span id="cb64-18"><a href="occupancy.html#cb64-18"></a><span class="co">#&gt; 1468 -1.129             0.00676               -0.2444                  NA              -0.749         2.95</span></span>
+<span id="cb64-19"><a href="occupancy.html#cb64-19"></a><span class="co">#&gt; 1178 -0.987             0.00567                    NA                  NA              -0.420         3.12</span></span>
+<span id="cb64-20"><a href="occupancy.html#cb64-20"></a><span class="co">#&gt; 1201 -1.039                  NA                    NA                  NA                  NA         3.23</span></span>
+<span id="cb64-21"><a href="occupancy.html#cb64-21"></a><span class="co">#&gt; 1682 -1.070             0.00569                    NA                  NA                  NA         3.19</span></span>
+<span id="cb64-22"><a href="occupancy.html#cb64-22"></a><span class="co">#&gt; 1716 -1.286             0.00678               -0.2123                  NA                  NA         3.24</span></span>
+<span id="cb64-23"><a href="occupancy.html#cb64-23"></a><span class="co">#&gt; 1458 -1.185             0.00459                    NA                  NA                  NA         3.15</span></span>
+<span id="cb64-24"><a href="occupancy.html#cb64-24"></a><span class="co">#&gt; 1172 -1.046             0.00678               -0.0664                  NA                  NA         3.14</span></span>
+<span id="cb64-25"><a href="occupancy.html#cb64-25"></a><span class="co">#&gt; 1210 -1.144             0.00438                    NA                  NA              -0.543         3.26</span></span>
+<span id="cb64-26"><a href="occupancy.html#cb64-26"></a><span class="co">#&gt; 1724 -1.176             0.00678               -0.2438                  NA              -0.733         3.13</span></span>
+<span id="cb64-27"><a href="occupancy.html#cb64-27"></a><span class="co">#&gt; 1234 -1.141             0.00585                    NA                  NA                  NA         3.22</span></span>
+<span id="cb64-28"><a href="occupancy.html#cb64-28"></a><span class="co">#&gt; 1174 -1.133             0.00568                    NA              0.0508                  NA         3.19</span></span>
+<span id="cb64-29"><a href="occupancy.html#cb64-29"></a><span class="co">#&gt; 1208 -1.414             0.00674               -0.2155              0.1105                  NA         3.21</span></span>
+<span id="cb64-30"><a href="occupancy.html#cb64-30"></a><span class="co">#&gt;      p(protocol_type) p(time_observations_started) df AICc delta  weight</span></span>
+<span id="cb64-31"><a href="occupancy.html#cb64-31"></a><span class="co">#&gt; 1170             &lt;NA&gt;                           NA  6  685 0.000 0.02724</span></span>
+<span id="cb64-32"><a href="occupancy.html#cb64-32"></a><span class="co">#&gt; 1204                +                           NA  8  685 0.117 0.02570</span></span>
+<span id="cb64-33"><a href="occupancy.html#cb64-33"></a><span class="co">#&gt; 1212                +                           NA  9  685 0.304 0.02340</span></span>
+<span id="cb64-34"><a href="occupancy.html#cb64-34"></a><span class="co">#&gt; 1202                +                           NA  7  685 0.725 0.01896</span></span>
+<span id="cb64-35"><a href="occupancy.html#cb64-35"></a><span class="co">#&gt; 1426             &lt;NA&gt;                           NA  7  685 0.726 0.01895</span></span>
+<span id="cb64-36"><a href="occupancy.html#cb64-36"></a><span class="co">#&gt; 1460                +                           NA  9  686 0.936 0.01706</span></span>
+<span id="cb64-37"><a href="occupancy.html#cb64-37"></a><span class="co">#&gt; 1468                +                           NA 10  686 1.110 0.01564</span></span>
+<span id="cb64-38"><a href="occupancy.html#cb64-38"></a><span class="co">#&gt; 1178             &lt;NA&gt;                           NA  7  686 1.392 0.01358</span></span>
+<span id="cb64-39"><a href="occupancy.html#cb64-39"></a><span class="co">#&gt; 1201                +                           NA  6  686 1.456 0.01316</span></span>
+<span id="cb64-40"><a href="occupancy.html#cb64-40"></a><span class="co">#&gt; 1682             &lt;NA&gt;                           NA  7  686 1.518 0.01275</span></span>
+<span id="cb64-41"><a href="occupancy.html#cb64-41"></a><span class="co">#&gt; 1716                +                           NA  9  686 1.605 0.01221</span></span>
+<span id="cb64-42"><a href="occupancy.html#cb64-42"></a><span class="co">#&gt; 1458                +                           NA  8  686 1.608 0.01219</span></span>
+<span id="cb64-43"><a href="occupancy.html#cb64-43"></a><span class="co">#&gt; 1172             &lt;NA&gt;                           NA  7  686 1.642 0.01199</span></span>
+<span id="cb64-44"><a href="occupancy.html#cb64-44"></a><span class="co">#&gt; 1210                +                           NA  8  686 1.701 0.01164</span></span>
+<span id="cb64-45"><a href="occupancy.html#cb64-45"></a><span class="co">#&gt; 1724                +                           NA 10  686 1.825 0.01094</span></span>
+<span id="cb64-46"><a href="occupancy.html#cb64-46"></a><span class="co">#&gt; 1234             &lt;NA&gt;                      0.00519  7  687 2.018 0.00993</span></span>
+<span id="cb64-47"><a href="occupancy.html#cb64-47"></a><span class="co">#&gt; 1174             &lt;NA&gt;                           NA  7  687 2.020 0.00992</span></span>
+<span id="cb64-48"><a href="occupancy.html#cb64-48"></a><span class="co">#&gt; 1208                +                           NA  9  687 2.048 0.00978</span></span></code></pre></div>
+<p>From these results, it’s clear that several of our effort covariates did not influence detection probability- mainly protocol type and the number of observers. However, including habitat covariates–especially mixed forest–influenced detection probability, as observed by the differences in AIC and the AIC weights for the models that include this covariate. Let’s look at the model averaged coefficients to see how they’re impacting detection and occupancy.</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="occupancy.html#cb65-1"></a><span class="kw">coef</span>(occ_avg) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb65-2"><a href="occupancy.html#cb65-2"></a><span class="st">  </span><span class="kw">enframe</span>() </span>
+<span id="cb65-3"><a href="occupancy.html#cb65-3"></a><span class="co">#&gt; # A tibble: 13 x 2</span></span>
+<span id="cb65-4"><a href="occupancy.html#cb65-4"></a><span class="co">#&gt;   name                                 value</span></span>
+<span id="cb65-5"><a href="occupancy.html#cb65-5"></a><span class="co">#&gt;   &lt;chr&gt;                                &lt;dbl&gt;</span></span>
+<span id="cb65-6"><a href="occupancy.html#cb65-6"></a><span class="co">#&gt; 1 psi(Int)                          -1.93   </span></span>
+<span id="cb65-7"><a href="occupancy.html#cb65-7"></a><span class="co">#&gt; 2 psi(pland_04_deciduous_broadleaf)  6.23   </span></span>
+<span id="cb65-8"><a href="occupancy.html#cb65-8"></a><span class="co">#&gt; 3 psi(pland_13_urban)               -2.09   </span></span>
+<span id="cb65-9"><a href="occupancy.html#cb65-9"></a><span class="co">#&gt; 4 p(Int)                            -1.14   </span></span>
+<span id="cb65-10"><a href="occupancy.html#cb65-10"></a><span class="co">#&gt; 5 p(duration_minutes)                0.00605</span></span>
+<span id="cb65-11"><a href="occupancy.html#cb65-11"></a><span class="co">#&gt; 6 p(pland_05_mixed_forest)           3.15   </span></span>
+<span id="cb65-12"><a href="occupancy.html#cb65-12"></a><span class="co">#&gt; # … with 7 more rows</span></span></code></pre></div>
+<p>Again, the <code>psi()</code> coefficients are from the occupancy submodel and the <code>p()</code> coefficients are from the detection submodel. For detection probability, we see that although deciduous forest increases occupancy probability for Wood Thrush, it decreases detection probability, since birds are harder to see and hear in dense forest. However, mixed forest positively influences both, occupancy and detection probability. The ability to tease apart the differing effects that covariates have on detection and occupancy is one of the strengths of occupancy modeling.</p>
 </div>
 </div>
 <div id="occupancy-predict" class="section level2">
 <h2><span class="header-section-number">5.4</span> Prediction</h2>
-<p>In this section, we’ll estimate the distribution of Wood Thrush in BCR 27. Similar to Section <a href="covariates.html#covariates-prediction">3.4</a>, we’ll generate a prediction surface using the PLAND land cover covariates summarized on a regular grid of points across BCR 27. For this, we’ll use the <code>predict()</code> function to estimate occupancy probabilities, standard errors, and confidence intervals. When we use <code>predict()</code> on the output of <code>get.models()</code> it will make predictions for each of the selected models, then average the predictions using the AIC weights to produce the final prediction for each location.</p>
-<p>Recall that when we <a href="encounter.html#encounter-predict">predicted encouter rate</a>, we had to include effort variables in our prediction surface. We don’t need to do that here because the occupancy submodel doesn’t depend on the effort covariates; these only occur in the detection submodel.</p>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="occupancy.html#cb67-1"></a>occ_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(occ_avg, </span>
-<span id="cb67-2"><a href="occupancy.html#cb67-2"></a>                    <span class="dt">newdata =</span> <span class="kw">as.data.frame</span>(pred_surface), </span>
-<span id="cb67-3"><a href="occupancy.html#cb67-3"></a>                    <span class="dt">type =</span> <span class="st">&quot;state&quot;</span>)</span>
-<span id="cb67-4"><a href="occupancy.html#cb67-4"></a></span>
-<span id="cb67-5"><a href="occupancy.html#cb67-5"></a><span class="co"># add to prediction surface</span></span>
-<span id="cb67-6"><a href="occupancy.html#cb67-6"></a>pred_occ &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(pred_surface, </span>
-<span id="cb67-7"><a href="occupancy.html#cb67-7"></a>                      <span class="dt">occ_prob =</span> occ_pred<span class="op">$</span>fit, </span>
-<span id="cb67-8"><a href="occupancy.html#cb67-8"></a>                      <span class="dt">occ_se =</span> occ_pred<span class="op">$</span>se.fit) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb67-9"><a href="occupancy.html#cb67-9"></a><span class="st">  </span><span class="kw">select</span>(latitude, longitude, occ_prob, occ_se)</span></code></pre></div>
+<p>In this section, we’ll estimate the distribution of Wood Thrush in BCR 27. Similar to Section <a href="covariates.html#covariates-prediction">3.4</a>, we’ll generate a prediction surface using the PLAND land cover covariates summarized on a regular grid of points across BCR 27. For this, we’ll use the <code>predict()</code> function to estimate occupancy probabilities, standard errors, and confidence intervals. We will use <code>predict()</code> on the output of <code>model.avg()</code> to make predictions using the model averaged coefficients from the candidate model set with at least a 95% cumulative AIC weight.</p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="occupancy.html#cb66-1"></a><span class="co"># note: the code below can take up to an hour to run!</span></span>
+<span id="cb66-2"><a href="occupancy.html#cb66-2"></a>occ_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(occ_avg, </span>
+<span id="cb66-3"><a href="occupancy.html#cb66-3"></a>                    <span class="dt">newdata =</span> <span class="kw">as.data.frame</span>(pred_surface), </span>
+<span id="cb66-4"><a href="occupancy.html#cb66-4"></a>                    <span class="dt">type =</span> <span class="st">&quot;state&quot;</span>)</span>
+<span id="cb66-5"><a href="occupancy.html#cb66-5"></a></span>
+<span id="cb66-6"><a href="occupancy.html#cb66-6"></a><span class="co"># add to prediction surface</span></span>
+<span id="cb66-7"><a href="occupancy.html#cb66-7"></a>pred_occ &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(pred_surface, </span>
+<span id="cb66-8"><a href="occupancy.html#cb66-8"></a>                      <span class="dt">occ_prob =</span> occ_pred<span class="op">$</span>fit, </span>
+<span id="cb66-9"><a href="occupancy.html#cb66-9"></a>                      <span class="dt">occ_se =</span> occ_pred<span class="op">$</span>se.fit) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb66-10"><a href="occupancy.html#cb66-10"></a><span class="st">  </span><span class="kw">select</span>(latitude, longitude, occ_prob, occ_se)</span></code></pre></div>
 <p>Next, we’ll convert this data frame to spatial features using <code>sf</code>, then rasterize the points using the prediction surface raster template.</p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="occupancy.html#cb68-1"></a>r_pred &lt;-<span class="st"> </span>pred_occ <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb68-2"><a href="occupancy.html#cb68-2"></a><span class="st">  </span><span class="co"># convert to spatial features</span></span>
-<span id="cb68-3"><a href="occupancy.html#cb68-3"></a><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb68-4"><a href="occupancy.html#cb68-4"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb68-5"><a href="occupancy.html#cb68-5"></a><span class="st">  </span><span class="co"># rasterize</span></span>
-<span id="cb68-6"><a href="occupancy.html#cb68-6"></a><span class="st">  </span><span class="kw">rasterize</span>(r)</span>
-<span id="cb68-7"><a href="occupancy.html#cb68-7"></a>r_pred &lt;-<span class="st"> </span>r_pred[[<span class="kw">c</span>(<span class="st">&quot;occ_prob&quot;</span>, <span class="st">&quot;occ_se&quot;</span>)]]</span>
-<span id="cb68-8"><a href="occupancy.html#cb68-8"></a></span>
-<span id="cb68-9"><a href="occupancy.html#cb68-9"></a><span class="co"># save the raster</span></span>
-<span id="cb68-10"><a href="occupancy.html#cb68-10"></a>tif_dir &lt;-<span class="st"> &quot;output&quot;</span></span>
-<span id="cb68-11"><a href="occupancy.html#cb68-11"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">dir.exists</span>(tif_dir)) {</span>
-<span id="cb68-12"><a href="occupancy.html#cb68-12"></a>  <span class="kw">dir.create</span>(tif_dir)</span>
-<span id="cb68-13"><a href="occupancy.html#cb68-13"></a>}</span>
-<span id="cb68-14"><a href="occupancy.html#cb68-14"></a><span class="kw">writeRaster</span>(r_pred[[<span class="st">&quot;occ_prob&quot;</span>]], </span>
-<span id="cb68-15"><a href="occupancy.html#cb68-15"></a>            <span class="dt">filename =</span> <span class="kw">file.path</span>(tif_dir, <span class="st">&quot;occupancy-model_prob_woothr.tif&quot;</span>),</span>
-<span id="cb68-16"><a href="occupancy.html#cb68-16"></a>            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb68-17"><a href="occupancy.html#cb68-17"></a><span class="kw">writeRaster</span>(r_pred[[<span class="st">&quot;occ_se&quot;</span>]], </span>
-<span id="cb68-18"><a href="occupancy.html#cb68-18"></a>            <span class="dt">filename =</span> <span class="kw">file.path</span>(tif_dir, <span class="st">&quot;occupancy-model_se_woothr.tif&quot;</span>), </span>
-<span id="cb68-19"><a href="occupancy.html#cb68-19"></a>            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="occupancy.html#cb67-1"></a>r_pred &lt;-<span class="st"> </span>pred_occ <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-2"><a href="occupancy.html#cb67-2"></a><span class="st">  </span><span class="co"># convert to spatial features</span></span>
+<span id="cb67-3"><a href="occupancy.html#cb67-3"></a><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-4"><a href="occupancy.html#cb67-4"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-5"><a href="occupancy.html#cb67-5"></a><span class="st">  </span><span class="co"># rasterize</span></span>
+<span id="cb67-6"><a href="occupancy.html#cb67-6"></a><span class="st">  </span><span class="kw">rasterize</span>(r)</span>
+<span id="cb67-7"><a href="occupancy.html#cb67-7"></a>r_pred &lt;-<span class="st"> </span>r_pred[[<span class="kw">c</span>(<span class="st">&quot;occ_prob&quot;</span>, <span class="st">&quot;occ_se&quot;</span>)]]</span>
+<span id="cb67-8"><a href="occupancy.html#cb67-8"></a></span>
+<span id="cb67-9"><a href="occupancy.html#cb67-9"></a><span class="co"># save the raster</span></span>
+<span id="cb67-10"><a href="occupancy.html#cb67-10"></a>tif_dir &lt;-<span class="st"> &quot;output&quot;</span></span>
+<span id="cb67-11"><a href="occupancy.html#cb67-11"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">dir.exists</span>(tif_dir)) {</span>
+<span id="cb67-12"><a href="occupancy.html#cb67-12"></a>  <span class="kw">dir.create</span>(tif_dir)</span>
+<span id="cb67-13"><a href="occupancy.html#cb67-13"></a>}</span>
+<span id="cb67-14"><a href="occupancy.html#cb67-14"></a><span class="kw">writeRaster</span>(r_pred[[<span class="st">&quot;occ_prob&quot;</span>]], </span>
+<span id="cb67-15"><a href="occupancy.html#cb67-15"></a>            <span class="dt">filename =</span> <span class="kw">file.path</span>(tif_dir, <span class="st">&quot;occupancy-model_prob_woothr.tif&quot;</span>),</span>
+<span id="cb67-16"><a href="occupancy.html#cb67-16"></a>            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb67-17"><a href="occupancy.html#cb67-17"></a><span class="kw">writeRaster</span>(r_pred[[<span class="st">&quot;occ_se&quot;</span>]], </span>
+<span id="cb67-18"><a href="occupancy.html#cb67-18"></a>            <span class="dt">filename =</span> <span class="kw">file.path</span>(tif_dir, <span class="st">&quot;occupancy-model_se_woothr.tif&quot;</span>), </span>
+<span id="cb67-19"><a href="occupancy.html#cb67-19"></a>            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 <p>Finally, we can map these predictions!</p>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="occupancy.html#cb69-1"></a><span class="co"># project predictions</span></span>
-<span id="cb69-2"><a href="occupancy.html#cb69-2"></a>r_pred_proj &lt;-<span class="st"> </span><span class="kw">projectRaster</span>(r_pred, <span class="dt">crs =</span> map_proj<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>)</span>
-<span id="cb69-3"><a href="occupancy.html#cb69-3"></a></span>
-<span id="cb69-4"><a href="occupancy.html#cb69-4"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
-<span id="cb69-5"><a href="occupancy.html#cb69-5"></a><span class="cf">for</span> (nm <span class="cf">in</span> <span class="kw">names</span>(r_pred)) {</span>
-<span id="cb69-6"><a href="occupancy.html#cb69-6"></a>  r_plot &lt;-<span class="st"> </span>r_pred_proj[[nm]]</span>
-<span id="cb69-7"><a href="occupancy.html#cb69-7"></a>  </span>
-<span id="cb69-8"><a href="occupancy.html#cb69-8"></a>  <span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">3.5</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))</span>
-<span id="cb69-9"><a href="occupancy.html#cb69-9"></a>  <span class="co"># set up plot area</span></span>
-<span id="cb69-10"><a href="occupancy.html#cb69-10"></a>  <span class="kw">plot</span>(bcr, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">border =</span> <span class="ot">NA</span>)</span>
-<span id="cb69-11"><a href="occupancy.html#cb69-11"></a>  <span class="kw">plot</span>(ne_land, <span class="dt">col =</span> <span class="st">&quot;#dddddd&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;#888888&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb69-12"><a href="occupancy.html#cb69-12"></a></span>
-<span id="cb69-13"><a href="occupancy.html#cb69-13"></a>  <span class="co"># occupancy probability or standard error</span></span>
-<span id="cb69-14"><a href="occupancy.html#cb69-14"></a>  <span class="cf">if</span> (nm <span class="op">==</span><span class="st"> &quot;occ_prob&quot;</span>) {</span>
-<span id="cb69-15"><a href="occupancy.html#cb69-15"></a>    title &lt;-<span class="st"> &quot;Wood Thrush Occupancy Probability&quot;</span></span>
-<span id="cb69-16"><a href="occupancy.html#cb69-16"></a>    brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">21</span>)</span>
-<span id="cb69-17"><a href="occupancy.html#cb69-17"></a>    lbl_brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">11</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb69-18"><a href="occupancy.html#cb69-18"></a><span class="st">      </span><span class="kw">round</span>(<span class="dv">2</span>)</span>
-<span id="cb69-19"><a href="occupancy.html#cb69-19"></a>  } <span class="cf">else</span> {</span>
-<span id="cb69-20"><a href="occupancy.html#cb69-20"></a>    title &lt;-<span class="st"> &quot;Wood Thrush Occupancy Uncertainty (SE)&quot;</span></span>
-<span id="cb69-21"><a href="occupancy.html#cb69-21"></a>    mx &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="dv">1000</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, max)) <span class="op">/</span><span class="st"> </span><span class="dv">1000</span></span>
-<span id="cb69-22"><a href="occupancy.html#cb69-22"></a>    brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, mx, <span class="dt">length.out =</span> <span class="dv">21</span>)</span>
-<span id="cb69-23"><a href="occupancy.html#cb69-23"></a>    lbl_brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, mx, <span class="dt">length.out =</span> <span class="dv">11</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb69-24"><a href="occupancy.html#cb69-24"></a><span class="st">      </span><span class="kw">round</span>(<span class="dv">2</span>)</span>
-<span id="cb69-25"><a href="occupancy.html#cb69-25"></a>  }</span>
-<span id="cb69-26"><a href="occupancy.html#cb69-26"></a>  pal &lt;-<span class="st"> </span><span class="kw">abundance_palette</span>(<span class="kw">length</span>(brks) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</span>
-<span id="cb69-27"><a href="occupancy.html#cb69-27"></a>  <span class="kw">plot</span>(r_plot, </span>
-<span id="cb69-28"><a href="occupancy.html#cb69-28"></a>       <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks, </span>
-<span id="cb69-29"><a href="occupancy.html#cb69-29"></a>       <span class="dt">maxpixels =</span> <span class="kw">ncell</span>(r_plot),</span>
-<span id="cb69-30"><a href="occupancy.html#cb69-30"></a>       <span class="dt">legend =</span> <span class="ot">FALSE</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb69-31"><a href="occupancy.html#cb69-31"></a>  </span>
-<span id="cb69-32"><a href="occupancy.html#cb69-32"></a>  <span class="co"># borders</span></span>
-<span id="cb69-33"><a href="occupancy.html#cb69-33"></a>  <span class="kw">plot</span>(bcr, <span class="dt">border =</span> <span class="st">&quot;#000000&quot;</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">lwd =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb69-34"><a href="occupancy.html#cb69-34"></a>  <span class="kw">plot</span>(ne_state_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.75</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb69-35"><a href="occupancy.html#cb69-35"></a>  <span class="kw">plot</span>(ne_country_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb69-36"><a href="occupancy.html#cb69-36"></a>  <span class="kw">box</span>()</span>
-<span id="cb69-37"><a href="occupancy.html#cb69-37"></a>  </span>
-<span id="cb69-38"><a href="occupancy.html#cb69-38"></a>  <span class="co"># legend</span></span>
-<span id="cb69-39"><a href="occupancy.html#cb69-39"></a>  <span class="kw">par</span>(<span class="dt">new =</span> <span class="ot">TRUE</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
-<span id="cb69-40"><a href="occupancy.html#cb69-40"></a>  <span class="kw">image.plot</span>(<span class="dt">zlim =</span> <span class="kw">range</span>(brks), <span class="dt">legend.only =</span> <span class="ot">TRUE</span>, </span>
-<span id="cb69-41"><a href="occupancy.html#cb69-41"></a>             <span class="dt">breaks =</span> brks, <span class="dt">col =</span> pal,</span>
-<span id="cb69-42"><a href="occupancy.html#cb69-42"></a>             <span class="dt">smallplot =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.75</span>, <span class="fl">0.06</span>, <span class="fl">0.09</span>),</span>
-<span id="cb69-43"><a href="occupancy.html#cb69-43"></a>             <span class="dt">horizontal =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb69-44"><a href="occupancy.html#cb69-44"></a>             <span class="dt">axis.args =</span> <span class="kw">list</span>(<span class="dt">at =</span> lbl_brks, <span class="dt">labels =</span> lbl_brks,</span>
-<span id="cb69-45"><a href="occupancy.html#cb69-45"></a>                              <span class="dt">fg =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">col.axis =</span> <span class="st">&quot;black&quot;</span>,</span>
-<span id="cb69-46"><a href="occupancy.html#cb69-46"></a>                              <span class="dt">cex.axis =</span> <span class="fl">0.75</span>, <span class="dt">lwd.ticks =</span> <span class="fl">0.5</span>,</span>
-<span id="cb69-47"><a href="occupancy.html#cb69-47"></a>                              <span class="dt">padj =</span> <span class="fl">-1.5</span>),</span>
-<span id="cb69-48"><a href="occupancy.html#cb69-48"></a>             <span class="dt">legend.args =</span> <span class="kw">list</span>(<span class="dt">text =</span> title,</span>
-<span id="cb69-49"><a href="occupancy.html#cb69-49"></a>                                <span class="dt">side =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,</span>
-<span id="cb69-50"><a href="occupancy.html#cb69-50"></a>                                <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">line =</span> <span class="dv">0</span>))</span>
-<span id="cb69-51"><a href="occupancy.html#cb69-51"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="occupancy.html#cb68-1"></a><span class="co"># project predictions</span></span>
+<span id="cb68-2"><a href="occupancy.html#cb68-2"></a>r_pred_proj &lt;-<span class="st"> </span><span class="kw">projectRaster</span>(r_pred, <span class="dt">crs =</span> map_proj<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>)</span>
+<span id="cb68-3"><a href="occupancy.html#cb68-3"></a></span>
+<span id="cb68-4"><a href="occupancy.html#cb68-4"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb68-5"><a href="occupancy.html#cb68-5"></a><span class="cf">for</span> (nm <span class="cf">in</span> <span class="kw">names</span>(r_pred)) {</span>
+<span id="cb68-6"><a href="occupancy.html#cb68-6"></a>  r_plot &lt;-<span class="st"> </span>r_pred_proj[[nm]]</span>
+<span id="cb68-7"><a href="occupancy.html#cb68-7"></a>  </span>
+<span id="cb68-8"><a href="occupancy.html#cb68-8"></a>  <span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">3.5</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))</span>
+<span id="cb68-9"><a href="occupancy.html#cb68-9"></a>  <span class="co"># set up plot area</span></span>
+<span id="cb68-10"><a href="occupancy.html#cb68-10"></a>  <span class="kw">plot</span>(bcr, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">border =</span> <span class="ot">NA</span>)</span>
+<span id="cb68-11"><a href="occupancy.html#cb68-11"></a>  <span class="kw">plot</span>(ne_land, <span class="dt">col =</span> <span class="st">&quot;#dddddd&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;#888888&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb68-12"><a href="occupancy.html#cb68-12"></a></span>
+<span id="cb68-13"><a href="occupancy.html#cb68-13"></a>  <span class="co"># occupancy probability or standard error</span></span>
+<span id="cb68-14"><a href="occupancy.html#cb68-14"></a>  <span class="cf">if</span> (nm <span class="op">==</span><span class="st"> &quot;occ_prob&quot;</span>) {</span>
+<span id="cb68-15"><a href="occupancy.html#cb68-15"></a>    title &lt;-<span class="st"> &quot;Wood Thrush Occupancy Probability&quot;</span></span>
+<span id="cb68-16"><a href="occupancy.html#cb68-16"></a>    brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">21</span>)</span>
+<span id="cb68-17"><a href="occupancy.html#cb68-17"></a>    lbl_brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">11</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb68-18"><a href="occupancy.html#cb68-18"></a><span class="st">      </span><span class="kw">round</span>(<span class="dv">2</span>)</span>
+<span id="cb68-19"><a href="occupancy.html#cb68-19"></a>  } <span class="cf">else</span> {</span>
+<span id="cb68-20"><a href="occupancy.html#cb68-20"></a>    title &lt;-<span class="st"> &quot;Wood Thrush Occupancy Uncertainty (SE)&quot;</span></span>
+<span id="cb68-21"><a href="occupancy.html#cb68-21"></a>    mx &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="dv">1000</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, max)) <span class="op">/</span><span class="st"> </span><span class="dv">1000</span></span>
+<span id="cb68-22"><a href="occupancy.html#cb68-22"></a>    brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, mx, <span class="dt">length.out =</span> <span class="dv">21</span>)</span>
+<span id="cb68-23"><a href="occupancy.html#cb68-23"></a>    lbl_brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, mx, <span class="dt">length.out =</span> <span class="dv">11</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb68-24"><a href="occupancy.html#cb68-24"></a><span class="st">      </span><span class="kw">round</span>(<span class="dv">2</span>)</span>
+<span id="cb68-25"><a href="occupancy.html#cb68-25"></a>  }</span>
+<span id="cb68-26"><a href="occupancy.html#cb68-26"></a>  pal &lt;-<span class="st"> </span><span class="kw">abundance_palette</span>(<span class="kw">length</span>(brks) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb68-27"><a href="occupancy.html#cb68-27"></a>  <span class="kw">plot</span>(r_plot, </span>
+<span id="cb68-28"><a href="occupancy.html#cb68-28"></a>       <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks, </span>
+<span id="cb68-29"><a href="occupancy.html#cb68-29"></a>       <span class="dt">maxpixels =</span> <span class="kw">ncell</span>(r_plot),</span>
+<span id="cb68-30"><a href="occupancy.html#cb68-30"></a>       <span class="dt">legend =</span> <span class="ot">FALSE</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb68-31"><a href="occupancy.html#cb68-31"></a>  </span>
+<span id="cb68-32"><a href="occupancy.html#cb68-32"></a>  <span class="co"># borders</span></span>
+<span id="cb68-33"><a href="occupancy.html#cb68-33"></a>  <span class="kw">plot</span>(bcr, <span class="dt">border =</span> <span class="st">&quot;#000000&quot;</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">lwd =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb68-34"><a href="occupancy.html#cb68-34"></a>  <span class="kw">plot</span>(ne_state_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.75</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb68-35"><a href="occupancy.html#cb68-35"></a>  <span class="kw">plot</span>(ne_country_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb68-36"><a href="occupancy.html#cb68-36"></a>  <span class="kw">box</span>()</span>
+<span id="cb68-37"><a href="occupancy.html#cb68-37"></a>  </span>
+<span id="cb68-38"><a href="occupancy.html#cb68-38"></a>  <span class="co"># legend</span></span>
+<span id="cb68-39"><a href="occupancy.html#cb68-39"></a>  <span class="kw">par</span>(<span class="dt">new =</span> <span class="ot">TRUE</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb68-40"><a href="occupancy.html#cb68-40"></a>  <span class="kw">image.plot</span>(<span class="dt">zlim =</span> <span class="kw">range</span>(brks), <span class="dt">legend.only =</span> <span class="ot">TRUE</span>, </span>
+<span id="cb68-41"><a href="occupancy.html#cb68-41"></a>             <span class="dt">breaks =</span> brks, <span class="dt">col =</span> pal,</span>
+<span id="cb68-42"><a href="occupancy.html#cb68-42"></a>             <span class="dt">smallplot =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.75</span>, <span class="fl">0.06</span>, <span class="fl">0.09</span>),</span>
+<span id="cb68-43"><a href="occupancy.html#cb68-43"></a>             <span class="dt">horizontal =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb68-44"><a href="occupancy.html#cb68-44"></a>             <span class="dt">axis.args =</span> <span class="kw">list</span>(<span class="dt">at =</span> lbl_brks, <span class="dt">labels =</span> lbl_brks,</span>
+<span id="cb68-45"><a href="occupancy.html#cb68-45"></a>                              <span class="dt">fg =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">col.axis =</span> <span class="st">&quot;black&quot;</span>,</span>
+<span id="cb68-46"><a href="occupancy.html#cb68-46"></a>                              <span class="dt">cex.axis =</span> <span class="fl">0.75</span>, <span class="dt">lwd.ticks =</span> <span class="fl">0.5</span>,</span>
+<span id="cb68-47"><a href="occupancy.html#cb68-47"></a>                              <span class="dt">padj =</span> <span class="fl">-1.5</span>),</span>
+<span id="cb68-48"><a href="occupancy.html#cb68-48"></a>             <span class="dt">legend.args =</span> <span class="kw">list</span>(<span class="dt">text =</span> title,</span>
+<span id="cb68-49"><a href="occupancy.html#cb68-49"></a>                                <span class="dt">side =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,</span>
+<span id="cb68-50"><a href="occupancy.html#cb68-50"></a>                                <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">line =</span> <span class="dv">0</span>))</span>
+<span id="cb68-51"><a href="occupancy.html#cb68-51"></a>}</span></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/occupancy-predict-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 
 </div>
