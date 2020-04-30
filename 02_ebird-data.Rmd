@@ -229,9 +229,9 @@ breaks <- 0:24
 labels <- breaks[-length(breaks)] + diff(breaks) / 2
 ebird_tod <- ebird %>% 
   mutate(tod_bins = cut(time_observations_started, 
-                         breaks = breaks, 
+                        breaks = breaks, 
                         labels = labels,
-                         include.lowest = TRUE),
+                        include.lowest = TRUE),
          tod_bins = as.numeric(as.character(tod_bins))) %>% 
   group_by(tod_bins) %>% 
   summarise(n_checklists = n(),
@@ -241,7 +241,9 @@ ebird_tod <- ebird %>%
 # histogram
 g_tod_hist <- ggplot(ebird_tod) +
   aes(x = tod_bins, y = n_checklists) +
-  geom_col(width = mean(diff(breaks)), color = "grey30", fill = "grey50") +
+  geom_segment(aes(xend = tod_bins, y = 0, yend = n_checklists),
+               color = "grey50") +
+  geom_point() +
   scale_x_continuous(breaks = seq(0, 24, by = 3), limits = c(0, 24)) +
   scale_y_continuous(labels = scales::comma) +
   labs(x = "Hours since midnight",
@@ -287,7 +289,9 @@ ebird_dur <- ebird %>%
 # histogram
 g_dur_hist <- ggplot(ebird_dur) +
   aes(x = dur_bins, y = n_checklists) +
-  geom_col(width = mean(diff(breaks)), color = "grey30", fill = "grey50") +
+  geom_segment(aes(xend = dur_bins, y = 0, yend = n_checklists),
+               color = "grey50") +
+  geom_point() +
   scale_x_continuous(breaks = 0:5) +
   scale_y_continuous(labels = scales::comma) +
   labs(x = "Checklist duration (hours)",
@@ -333,7 +337,9 @@ ebird_dist <- ebird %>%
 # histogram
 g_dist_hist <- ggplot(ebird_dist) +
   aes(x = dist_bins, y = n_checklists) +
-  geom_col(width = mean(diff(breaks)), color = "grey30", fill = "grey50") +
+  geom_segment(aes(xend = dist_bins, y = 0, yend = n_checklists),
+               color = "grey50") +
+  geom_point() +
   scale_x_continuous(breaks = 0:5) +
   scale_y_continuous(labels = scales::comma) +
   labs(x = "Distance travelled (km)",
@@ -379,7 +385,9 @@ ebird_obs <- ebird %>%
 # histogram
 g_obs_hist <- ggplot(ebird_obs) +
   aes(x = obs_bins, y = n_checklists) +
-  geom_col(width = mean(diff(breaks)), color = "grey30", fill = "grey50") +
+  geom_segment(aes(xend = obs_bins, y = 0, yend = n_checklists),
+               color = "grey50") +
+  geom_point() +
   scale_x_continuous(breaks = 1:10) +
   scale_y_continuous(labels = scales::comma) +
   labs(x = "# observers",

@@ -34,11 +34,12 @@ Let's start by figuring out the tile IDs for the tiles that BCR 27 spans. Recall
 library(sf)
 library(raster)
 library(MODIS)
-library(velox)
+library(exactextractr)
 library(viridis)
 library(tidyverse)
 # resolve namespace conflicts
 select <- dplyr::select
+map <- purrr::map
 projection <- raster::projection
 
 # bcr 27 boundary
@@ -171,23 +172,16 @@ ebird_buff <- ebird %>%
   nest(data = c(year, locality_id, geometry))
 ```
 
-Now, we'll loop over the years and for each square neighborhood extract all the raster values within that neighborhood. We use the `velox` package for this, since it's often orders of magnitude faster than using `raster::extract()`.
+Now, we'll loop over the years and for each square neighborhood extract all the raster values within that neighborhood and count the number of cells of each landcover class. We use the `exactextractr` package for this, since it's often orders of magnitude faster than using `raster::extract()`.
 
 ```{r landcover-lsm-extract}
-# function to extract landcover data for all checklists in a given year
+# function to summarize landcover data for all checklists in a given year
 calculate_pland <- function(yr, regions, lc) {
-  # create a lookup table to get locality_id from row number
-  locs <- st_set_geometry(regions, NULL) %>% 
-    mutate(id = row_number())
-  
-  # extract using velox
-  lc_vlx <- velox(lc[[yr]])
-  lc_vlx$extract(regions, df = TRUE) %>% 
-    # velox doesn't properly name columns, fix that
-    set_names(c("id", "landcover")) %>% 
-    # join to lookup table to get locality_id
-    inner_join(locs, ., by = "id") %>% 
-    select(-id)
+  locs <- st_set_geometry(regions, NULL)
+  exact_extract(lc[[yr]], regions) %>% 
+    map(~ count(., landcover = value)) %>% 
+    tibble(locs, data = .) %>% 
+    unnest(data)
 }
 # iterate over all years extracting landcover for all checklists in each
 lc_extract <- ebird_buff %>% 
@@ -200,8 +194,6 @@ Now we have the set of land cover values within a neighborhood around each check
 
 ```{r landcover-lsm-pland}
 pland <- lc_extract %>% 
-  # count landcovers
-  count(locality_id, year, landcover) %>% 
   # calculate proporiton
   group_by(locality_id, year) %>% 
   mutate(pland = n / sum(n)) %>% 
@@ -273,9 +265,11 @@ r_centers <- rasterToPoints(r, spatial = TRUE) %>%
 r_cells <- st_buffer(r_centers, dist = neighborhood_radius)
 
 # extract landcover values within neighborhoods, only needed most recent year
-lc_vlx <- velox(landcover[[paste0("y", max_lc_year)]])
-lc_extract_pred <- lc_vlx$extract(r_cells, df = TRUE) %>% 
-  set_names(c("id", "landcover"))
+lc_extract_pred <- landcover[[paste0("y", max_lc_year)]] %>% 
+  exact_extract(r_cells) %>% 
+  map(~ count(., landcover = value)) %>% 
+  tibble(id = r_cells$id, data = .) %>% 
+  unnest(data)
 
 # calculate the percent for each landcover class
 pland_pred <- lc_extract_pred %>% 
@@ -369,31 +363,25 @@ ebird_buff_noyear <- ebird %>%
   st_transform(crs = projection(elev)) %>% 
   st_buffer(dist = neighborhood_radius)
 
-# extract using velox and calculate median and sd
+# extract elevation values and calculate median and sd
 locs <- st_set_geometry(ebird_buff_noyear, NULL) %>% 
     mutate(id = row_number())
-elev_checklists <- velox(elev)$extract(ebird_buff_noyear, df = TRUE) %>% 
-  # velox doesn't properly name columns, fix that
-  set_names(c("id", "elevation")) %>% 
+elev_checklists <- exact_extract(elev, ebird_buff_noyear) %>% 
+  map_dfr(~ tibble(elevation_median = mean(.$value, na.rm = TRUE),
+                   elevation_sd = sd(.$value, na.rm = TRUE))) %>% 
   # join to lookup table to get locality_id
-  inner_join(locs, ., by = "id") %>% 
-  # summarize
-  group_by(locality_id) %>% 
-  summarize(elevation_median = median(elevation, na.rm = TRUE),
-            elevation_sd = sd(elevation, na.rm = TRUE))
+  bind_cols(locs, .)
 ```
 
 We'll need to repeat this process to calculate the elevation covariates for the prediction surface.
 
 ```{r covariates-elevation-pred}
-# extract using velox and calculate median and sd
-elev_pred <- velox(elev)$extract(r_cells, df = TRUE) %>% 
-  # velox doesn't properly name columns, fix that
-  set_names(c("id", "elevation")) %>% 
-  # summarize
-  group_by(id) %>% 
-  summarize(elevation_median = median(elevation, na.rm = TRUE),
-            elevation_sd = sd(elevation, na.rm = TRUE))
+# extract and calculate median and sd
+elev_pred <- exact_extract(elev, r_cells) %>% 
+  map_dfr(~ tibble(elevation_median = mean(.$value, na.rm = TRUE),
+                   elevation_sd = sd(.$value, na.rm = TRUE))) %>% 
+  # join to lookup table to get locality_id
+  bind_cols(st_drop_geometry(r_cells), .)
 ```
 
 Finally, we'll combine these elevation covariates with the land cover covariates.

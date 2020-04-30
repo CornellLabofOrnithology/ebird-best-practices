@@ -449,9 +449,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb13-3"><a href="ebird.html#cb13-3"></a>labels &lt;-<span class="st"> </span>breaks[<span class="op">-</span><span class="kw">length</span>(breaks)] <span class="op">+</span><span class="st"> </span><span class="kw">diff</span>(breaks) <span class="op">/</span><span class="st"> </span><span class="dv">2</span></span>
 <span id="cb13-4"><a href="ebird.html#cb13-4"></a>ebird_tod &lt;-<span class="st"> </span>ebird <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb13-5"><a href="ebird.html#cb13-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">tod_bins =</span> <span class="kw">cut</span>(time_observations_started, </span>
-<span id="cb13-6"><a href="ebird.html#cb13-6"></a>                         <span class="dt">breaks =</span> breaks, </span>
+<span id="cb13-6"><a href="ebird.html#cb13-6"></a>                        <span class="dt">breaks =</span> breaks, </span>
 <span id="cb13-7"><a href="ebird.html#cb13-7"></a>                        <span class="dt">labels =</span> labels,</span>
-<span id="cb13-8"><a href="ebird.html#cb13-8"></a>                         <span class="dt">include.lowest =</span> <span class="ot">TRUE</span>),</span>
+<span id="cb13-8"><a href="ebird.html#cb13-8"></a>                        <span class="dt">include.lowest =</span> <span class="ot">TRUE</span>),</span>
 <span id="cb13-9"><a href="ebird.html#cb13-9"></a>         <span class="dt">tod_bins =</span> <span class="kw">as.numeric</span>(<span class="kw">as.character</span>(tod_bins))) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb13-10"><a href="ebird.html#cb13-10"></a><span class="st">  </span><span class="kw">group_by</span>(tod_bins) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb13-11"><a href="ebird.html#cb13-11"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">n_checklists =</span> <span class="kw">n</span>(),</span>
@@ -461,26 +461,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb13-15"><a href="ebird.html#cb13-15"></a><span class="co"># histogram</span></span>
 <span id="cb13-16"><a href="ebird.html#cb13-16"></a>g_tod_hist &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_tod) <span class="op">+</span></span>
 <span id="cb13-17"><a href="ebird.html#cb13-17"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> tod_bins, <span class="dt">y =</span> n_checklists) <span class="op">+</span></span>
-<span id="cb13-18"><a href="ebird.html#cb13-18"></a><span class="st">  </span><span class="kw">geom_col</span>(<span class="dt">width =</span> <span class="kw">mean</span>(<span class="kw">diff</span>(breaks)), <span class="dt">color =</span> <span class="st">&quot;grey30&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span></span>
-<span id="cb13-19"><a href="ebird.html#cb13-19"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">by =</span> <span class="dv">3</span>), <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">24</span>)) <span class="op">+</span></span>
-<span id="cb13-20"><a href="ebird.html#cb13-20"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span></span>
-<span id="cb13-21"><a href="ebird.html#cb13-21"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Hours since midnight&quot;</span>,</span>
-<span id="cb13-22"><a href="ebird.html#cb13-22"></a>       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,</span>
-<span id="cb13-23"><a href="ebird.html#cb13-23"></a>       <span class="dt">title =</span> <span class="st">&quot;Distribution of observation start times&quot;</span>)</span>
-<span id="cb13-24"><a href="ebird.html#cb13-24"></a></span>
-<span id="cb13-25"><a href="ebird.html#cb13-25"></a><span class="co"># frequency of detection</span></span>
-<span id="cb13-26"><a href="ebird.html#cb13-26"></a>g_tod_freq &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_tod <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n_checklists <span class="op">&gt;</span><span class="st"> </span><span class="dv">100</span>)) <span class="op">+</span></span>
-<span id="cb13-27"><a href="ebird.html#cb13-27"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> tod_bins, <span class="dt">y =</span> det_freq) <span class="op">+</span></span>
-<span id="cb13-28"><a href="ebird.html#cb13-28"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></span>
-<span id="cb13-29"><a href="ebird.html#cb13-29"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
-<span id="cb13-30"><a href="ebird.html#cb13-30"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">by =</span> <span class="dv">3</span>), <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">24</span>)) <span class="op">+</span></span>
-<span id="cb13-31"><a href="ebird.html#cb13-31"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>percent) <span class="op">+</span></span>
-<span id="cb13-32"><a href="ebird.html#cb13-32"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Hours since midnight&quot;</span>,</span>
-<span id="cb13-33"><a href="ebird.html#cb13-33"></a>       <span class="dt">y =</span> <span class="st">&quot;% checklists with detections&quot;</span>,</span>
-<span id="cb13-34"><a href="ebird.html#cb13-34"></a>       <span class="dt">title =</span> <span class="st">&quot;Detection frequency&quot;</span>)</span>
-<span id="cb13-35"><a href="ebird.html#cb13-35"></a></span>
-<span id="cb13-36"><a href="ebird.html#cb13-36"></a><span class="co"># combine</span></span>
-<span id="cb13-37"><a href="ebird.html#cb13-37"></a><span class="kw">grid.arrange</span>(g_tod_hist, g_tod_freq)</span></code></pre></div>
+<span id="cb13-18"><a href="ebird.html#cb13-18"></a><span class="st">  </span><span class="kw">geom_segment</span>(<span class="kw">aes</span>(<span class="dt">xend =</span> tod_bins, <span class="dt">y =</span> <span class="dv">0</span>, <span class="dt">yend =</span> n_checklists),</span>
+<span id="cb13-19"><a href="ebird.html#cb13-19"></a>               <span class="dt">color =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span></span>
+<span id="cb13-20"><a href="ebird.html#cb13-20"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb13-21"><a href="ebird.html#cb13-21"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">by =</span> <span class="dv">3</span>), <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">24</span>)) <span class="op">+</span></span>
+<span id="cb13-22"><a href="ebird.html#cb13-22"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span></span>
+<span id="cb13-23"><a href="ebird.html#cb13-23"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Hours since midnight&quot;</span>,</span>
+<span id="cb13-24"><a href="ebird.html#cb13-24"></a>       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,</span>
+<span id="cb13-25"><a href="ebird.html#cb13-25"></a>       <span class="dt">title =</span> <span class="st">&quot;Distribution of observation start times&quot;</span>)</span>
+<span id="cb13-26"><a href="ebird.html#cb13-26"></a></span>
+<span id="cb13-27"><a href="ebird.html#cb13-27"></a><span class="co"># frequency of detection</span></span>
+<span id="cb13-28"><a href="ebird.html#cb13-28"></a>g_tod_freq &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_tod <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n_checklists <span class="op">&gt;</span><span class="st"> </span><span class="dv">100</span>)) <span class="op">+</span></span>
+<span id="cb13-29"><a href="ebird.html#cb13-29"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> tod_bins, <span class="dt">y =</span> det_freq) <span class="op">+</span></span>
+<span id="cb13-30"><a href="ebird.html#cb13-30"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></span>
+<span id="cb13-31"><a href="ebird.html#cb13-31"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb13-32"><a href="ebird.html#cb13-32"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">by =</span> <span class="dv">3</span>), <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">24</span>)) <span class="op">+</span></span>
+<span id="cb13-33"><a href="ebird.html#cb13-33"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>percent) <span class="op">+</span></span>
+<span id="cb13-34"><a href="ebird.html#cb13-34"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Hours since midnight&quot;</span>,</span>
+<span id="cb13-35"><a href="ebird.html#cb13-35"></a>       <span class="dt">y =</span> <span class="st">&quot;% checklists with detections&quot;</span>,</span>
+<span id="cb13-36"><a href="ebird.html#cb13-36"></a>       <span class="dt">title =</span> <span class="st">&quot;Detection frequency&quot;</span>)</span>
+<span id="cb13-37"><a href="ebird.html#cb13-37"></a></span>
+<span id="cb13-38"><a href="ebird.html#cb13-38"></a><span class="co"># combine</span></span>
+<span id="cb13-39"><a href="ebird.html#cb13-39"></a><span class="kw">grid.arrange</span>(g_tod_hist, g_tod_freq)</span></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/ebird-explore-time-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>As expected, Wood Thrush detectability is highest early in the morning and quickly falls off as the day progresses. In later chapters, we’ll make predictions at the peak time of day for detecatibility to limit the effect of this variation. The majority of checklist submissions also occurs in the morning; however, there are reasonable numbers of checklists between 5am and 9pm. It’s in this region that our model estimates will be most reliable.</p>
 </div>
@@ -504,26 +506,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb14-15"><a href="ebird.html#cb14-15"></a><span class="co"># histogram</span></span>
 <span id="cb14-16"><a href="ebird.html#cb14-16"></a>g_dur_hist &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_dur) <span class="op">+</span></span>
 <span id="cb14-17"><a href="ebird.html#cb14-17"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> dur_bins, <span class="dt">y =</span> n_checklists) <span class="op">+</span></span>
-<span id="cb14-18"><a href="ebird.html#cb14-18"></a><span class="st">  </span><span class="kw">geom_col</span>(<span class="dt">width =</span> <span class="kw">mean</span>(<span class="kw">diff</span>(breaks)), <span class="dt">color =</span> <span class="st">&quot;grey30&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span></span>
-<span id="cb14-19"><a href="ebird.html#cb14-19"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">5</span>) <span class="op">+</span></span>
-<span id="cb14-20"><a href="ebird.html#cb14-20"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span></span>
-<span id="cb14-21"><a href="ebird.html#cb14-21"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Checklist duration (hours)&quot;</span>,</span>
-<span id="cb14-22"><a href="ebird.html#cb14-22"></a>       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,</span>
-<span id="cb14-23"><a href="ebird.html#cb14-23"></a>       <span class="dt">title =</span> <span class="st">&quot;Distribution of checklist durations&quot;</span>)</span>
-<span id="cb14-24"><a href="ebird.html#cb14-24"></a></span>
-<span id="cb14-25"><a href="ebird.html#cb14-25"></a><span class="co"># frequency of detection</span></span>
-<span id="cb14-26"><a href="ebird.html#cb14-26"></a>g_dur_freq &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_dur <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n_checklists <span class="op">&gt;</span><span class="st"> </span><span class="dv">100</span>)) <span class="op">+</span></span>
-<span id="cb14-27"><a href="ebird.html#cb14-27"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> dur_bins, <span class="dt">y =</span> det_freq) <span class="op">+</span></span>
-<span id="cb14-28"><a href="ebird.html#cb14-28"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></span>
-<span id="cb14-29"><a href="ebird.html#cb14-29"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
-<span id="cb14-30"><a href="ebird.html#cb14-30"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">5</span>) <span class="op">+</span></span>
-<span id="cb14-31"><a href="ebird.html#cb14-31"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>percent) <span class="op">+</span></span>
-<span id="cb14-32"><a href="ebird.html#cb14-32"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Checklist duration (hours)&quot;</span>,</span>
-<span id="cb14-33"><a href="ebird.html#cb14-33"></a>       <span class="dt">y =</span> <span class="st">&quot;% checklists with detections&quot;</span>,</span>
-<span id="cb14-34"><a href="ebird.html#cb14-34"></a>       <span class="dt">title =</span> <span class="st">&quot;Detection frequency&quot;</span>)</span>
-<span id="cb14-35"><a href="ebird.html#cb14-35"></a></span>
-<span id="cb14-36"><a href="ebird.html#cb14-36"></a><span class="co"># combine</span></span>
-<span id="cb14-37"><a href="ebird.html#cb14-37"></a><span class="kw">grid.arrange</span>(g_dur_hist, g_dur_freq)</span></code></pre></div>
+<span id="cb14-18"><a href="ebird.html#cb14-18"></a><span class="st">  </span><span class="kw">geom_segment</span>(<span class="kw">aes</span>(<span class="dt">xend =</span> dur_bins, <span class="dt">y =</span> <span class="dv">0</span>, <span class="dt">yend =</span> n_checklists),</span>
+<span id="cb14-19"><a href="ebird.html#cb14-19"></a>               <span class="dt">color =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span></span>
+<span id="cb14-20"><a href="ebird.html#cb14-20"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb14-21"><a href="ebird.html#cb14-21"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">5</span>) <span class="op">+</span></span>
+<span id="cb14-22"><a href="ebird.html#cb14-22"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span></span>
+<span id="cb14-23"><a href="ebird.html#cb14-23"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Checklist duration (hours)&quot;</span>,</span>
+<span id="cb14-24"><a href="ebird.html#cb14-24"></a>       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,</span>
+<span id="cb14-25"><a href="ebird.html#cb14-25"></a>       <span class="dt">title =</span> <span class="st">&quot;Distribution of checklist durations&quot;</span>)</span>
+<span id="cb14-26"><a href="ebird.html#cb14-26"></a></span>
+<span id="cb14-27"><a href="ebird.html#cb14-27"></a><span class="co"># frequency of detection</span></span>
+<span id="cb14-28"><a href="ebird.html#cb14-28"></a>g_dur_freq &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_dur <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n_checklists <span class="op">&gt;</span><span class="st"> </span><span class="dv">100</span>)) <span class="op">+</span></span>
+<span id="cb14-29"><a href="ebird.html#cb14-29"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> dur_bins, <span class="dt">y =</span> det_freq) <span class="op">+</span></span>
+<span id="cb14-30"><a href="ebird.html#cb14-30"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></span>
+<span id="cb14-31"><a href="ebird.html#cb14-31"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb14-32"><a href="ebird.html#cb14-32"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">5</span>) <span class="op">+</span></span>
+<span id="cb14-33"><a href="ebird.html#cb14-33"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>percent) <span class="op">+</span></span>
+<span id="cb14-34"><a href="ebird.html#cb14-34"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Checklist duration (hours)&quot;</span>,</span>
+<span id="cb14-35"><a href="ebird.html#cb14-35"></a>       <span class="dt">y =</span> <span class="st">&quot;% checklists with detections&quot;</span>,</span>
+<span id="cb14-36"><a href="ebird.html#cb14-36"></a>       <span class="dt">title =</span> <span class="st">&quot;Detection frequency&quot;</span>)</span>
+<span id="cb14-37"><a href="ebird.html#cb14-37"></a></span>
+<span id="cb14-38"><a href="ebird.html#cb14-38"></a><span class="co"># combine</span></span>
+<span id="cb14-39"><a href="ebird.html#cb14-39"></a><span class="kw">grid.arrange</span>(g_dur_hist, g_dur_freq)</span></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/ebird-explore-duration-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>The majority of checklists are half an hour or shorter and there is a rapid decline in the frequency of checklists with increasing duration. In addition, longer searches yield a higher chance of detecting a Wood Thrush. In many cases, there is a saturation effect, with searches beyond a given length producing little additional benefit; however, here there appears to be a drop off in detection for checklists longer than 4 hours.</p>
 </div>
@@ -547,26 +551,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb15-15"><a href="ebird.html#cb15-15"></a><span class="co"># histogram</span></span>
 <span id="cb15-16"><a href="ebird.html#cb15-16"></a>g_dist_hist &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_dist) <span class="op">+</span></span>
 <span id="cb15-17"><a href="ebird.html#cb15-17"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> dist_bins, <span class="dt">y =</span> n_checklists) <span class="op">+</span></span>
-<span id="cb15-18"><a href="ebird.html#cb15-18"></a><span class="st">  </span><span class="kw">geom_col</span>(<span class="dt">width =</span> <span class="kw">mean</span>(<span class="kw">diff</span>(breaks)), <span class="dt">color =</span> <span class="st">&quot;grey30&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span></span>
-<span id="cb15-19"><a href="ebird.html#cb15-19"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">5</span>) <span class="op">+</span></span>
-<span id="cb15-20"><a href="ebird.html#cb15-20"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span></span>
-<span id="cb15-21"><a href="ebird.html#cb15-21"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Distance travelled (km)&quot;</span>,</span>
-<span id="cb15-22"><a href="ebird.html#cb15-22"></a>       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,</span>
-<span id="cb15-23"><a href="ebird.html#cb15-23"></a>       <span class="dt">title =</span> <span class="st">&quot;Distribution of distance travelled&quot;</span>)</span>
-<span id="cb15-24"><a href="ebird.html#cb15-24"></a></span>
-<span id="cb15-25"><a href="ebird.html#cb15-25"></a><span class="co"># frequency of detection</span></span>
-<span id="cb15-26"><a href="ebird.html#cb15-26"></a>g_dist_freq &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_dist <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n_checklists <span class="op">&gt;</span><span class="st"> </span><span class="dv">100</span>)) <span class="op">+</span></span>
-<span id="cb15-27"><a href="ebird.html#cb15-27"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> dist_bins, <span class="dt">y =</span> det_freq) <span class="op">+</span></span>
-<span id="cb15-28"><a href="ebird.html#cb15-28"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></span>
-<span id="cb15-29"><a href="ebird.html#cb15-29"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
-<span id="cb15-30"><a href="ebird.html#cb15-30"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">5</span>) <span class="op">+</span></span>
-<span id="cb15-31"><a href="ebird.html#cb15-31"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>percent) <span class="op">+</span></span>
-<span id="cb15-32"><a href="ebird.html#cb15-32"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Distance travelled (km)&quot;</span>,</span>
-<span id="cb15-33"><a href="ebird.html#cb15-33"></a>       <span class="dt">y =</span> <span class="st">&quot;% checklists with detections&quot;</span>,</span>
-<span id="cb15-34"><a href="ebird.html#cb15-34"></a>       <span class="dt">title =</span> <span class="st">&quot;Detection frequency&quot;</span>)</span>
-<span id="cb15-35"><a href="ebird.html#cb15-35"></a></span>
-<span id="cb15-36"><a href="ebird.html#cb15-36"></a><span class="co"># combine</span></span>
-<span id="cb15-37"><a href="ebird.html#cb15-37"></a><span class="kw">grid.arrange</span>(g_dist_hist, g_dist_freq)</span></code></pre></div>
+<span id="cb15-18"><a href="ebird.html#cb15-18"></a><span class="st">  </span><span class="kw">geom_segment</span>(<span class="kw">aes</span>(<span class="dt">xend =</span> dist_bins, <span class="dt">y =</span> <span class="dv">0</span>, <span class="dt">yend =</span> n_checklists),</span>
+<span id="cb15-19"><a href="ebird.html#cb15-19"></a>               <span class="dt">color =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span></span>
+<span id="cb15-20"><a href="ebird.html#cb15-20"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb15-21"><a href="ebird.html#cb15-21"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">5</span>) <span class="op">+</span></span>
+<span id="cb15-22"><a href="ebird.html#cb15-22"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span></span>
+<span id="cb15-23"><a href="ebird.html#cb15-23"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Distance travelled (km)&quot;</span>,</span>
+<span id="cb15-24"><a href="ebird.html#cb15-24"></a>       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,</span>
+<span id="cb15-25"><a href="ebird.html#cb15-25"></a>       <span class="dt">title =</span> <span class="st">&quot;Distribution of distance travelled&quot;</span>)</span>
+<span id="cb15-26"><a href="ebird.html#cb15-26"></a></span>
+<span id="cb15-27"><a href="ebird.html#cb15-27"></a><span class="co"># frequency of detection</span></span>
+<span id="cb15-28"><a href="ebird.html#cb15-28"></a>g_dist_freq &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_dist <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n_checklists <span class="op">&gt;</span><span class="st"> </span><span class="dv">100</span>)) <span class="op">+</span></span>
+<span id="cb15-29"><a href="ebird.html#cb15-29"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> dist_bins, <span class="dt">y =</span> det_freq) <span class="op">+</span></span>
+<span id="cb15-30"><a href="ebird.html#cb15-30"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></span>
+<span id="cb15-31"><a href="ebird.html#cb15-31"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb15-32"><a href="ebird.html#cb15-32"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">5</span>) <span class="op">+</span></span>
+<span id="cb15-33"><a href="ebird.html#cb15-33"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>percent) <span class="op">+</span></span>
+<span id="cb15-34"><a href="ebird.html#cb15-34"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Distance travelled (km)&quot;</span>,</span>
+<span id="cb15-35"><a href="ebird.html#cb15-35"></a>       <span class="dt">y =</span> <span class="st">&quot;% checklists with detections&quot;</span>,</span>
+<span id="cb15-36"><a href="ebird.html#cb15-36"></a>       <span class="dt">title =</span> <span class="st">&quot;Detection frequency&quot;</span>)</span>
+<span id="cb15-37"><a href="ebird.html#cb15-37"></a></span>
+<span id="cb15-38"><a href="ebird.html#cb15-38"></a><span class="co"># combine</span></span>
+<span id="cb15-39"><a href="ebird.html#cb15-39"></a><span class="kw">grid.arrange</span>(g_dist_hist, g_dist_freq)</span></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/ebird-explore-distance-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>As with duration, the majority of observations are from short checklists (less than half a kilometer). One fortunate consequence of this is that most checklists will be contained within a small area within which habitat is not likely to show high variability. In chapter @ref{covariates}, we will summarize land cover data within circles 2.5 km in diameter, centered on each checklist, and it appears that the vast majority of checklists will stay contained within this area.</p>
 </div>
@@ -590,26 +596,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb16-15"><a href="ebird.html#cb16-15"></a><span class="co"># histogram</span></span>
 <span id="cb16-16"><a href="ebird.html#cb16-16"></a>g_obs_hist &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_obs) <span class="op">+</span></span>
 <span id="cb16-17"><a href="ebird.html#cb16-17"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> obs_bins, <span class="dt">y =</span> n_checklists) <span class="op">+</span></span>
-<span id="cb16-18"><a href="ebird.html#cb16-18"></a><span class="st">  </span><span class="kw">geom_col</span>(<span class="dt">width =</span> <span class="kw">mean</span>(<span class="kw">diff</span>(breaks)), <span class="dt">color =</span> <span class="st">&quot;grey30&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span></span>
-<span id="cb16-19"><a href="ebird.html#cb16-19"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) <span class="op">+</span></span>
-<span id="cb16-20"><a href="ebird.html#cb16-20"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span></span>
-<span id="cb16-21"><a href="ebird.html#cb16-21"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;# observers&quot;</span>,</span>
-<span id="cb16-22"><a href="ebird.html#cb16-22"></a>       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,</span>
-<span id="cb16-23"><a href="ebird.html#cb16-23"></a>       <span class="dt">title =</span> <span class="st">&quot;Distribution of the number of observers&quot;</span>)</span>
-<span id="cb16-24"><a href="ebird.html#cb16-24"></a></span>
-<span id="cb16-25"><a href="ebird.html#cb16-25"></a><span class="co"># frequency of detection</span></span>
-<span id="cb16-26"><a href="ebird.html#cb16-26"></a>g_obs_freq &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_obs <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n_checklists <span class="op">&gt;</span><span class="st"> </span><span class="dv">100</span>)) <span class="op">+</span></span>
-<span id="cb16-27"><a href="ebird.html#cb16-27"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> obs_bins, <span class="dt">y =</span> det_freq) <span class="op">+</span></span>
-<span id="cb16-28"><a href="ebird.html#cb16-28"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></span>
-<span id="cb16-29"><a href="ebird.html#cb16-29"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
-<span id="cb16-30"><a href="ebird.html#cb16-30"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) <span class="op">+</span></span>
-<span id="cb16-31"><a href="ebird.html#cb16-31"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>percent) <span class="op">+</span></span>
-<span id="cb16-32"><a href="ebird.html#cb16-32"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;# observers&quot;</span>,</span>
-<span id="cb16-33"><a href="ebird.html#cb16-33"></a>       <span class="dt">y =</span> <span class="st">&quot;% checklists with detections&quot;</span>,</span>
-<span id="cb16-34"><a href="ebird.html#cb16-34"></a>       <span class="dt">title =</span> <span class="st">&quot;Detection frequency&quot;</span>)</span>
-<span id="cb16-35"><a href="ebird.html#cb16-35"></a></span>
-<span id="cb16-36"><a href="ebird.html#cb16-36"></a><span class="co"># combine</span></span>
-<span id="cb16-37"><a href="ebird.html#cb16-37"></a><span class="kw">grid.arrange</span>(g_obs_hist, g_obs_freq)</span></code></pre></div>
+<span id="cb16-18"><a href="ebird.html#cb16-18"></a><span class="st">  </span><span class="kw">geom_segment</span>(<span class="kw">aes</span>(<span class="dt">xend =</span> obs_bins, <span class="dt">y =</span> <span class="dv">0</span>, <span class="dt">yend =</span> n_checklists),</span>
+<span id="cb16-19"><a href="ebird.html#cb16-19"></a>               <span class="dt">color =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span></span>
+<span id="cb16-20"><a href="ebird.html#cb16-20"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb16-21"><a href="ebird.html#cb16-21"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) <span class="op">+</span></span>
+<span id="cb16-22"><a href="ebird.html#cb16-22"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span></span>
+<span id="cb16-23"><a href="ebird.html#cb16-23"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;# observers&quot;</span>,</span>
+<span id="cb16-24"><a href="ebird.html#cb16-24"></a>       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,</span>
+<span id="cb16-25"><a href="ebird.html#cb16-25"></a>       <span class="dt">title =</span> <span class="st">&quot;Distribution of the number of observers&quot;</span>)</span>
+<span id="cb16-26"><a href="ebird.html#cb16-26"></a></span>
+<span id="cb16-27"><a href="ebird.html#cb16-27"></a><span class="co"># frequency of detection</span></span>
+<span id="cb16-28"><a href="ebird.html#cb16-28"></a>g_obs_freq &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_obs <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n_checklists <span class="op">&gt;</span><span class="st"> </span><span class="dv">100</span>)) <span class="op">+</span></span>
+<span id="cb16-29"><a href="ebird.html#cb16-29"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> obs_bins, <span class="dt">y =</span> det_freq) <span class="op">+</span></span>
+<span id="cb16-30"><a href="ebird.html#cb16-30"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></span>
+<span id="cb16-31"><a href="ebird.html#cb16-31"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb16-32"><a href="ebird.html#cb16-32"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) <span class="op">+</span></span>
+<span id="cb16-33"><a href="ebird.html#cb16-33"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>percent) <span class="op">+</span></span>
+<span id="cb16-34"><a href="ebird.html#cb16-34"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;# observers&quot;</span>,</span>
+<span id="cb16-35"><a href="ebird.html#cb16-35"></a>       <span class="dt">y =</span> <span class="st">&quot;% checklists with detections&quot;</span>,</span>
+<span id="cb16-36"><a href="ebird.html#cb16-36"></a>       <span class="dt">title =</span> <span class="st">&quot;Detection frequency&quot;</span>)</span>
+<span id="cb16-37"><a href="ebird.html#cb16-37"></a></span>
+<span id="cb16-38"><a href="ebird.html#cb16-38"></a><span class="co"># combine</span></span>
+<span id="cb16-39"><a href="ebird.html#cb16-39"></a><span class="kw">grid.arrange</span>(g_obs_hist, g_obs_freq)</span></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/ebird-explore-observers-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>There is no discernable pattern amongst the noise here, likely because there are so few checklists with more than 3 observers.</p>
 </div>
@@ -669,14 +677,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb19-9"><a href="ebird.html#cb19-9"></a><span class="kw">glimpse</span>(selected)</span>
 <span id="cb19-10"><a href="ebird.html#cb19-10"></a><span class="co">#&gt; Rows: 3,955</span></span>
 <span id="cb19-11"><a href="ebird.html#cb19-11"></a><span class="co">#&gt; Columns: 8</span></span>
-<span id="cb19-12"><a href="ebird.html#cb19-12"></a><span class="co">#&gt; $ checklist_id              &lt;chr&gt; &quot;S8861448&quot;, &quot;S11177008&quot;, &quot;S20926623&quot;, &quot;S14628278&quot;, &quot;S20926637&quot;, &quot;S10191838&quot;,…</span></span>
-<span id="cb19-13"><a href="ebird.html#cb19-13"></a><span class="co">#&gt; $ scientific_name           &lt;chr&gt; &quot;Hylocichla mustelina&quot;, &quot;Hylocichla mustelina&quot;, &quot;Hylocichla mustelina&quot;, &quot;Hyl…</span></span>
-<span id="cb19-14"><a href="ebird.html#cb19-14"></a><span class="co">#&gt; $ observation_count         &lt;chr&gt; &quot;45&quot;, &quot;4&quot;, &quot;1&quot;, &quot;6&quot;, &quot;1&quot;, &quot;4&quot;, &quot;1&quot;, &quot;1&quot;, &quot;7&quot;, &quot;2&quot;, &quot;1&quot;, &quot;X&quot;, &quot;1&quot;, &quot;X&quot;, &quot;2&quot;, …</span></span>
-<span id="cb19-15"><a href="ebird.html#cb19-15"></a><span class="co">#&gt; $ latitude                  &lt;dbl&gt; 35.5, 35.1, 32.8, 35.3, 32.9, 35.3, 34.6, 32.7, 34.9, 34.5, 32.9, 32.4, 35.5…</span></span>
-<span id="cb19-16"><a href="ebird.html#cb19-16"></a><span class="co">#&gt; $ longitude                 &lt;dbl&gt; -89.2, -90.1, -87.2, -90.1, -87.2, -90.0, -88.2, -87.2, -88.1, -80.2, -87.2,…</span></span>
-<span id="cb19-17"><a href="ebird.html#cb19-17"></a><span class="co">#&gt; $ observer_id               &lt;chr&gt; &quot;obsr245742&quot;, &quot;obsr245742&quot;, &quot;obsr35725&quot;, &quot;obsr245742&quot;, &quot;obsr35725&quot;, &quot;obsr245…</span></span>
-<span id="cb19-18"><a href="ebird.html#cb19-18"></a><span class="co">#&gt; $ sampling_event_identifier &lt;chr&gt; &quot;S8861448&quot;, &quot;S11177008&quot;, &quot;S20926623&quot;, &quot;S14628278&quot;, &quot;S20926637&quot;, &quot;S10191838&quot;,…</span></span>
-<span id="cb19-19"><a href="ebird.html#cb19-19"></a><span class="co">#&gt; $ group_identifier          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</span></span>
+<span id="cb19-12"><a href="ebird.html#cb19-12"></a><span class="co">#&gt; $ checklist_id              &lt;chr&gt; &quot;S8861448&quot;, &quot;S11177008&quot;, &quot;S20926623&quot;, &quot;S14628278&quot;, &quot;S20926637&quot;, &quot;S10191838&quot;, &quot;S189458…</span></span>
+<span id="cb19-13"><a href="ebird.html#cb19-13"></a><span class="co">#&gt; $ scientific_name           &lt;chr&gt; &quot;Hylocichla mustelina&quot;, &quot;Hylocichla mustelina&quot;, &quot;Hylocichla mustelina&quot;, &quot;Hylocichla m…</span></span>
+<span id="cb19-14"><a href="ebird.html#cb19-14"></a><span class="co">#&gt; $ observation_count         &lt;chr&gt; &quot;45&quot;, &quot;4&quot;, &quot;1&quot;, &quot;6&quot;, &quot;1&quot;, &quot;4&quot;, &quot;1&quot;, &quot;1&quot;, &quot;7&quot;, &quot;2&quot;, &quot;1&quot;, &quot;X&quot;, &quot;1&quot;, &quot;X&quot;, &quot;2&quot;, &quot;5&quot;, &quot;3&quot;,…</span></span>
+<span id="cb19-15"><a href="ebird.html#cb19-15"></a><span class="co">#&gt; $ latitude                  &lt;dbl&gt; 35.5, 35.1, 32.8, 35.3, 32.9, 35.3, 34.6, 32.7, 34.9, 34.5, 32.9, 32.4, 35.5, 35.3, 3…</span></span>
+<span id="cb19-16"><a href="ebird.html#cb19-16"></a><span class="co">#&gt; $ longitude                 &lt;dbl&gt; -89.2, -90.1, -87.2, -90.1, -87.2, -90.0, -88.2, -87.2, -88.1, -80.2, -87.2, -84.0, -…</span></span>
+<span id="cb19-17"><a href="ebird.html#cb19-17"></a><span class="co">#&gt; $ observer_id               &lt;chr&gt; &quot;obsr245742&quot;, &quot;obsr245742&quot;, &quot;obsr35725&quot;, &quot;obsr245742&quot;, &quot;obsr35725&quot;, &quot;obsr245742&quot;, &quot;ob…</span></span>
+<span id="cb19-18"><a href="ebird.html#cb19-18"></a><span class="co">#&gt; $ sampling_event_identifier &lt;chr&gt; &quot;S8861448&quot;, &quot;S11177008&quot;, &quot;S20926623&quot;, &quot;S14628278&quot;, &quot;S20926637&quot;, &quot;S10191838&quot;, &quot;S189458…</span></span>
+<span id="cb19-19"><a href="ebird.html#cb19-19"></a><span class="co">#&gt; $ group_identifier          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
 <span id="cb19-20"><a href="ebird.html#cb19-20"></a><span class="co"># file size difference</span></span>
 <span id="cb19-21"><a href="ebird.html#cb19-21"></a><span class="kw">file.size</span>(f_ebd) <span class="op">/</span><span class="st"> </span><span class="kw">file.size</span>(f_select)</span>
 <span id="cb19-22"><a href="ebird.html#cb19-22"></a><span class="co">#&gt; [1] 5.72</span></span></code></pre></div>

@@ -24,11 +24,9 @@ Imports:
     bookdown,
     data.table,
     dggridR,
-    DHARMa,
     dplyr (>= 0.8.3),
     ebirdst,
-    edarf,
-    fasterize,
+    exactextractr,
     fields,
     fitdistrplus,
     forcats,
@@ -40,7 +38,6 @@ Imports:
     knitr,
     lubridate,
     lwgeom,
-    maxnet,
     mgcv,
     MODIS,
     MuMIn,
@@ -63,7 +60,6 @@ Imports:
     tidyr (>= 1.2.1),
     tidyverse,
     unmarked,
-    velox,
     verification,
     viridis
   
