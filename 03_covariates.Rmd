@@ -178,7 +178,7 @@ Now, we'll loop over the years and for each square neighborhood extract all the 
 # function to summarize landcover data for all checklists in a given year
 calculate_pland <- function(yr, regions, lc) {
   locs <- st_set_geometry(regions, NULL)
-  exact_extract(lc[[yr]], regions) %>% 
+  exact_extract(lc[[yr]], regions, progress = FALSE) %>% 
     map(~ count(., landcover = value)) %>% 
     tibble(locs, data = .) %>% 
     unnest(data)
@@ -266,7 +266,7 @@ r_cells <- st_buffer(r_centers, dist = neighborhood_radius)
 
 # extract landcover values within neighborhoods, only needed most recent year
 lc_extract_pred <- landcover[[paste0("y", max_lc_year)]] %>% 
-  exact_extract(r_cells) %>% 
+  exact_extract(r_cells, progress = FALSE) %>% 
   map(~ count(., landcover = value)) %>% 
   tibble(id = r_cells$id, data = .) %>% 
   unnest(data)
@@ -366,7 +366,7 @@ ebird_buff_noyear <- ebird %>%
 # extract elevation values and calculate median and sd
 locs <- st_set_geometry(ebird_buff_noyear, NULL) %>% 
     mutate(id = row_number())
-elev_checklists <- exact_extract(elev, ebird_buff_noyear) %>% 
+elev_checklists <- exact_extract(elev, ebird_buff_noyear, progress = FALSE) %>% 
   map_dfr(~ tibble(elevation_median = mean(.$value, na.rm = TRUE),
                    elevation_sd = sd(.$value, na.rm = TRUE))) %>% 
   # join to lookup table to get locality_id
@@ -377,7 +377,7 @@ We'll need to repeat this process to calculate the elevation covariates for the 
 
 ```{r covariates-elevation-pred}
 # extract and calculate median and sd
-elev_pred <- exact_extract(elev, r_cells) %>% 
+elev_pred <- exact_extract(elev, r_cells, progress = FALSE) %>% 
   map_dfr(~ tibble(elevation_median = mean(.$value, na.rm = TRUE),
                    elevation_sd = sd(.$value, na.rm = TRUE))) %>% 
   # join to lookup table to get locality_id
