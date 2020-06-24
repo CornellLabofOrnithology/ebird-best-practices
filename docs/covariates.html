@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 3 Habitat Covariates | Best Practices for Using eBird Data</title>
   <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.19 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 3 Habitat Covariates | Best Practices for Using eBird Data" />
   <meta property="og:type" content="book" />
@@ -32,6 +32,7 @@
   
 <link rel="prev" href="ebird.html"/>
 <link rel="next" href="encounter.html"/>
+<script src="libs/header-attrs-2.2/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -61,18 +62,17 @@
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -92,7 +92,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -142,10 +142,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome</a></li>
-<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction and Setup</a><ul>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction and Setup</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#intro-intro"><i class="fa fa-check"></i><b>1.1</b> Introduction</a></li>
 <li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#intro-pre"><i class="fa fa-check"></i><b>1.2</b> Prerequisites</a></li>
-<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a><ul>
+<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a>
+<ul>
 <li class="chapter" data-level="1.3.1" data-path="intro.html"><a href="intro.html#intro-setup-data"><i class="fa fa-check"></i><b>1.3.1</b> Data package</a></li>
 <li class="chapter" data-level="1.3.2" data-path="intro.html"><a href="intro.html#intro-setup-software"><i class="fa fa-check"></i><b>1.3.2</b> Software</a></li>
 <li class="chapter" data-level="1.3.3" data-path="intro.html"><a href="intro.html#intro-setup-packages"><i class="fa fa-check"></i><b>1.3.3</b> R packages</a></li>
@@ -154,29 +156,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.3.6" data-path="intro.html"><a href="intro.html#intro-setup-gis"><i class="fa fa-check"></i><b>1.3.6</b> GIS data</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="ebird.html"><a href="ebird.html"><i class="fa fa-check"></i><b>2</b> eBird Data</a><ul>
-<li class="chapter" data-level="2.1" data-path="ebird.html"><a href="ebird.html#ebird-intro"><i class="fa fa-check"></i><b>2.1</b> Introduction</a><ul>
+<li class="chapter" data-level="2" data-path="ebird.html"><a href="ebird.html"><i class="fa fa-check"></i><b>2</b> eBird Data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="ebird.html"><a href="ebird.html#ebird-intro"><i class="fa fa-check"></i><b>2.1</b> Introduction</a>
+<ul>
 <li class="chapter" data-level="2.1.1" data-path="ebird.html"><a href="ebird.html#ebird-intro-tax"><i class="fa fa-check"></i><b>2.1.1</b> eBird taxonomy</a></li>
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="ebird.html"><a href="ebird.html#ebird-extract"><i class="fa fa-check"></i><b>2.2</b> Data extraction with <code>auk</code></a></li>
 <li class="chapter" data-level="2.3" data-path="ebird.html"><a href="ebird.html#ebird-zf"><i class="fa fa-check"></i><b>2.3</b> Importing and zero-filling</a></li>
 <li class="chapter" data-level="2.4" data-path="ebird.html"><a href="ebird.html#ebird-detect"><i class="fa fa-check"></i><b>2.4</b> Accounting for variation in detectability</a></li>
-<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a><ul>
+<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a>
+<ul>
 <li class="chapter" data-level="2.5.1" data-path="ebird.html"><a href="ebird.html#ebird-explore-time"><i class="fa fa-check"></i><b>2.5.1</b> Time of day</a></li>
 <li class="chapter" data-level="2.5.2" data-path="ebird.html"><a href="ebird.html#ebird-explore-duration"><i class="fa fa-check"></i><b>2.5.2</b> Checklist duration</a></li>
 <li class="chapter" data-level="2.5.3" data-path="ebird.html"><a href="ebird.html#ebird-explore-distance"><i class="fa fa-check"></i><b>2.5.3</b> Distance traveled</a></li>
 <li class="chapter" data-level="2.5.4" data-path="ebird.html"><a href="ebird.html#number-of-observers-ebird-explore-observers"><i class="fa fa-check"></i><b>2.5.4</b> Number of observers {#ebird-explore-observers,}</a></li>
 </ul></li>
-<li class="chapter" data-level="2.6" data-path="ebird.html"><a href="ebird.html#ebird-size"><i class="fa fa-check"></i><b>2.6</b> EBD file size issues</a><ul>
+<li class="chapter" data-level="2.6" data-path="ebird.html"><a href="ebird.html#ebird-size"><i class="fa fa-check"></i><b>2.6</b> EBD file size issues</a>
+<ul>
 <li class="chapter" data-level="2.6.1" data-path="ebird.html"><a href="ebird.html#ebird-size-custom"><i class="fa fa-check"></i><b>2.6.1</b> Custom downloads</a></li>
 <li class="chapter" data-level="2.6.2" data-path="ebird.html"><a href="ebird.html#ebird-size-strict"><i class="fa fa-check"></i><b>2.6.2</b> Stricter filtering</a></li>
 <li class="chapter" data-level="2.6.3" data-path="ebird.html"><a href="ebird.html#ebird-size-columns"><i class="fa fa-check"></i><b>2.6.3</b> Removing columns</a></li>
 <li class="chapter" data-level="2.6.4" data-path="ebird.html"><a href="ebird.html#ebird-size-split"><i class="fa fa-check"></i><b>2.6.4</b> Splitting by species</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="covariates.html"><a href="covariates.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a><ul>
+<li class="chapter" data-level="3" data-path="covariates.html"><a href="covariates.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a>
+<ul>
 <li class="chapter" data-level="3.1" data-path="covariates.html"><a href="covariates.html#covariates-intro"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
-<li class="chapter" data-level="3.2" data-path="covariates.html"><a href="covariates.html#covariates-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a><ul>
+<li class="chapter" data-level="3.2" data-path="covariates.html"><a href="covariates.html#covariates-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a>
+<ul>
 <li class="chapter" data-level="3.2.1" data-path="covariates.html"><a href="covariates.html#covariates-dl-setup"><i class="fa fa-check"></i><b>3.2.1</b> <code>MODIS</code> setup</a></li>
 <li class="chapter" data-level="3.2.2" data-path="covariates.html"><a href="covariates.html#covariates-dl-r"><i class="fa fa-check"></i><b>3.2.2</b> Download using R</a></li>
 <li class="chapter" data-level="3.2.3" data-path="covariates.html"><a href="covariates.html#covariates-dl-trouble"><i class="fa fa-check"></i><b>3.2.3</b> Troubleshooting</a></li>
@@ -185,43 +193,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.4" data-path="covariates.html"><a href="covariates.html#covariates-prediction"><i class="fa fa-check"></i><b>3.4</b> Prediction surface</a></li>
 <li class="chapter" data-level="3.5" data-path="covariates.html"><a href="covariates.html#covariates-elevation"><i class="fa fa-check"></i><b>3.5</b> Elevation</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a><ul>
+<li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a>
+<ul>
 <li class="chapter" data-level="4.1" data-path="encounter.html"><a href="encounter.html#encouter-intro"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
 <li class="chapter" data-level="4.2" data-path="encounter.html"><a href="encounter.html#encounter-data"><i class="fa fa-check"></i><b>4.2</b> Data preparation</a></li>
 <li class="chapter" data-level="4.3" data-path="encounter.html"><a href="encounter.html#encounter-sss"><i class="fa fa-check"></i><b>4.3</b> Spatiotemporal subsampling</a></li>
-<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a><ul>
+<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a>
+<ul>
 <li class="chapter" data-level="4.4.1" data-path="encounter.html"><a href="encounter.html#encounter-rf-cal"><i class="fa fa-check"></i><b>4.4.1</b> Calibration</a></li>
 <li class="chapter" data-level="4.4.2" data-path="encounter.html"><a href="encounter.html#encounter-rf-assess"><i class="fa fa-check"></i><b>4.4.2</b> Assessment</a></li>
 </ul></li>
-<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Habitat associations</a><ul>
+<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Habitat associations</a>
+<ul>
 <li class="chapter" data-level="4.5.1" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pi"><i class="fa fa-check"></i><b>4.5.1</b> Predictor importance</a></li>
 <li class="chapter" data-level="4.5.2" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pd"><i class="fa fa-check"></i><b>4.5.2</b> Partial dependence</a></li>
 </ul></li>
 <li class="chapter" data-level="4.6" data-path="encounter.html"><a href="encounter.html#encounter-predict"><i class="fa fa-check"></i><b>4.6</b> Prediction</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a><ul>
+<li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a>
+<ul>
 <li class="chapter" data-level="5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-intro"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
-<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a>
+<ul>
 <li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.2.1</b> Data formatting</a></li>
 <li class="chapter" data-level="5.2.2" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.2.2</b> Spatial subsampling</a></li>
 <li class="chapter" data-level="5.2.3" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.2.3</b> <code>unmarked</code> object</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a><ul>
+<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a>
+<ul>
 <li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.3.1</b> Assessment</a></li>
 <li class="chapter" data-level="5.3.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.3.2</b> Model selection</a></li>
 <li class="chapter" data-level="5.3.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-detection"><i class="fa fa-check"></i><b>5.3.3</b> Exploring the effects of covariates on detection probability</a></li>
 </ul></li>
 <li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.4</b> Prediction</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a><ul>
+<li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a>
+<ul>
 <li class="chapter" data-level="6.1" data-path="abundance.html"><a href="abundance.html#abundance-intro"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
-<li class="chapter" data-level="6.2" data-path="abundance.html"><a href="abundance.html#abundance-data"><i class="fa fa-check"></i><b>6.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="6.2" data-path="abundance.html"><a href="abundance.html#abundance-data"><i class="fa fa-check"></i><b>6.2</b> Data preparation</a>
+<ul>
 <li class="chapter" data-level="6.2.1" data-path="abundance.html"><a href="abundance.html#abundance-data-sss"><i class="fa fa-check"></i><b>6.2.1</b> Spatiotemporal subsampling</a></li>
 <li class="chapter" data-level="6.2.2" data-path="abundance.html"><a href="abundance.html#abundance-data-tt"><i class="fa fa-check"></i><b>6.2.2</b> Test-train split</a></li>
 </ul></li>
 <li class="chapter" data-level="6.3" data-path="abundance.html"><a href="abundance.html#abundance-explore"><i class="fa fa-check"></i><b>6.3</b> Exploratory data analysis</a></li>
 <li class="chapter" data-level="6.4" data-path="abundance.html"><a href="abundance.html#abundance-model"><i class="fa fa-check"></i><b>6.4</b> Abundance models</a></li>
-<li class="chapter" data-level="6.5" data-path="abundance.html"><a href="abundance.html#abundance-assess"><i class="fa fa-check"></i><b>6.5</b> Asssessment</a><ul>
+<li class="chapter" data-level="6.5" data-path="abundance.html"><a href="abundance.html#abundance-assess"><i class="fa fa-check"></i><b>6.5</b> Asssessment</a>
+<ul>
 <li class="chapter" data-level="6.5.1" data-path="abundance.html"><a href="abundance.html#abundance-assess-rank"><i class="fa fa-check"></i><b>6.5.1</b> Predictive performance: Ranking</a></li>
 <li class="chapter" data-level="6.5.2" data-path="abundance.html"><a href="abundance.html#abundance-assess-mag"><i class="fa fa-check"></i><b>6.5.2</b> Predictive performance: Magnitude</a></li>
 <li class="chapter" data-level="6.5.3" data-path="abundance.html"><a href="abundance.html#abundance-assess-cov"><i class="fa fa-check"></i><b>6.5.3</b> Assessing covariate effects</a></li>
@@ -247,9 +264,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="covariates" class="section level1">
+<div id="covariates" class="section level1" number="3">
 <h1><span class="header-section-number">Chapter 3</span> Habitat Covariates</h1>
-<div id="covariates-intro" class="section level2">
+<div id="covariates-intro" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Introduction</h2>
 <p>Species distribution models work by finding associations between species occurrence or abundance and environmental variables. Using these relationships, it’s possible to predict the distribution in areas that aren’t sampled, provided we know the value of the environmental variables in these areas. Therefore, to proceed with the modeling in the next several chapters, we’ll need to prepare a suite of environmental variables to be used as covariates in our models. The particular set of covariates that’s most suitable for a given study will depend on the focal species, region, and time period, as well as the availability of data. When species distributions are well defined by the environmental covariates, extrapolations to unsurveyed areas will be more accurate. So, itss worth considering which environmental covariates are important for your species. Scientists can use many variables to characterise a species distribution - for example, climate, weather, and soil type. Here we use only landcover and elevation as example environmental covariates.</p>
 <p>Fortunately, there are an abundance of freely available, satellite-based land cover products derived from satellites such as <a href="https://en.wikipedia.org/wiki/Landsat_program">Landsat</a>, <a href="https://en.wikipedia.org/wiki/SPOT_(satellite)">SPOT</a>, and <a href="https://en.wikipedia.org/wiki/Moderate_Resolution_Imaging_Spectroradiometer">MODIS</a> that are suitable for distribution modeling. This land cover data will act as a proxy for habitat and throughout this book we’ll often use habitat and land cover interchangeably. In addition, we’ll include elevation as an additional covariate, which can be important for many species.</p>
@@ -353,7 +370,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>For a wide range of studies, this MODIS land cover dataset will be suitable for generating habitat covariates; however, there may be particular cases where the study species, habitat, or ecological question requires different, or more specialized, data. For example, shorebird distribution modeling would benefit from data on the <a href="https://www.intertidal.app">extent of tidal flats</a>, seabirds distributions are often influenced by <a href="https://eatlas.org.au/data/uuid/80301676-97fb-4bdf-b06c-e961e5c0cb0b">ocean depth</a>, and in many regions <a href="https://github.com/jhollist/elevatr">elevation</a> plays a critical role in shaping species distributions. Regardless of which habitat data you decide to use for your project, this chapter should provide a template for how to prepare these data as covariates for modeling species distributions.</p>
 <p>The following section will cover how to access and download MODIS land cover data. Next, we’ll demonstrate how to summarize these data within a neighborhood around each checklist location. Then, we’ll calculate a set of covariates over a regular grid, which we’ll use to make predictions of species distributions throughout our study area. Finally, as an example of including covariate data from multiple sources, we’ll demonstrate how to incorporate elevation data as an additional covariate. If you want to skip this section and jump straight to the modeling, you can download the <a href="https://raw.githubusercontent.com/cornelllabofornithology/ebird-best-practices/master/data.zip">data package</a>, which includes all the prepared MODIS data that we’ll use in the remainder of this book.</p>
 </div>
-<div id="covariates-dl" class="section level2">
+<div id="covariates-dl" class="section level2" number="3.2">
 <h2><span class="header-section-number">3.2</span> Downloading MODIS data</h2>
 <p>As with most satellite data, MODIS data are provided as <a href="https://modis-land.gsfc.nasa.gov/MODLAND_grid.html">1200 km by 1200 km tiles</a> for ease of download. Each tile is a <a href="http://desktop.arcgis.com/en/arcmap/10.3/manage-data/raster-and-images/what-is-raster-data.htm">raster GIS dataset</a> consisting of a regular grid of 500 m resolution cells. The surface of the Earth is divided up into a grid of these tiles, each given an ID, for example, h10v12 is the tile from the 10th column and 12th row of the grid. Compiling MODIS data for a given region requires figuring out which set of tiles covers the region, downloading those tiles, combining the tiles together into a single raster dataset, and converting from the native MODIS HDF format, which R can’t read, to a standard GeoTIFF format. This needs to be done for each year for which we want habitat data, and can be a time consuming and error prone process. Fortunately, the <a href="https://github.com/MatMatt/MODIS">R package <code>MODIS</code></a> automates most of these steps. Unfortunately, this package can be challenging and confusing to get working. With this in mind, this section will provide detailed instruction for setting up and using the <code>MODIS</code> package.</p>
 <p>Let’s start by figuring out the tile IDs for the tiles that BCR 27 spans. Recall that we prepared a BCR boundary in Section <a href="intro.html#intro-setup-gis">1.3.6</a> of the Introduction; if you haven’t already done so, <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip">download the data package</a> now to get that boundary. Given a set of spatial features, the <code>MODIS</code> package can quickly tell us which MODIS tiles we need.</p>
@@ -381,7 +398,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb20-22"><a href="covariates.html#cb20-22"></a>tiles<span class="op">@</span>tile</span>
 <span id="cb20-23"><a href="covariates.html#cb20-23"></a><span class="co">#&gt; [1] &quot;h10v06&quot; &quot;h10v05&quot; &quot;h11v05&quot;</span></span></code></pre></div>
 <p>So, we’ll need to download these three tiles for each of the 10 years from 2010-2019.</p>
-<div id="covariates-dl-setup" class="section level3">
+<div id="covariates-dl-setup" class="section level3" number="3.2.1">
 <h3><span class="header-section-number">3.2.1</span> <code>MODIS</code> setup</h3>
 <p>Before we start using <code>MODIS</code> for the first time, a bit of setup is required. First, <a href="https://urs.earthdata.nasa.gov/users/new">sign up for a NASA Earthdata account</a> to get access to MODIS, and other NASA data. Then use <code>MODIS::EarthdataLogin(usr = "username", pwd = "password")</code>, with the username and password you just created, to store your login credentials so the <code>MODIS</code> package can access them.</p>
 <p>Next, you’ll need to install <a href="https://www.gdal.org/">GDAL</a>, an open source library for working with geospatial data that’s needed for processing the MODIS tiles. The steps for installing GDAL are system dependent:</p>
@@ -399,7 +416,7 @@ brew link --force osgeo-gdal</code></pre>
 </ul>
 <p>Finally, run <code>MODIS:::checkTools("GDAL")</code> to check that GDAL is installed and that the <code>MODIS</code> package can find it. If GDAL can’t be found, you’ll need to manually locate it and use <code>MODIS::MODISoptions(gdalPath = "path/to/gdal/")</code> to tell the <code>MODIS</code> package where it is.</p>
 </div>
-<div id="covariates-dl-r" class="section level3">
+<div id="covariates-dl-r" class="section level3" number="3.2.2">
 <h3><span class="header-section-number">3.2.2</span> Download using R</h3>
 <p>Once all the setup steps have been completed, we can start downloading some data! The <code>MODIS</code> function <code>runGdal()</code> downloads and processes MODIS tiles into a single GeoTIFF for each year. Note that at the time of writing, land cover data from 2019 haven’t been prepared yet, so we’ll use 2018 data for both 2018 and 2019. The key arguments to <code>runGdal()</code> are:</p>
 <ul>
@@ -455,14 +472,14 @@ brew link --force osgeo-gdal</code></pre>
 <span id="cb24-4"><a href="covariates.html#cb24-4"></a><span class="st">  </span><span class="kw">max</span>()</span></code></pre></div>
 <p>So, we have landcover data up to 2018.</p>
 </div>
-<div id="covariates-dl-trouble" class="section level3">
+<div id="covariates-dl-trouble" class="section level3" number="3.2.3">
 <h3><span class="header-section-number">3.2.3</span> Troubleshooting</h3>
 <p>If the call to <code>runGDAL()</code> didn’t work for you, don’t worry, you’re not alone! It’s challenging to get the <code>MODIS</code> package working and errors are common when you’re first trying to get it set up. The most common error is not having GDAL installed correctly, which will give an error like <code>GDAL not installed or configured</code>. Either you don’t have GDAL at all or you have it, but it doesn’t have support for HDF4 files (this is the native format for MODIS data). Try following the <a href="habit-dl-setup">above instructions</a> again. If it still doesn’t work, consult the instructions on the <code>MODIStsp</code> website for <a href="http://ropensci.github.io/MODIStsp/articles/installation.html#installing-gdal-1-11-1">installing GDAL</a>.</p>
 <p>Another error you may see is: <code>Make sure either 'wget' or 'curl' is available in order to download data from LP DAAC or NSIDC.</code>. This should only arise on versions of Windows before Windows 10. If you see this error, you’ll need to install <code>curl</code>, which is used by R to download the MODIS tiles. There is a StackOverflow question with <a href="https://stackoverflow.com/questions/9507353/how-do-i-install-and-use-curl-on-windows">excellent instructions</a> for installing <code>curl</code> and getting it setup on your system.</p>
 <p>If these tips haven’t solved your particular problem, you’ll need to turn to Google to troubleshoot or find someone who has experience with these tools and ask them to help. Good luck!</p>
 </div>
 </div>
-<div id="covariates-lsm" class="section level2">
+<div id="covariates-lsm" class="section level2" number="3.3">
 <h2><span class="header-section-number">3.3</span> Landscape metrics</h2>
 <p>At this point we could use the MODIS land cover data directly, simply extracting the land cover class for each checklist location. However, we instead advocate summarizing the land cover data within a neighborhood around the checklist locations. As discussed in Section <a href="intro.html#intro-intro">1.1</a>, checklist locations are not precise, so it’s more appropriate to use the habitat in the surrounding area, rather than only at the checklist location. More fundamentally, organisms interact with their environment not at a single point, but at the scale of a landscape, so it’s important to include habitat information characterizing a suitably-sized landscape around the observation location.</p>
 <p>There are a variety of <strong>landscape metrics</strong> that can be used to characterize the composition (what habitat is available) and configuration (how that habitat is arranged spatially) of landscapes. The simplest metric of landscape composition is the proportion of the landscape in each land cover class (PLAND in the parlance of <a href="https://www.umass.edu/landeco/research/fragstats/fragstats.html">FRAGSTATS</a>). For a broad range of scenarios, PLAND is a reliable choice for calculating habitat covariates in distribution modeling. Based on our experience working with eBird data, an approximately 2.5 km by 2.5 km neighborhood (5 by 5 MODIS cells) centered on the checklist location is sufficient to account for the spatial precision in the data when the maximum distance of travelling counts has been limited to 5 km, while being a relevant ecological scale for many bird species.</p>
@@ -471,7 +488,7 @@ brew link --force osgeo-gdal</code></pre>
 <span id="cb25-2"><a href="covariates.html#cb25-2"></a>ebird_buff &lt;-<span class="st"> </span>ebird <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb25-3"><a href="covariates.html#cb25-3"></a><span class="st">  </span><span class="kw">distinct</span>(<span class="dt">year =</span> <span class="kw">format</span>(observation_date, <span class="st">&quot;%Y&quot;</span>),</span>
 <span id="cb25-4"><a href="covariates.html#cb25-4"></a>           locality_id, latitude, longitude) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb25-5"><a href="covariates.html#cb25-5"></a><span class="st">  </span><span class="co"># for 2018 use 2017 landcover data</span></span>
+<span id="cb25-5"><a href="covariates.html#cb25-5"></a><span class="st">  </span><span class="co"># for 2019 use 2018 landcover data</span></span>
 <span id="cb25-6"><a href="covariates.html#cb25-6"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year_lc =</span> <span class="kw">if_else</span>(<span class="kw">as.integer</span>(year) <span class="op">&gt;</span><span class="st"> </span>max_lc_year, </span>
 <span id="cb25-7"><a href="covariates.html#cb25-7"></a>                           <span class="kw">as.character</span>(max_lc_year), year),</span>
 <span id="cb25-8"><a href="covariates.html#cb25-8"></a>         <span class="dt">year_lc =</span> <span class="kw">paste0</span>(<span class="st">&quot;y&quot;</span>, year_lc)) <span class="op">%&gt;%</span><span class="st"> </span></span>
@@ -539,7 +556,7 @@ brew link --force osgeo-gdal</code></pre>
 <span id="cb28-30"><a href="covariates.html#cb28-30"></a><span class="co"># save</span></span>
 <span id="cb28-31"><a href="covariates.html#cb28-31"></a><span class="kw">write_csv</span>(pland, <span class="st">&quot;data/modis_pland_location-year.csv&quot;</span>)</span></code></pre></div>
 </div>
-<div id="covariates-prediction" class="section level2">
+<div id="covariates-prediction" class="section level2" number="3.4">
 <h2><span class="header-section-number">3.4</span> Prediction surface</h2>
 <p>After fitting species distribution models, the goal is typically to make predictions throughout the study area. To do this, we’ll need a regular grid of habitat covariates over which to make predictions. In this section, we’ll create such a prediction surface for BCR 27 using the MODIS land cover data from the most recent year for which they’re available. To start, we’ll need a template raster with cells equal in size to the neighborhoods we defined in the previous section: 5 by 5 MODIS land cover cells. We can use <code>raster::aggregate()</code> to achieve this. We’ll also use <code>raster::rasterize()</code> to assign the value 1 to all cells within BCR 27 and leave all cells outside BCR 27 empty.</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="covariates.html#cb29-1"></a>agg_factor &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>neighborhood_radius <span class="op">/</span><span class="st"> </span><span class="kw">res</span>(landcover))</span>
@@ -615,7 +632,7 @@ brew link --force osgeo-gdal</code></pre>
 <span id="cb31-16"><a href="covariates.html#cb31-16"></a><span class="kw">plot</span>(forest_cover, <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">box =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="kw">viridis</span>(<span class="dv">10</span>), <span class="dt">main =</span> t)</span></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/landcover-prediction-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 </div>
-<div id="covariates-elevation" class="section level2">
+<div id="covariates-elevation" class="section level2" number="3.5">
 <h2><span class="header-section-number">3.5</span> Elevation</h2>
 <p>In some scenarios, you may want to include additional covariates to complement the land cover variables. There is a wealth of open access raster data available for this purpose; however, in most cases, these data will not have a simple R interface for accessing them. Instead, you’ll typically have to manually download and process these data. As an example of how this works, we’ll demonstrate how to include covariates for elevation, which frequently plays an important role in shaping species distributions.</p>
 <p>Amatulli et al. <span class="citation">(<a href="#ref-amatulliSuiteGlobalCrossscale2018" role="doc-biblioref">2018</a>)</span> provide a suite of global, 1km resolution topographic variables designed for use in distribution modeling. A range of variables are available, including elevation, slope, roughness, and many others; we’ll focus on elevation here, but the approach can easily be applied to other variables. To start, visit <a href="http://www.earthenv.org/topography">the website for these data</a>, download the 1 km resolution median elevation product, and save the file (<code>elevation_1KMmd_GMTEDmd.tif</code>) in the <code>data/</code> subdirectory of your project:</p>
@@ -667,20 +684,20 @@ brew link --force osgeo-gdal</code></pre>
 <span id="cb35-13"><a href="covariates.html#cb35-13"></a><span class="co">#&gt; $ latitude                      &lt;dbl&gt; 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2, 37.2,…</span></span>
 <span id="cb35-14"><a href="covariates.html#cb35-14"></a><span class="co">#&gt; $ year                          &lt;int&gt; 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018, 2018,…</span></span>
 <span id="cb35-15"><a href="covariates.html#cb35-15"></a><span class="co">#&gt; $ pland_00_water                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span id="cb35-16"><a href="covariates.html#cb35-16"></a><span class="co">#&gt; $ pland_01_evergreen_needleleaf &lt;dbl&gt; 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000…</span></span>
+<span id="cb35-16"><a href="covariates.html#cb35-16"></a><span class="co">#&gt; $ pland_01_evergreen_needleleaf &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0…</span></span>
 <span id="cb35-17"><a href="covariates.html#cb35-17"></a><span class="co">#&gt; $ pland_02_evergreen_broadleaf  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span id="cb35-18"><a href="covariates.html#cb35-18"></a><span class="co">#&gt; $ pland_03_deciduous_needleleaf &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span id="cb35-19"><a href="covariates.html#cb35-19"></a><span class="co">#&gt; $ pland_04_deciduous_broadleaf  &lt;dbl&gt; 0.000, 0.500, 0.250, 0.000, 0.000, 0.333, 0.000, 0.000, 0.000, 0.000, 0.250, 0.333, 0.000…</span></span>
-<span id="cb35-20"><a href="covariates.html#cb35-20"></a><span class="co">#&gt; $ pland_05_mixed_forest         &lt;dbl&gt; 0.000, 0.000, 0.000, 0.333, 0.500, 0.333, 0.000, 0.000, 0.250, 0.333, 0.250, 0.333, 0.500…</span></span>
+<span id="cb35-19"><a href="covariates.html#cb35-19"></a><span class="co">#&gt; $ pland_04_deciduous_broadleaf  &lt;dbl&gt; 0.0000, 0.1724, 0.0345, 0.0000, 0.0000, 0.0345, 0.0000, 0.0000, 0.0000, 0.0000, 0.0345, 0…</span></span>
+<span id="cb35-20"><a href="covariates.html#cb35-20"></a><span class="co">#&gt; $ pland_05_mixed_forest         &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.1379, 0.1379, 0.2759, 0.0000, 0.0000, 0.0345, 0.1379, 0.0345, 0…</span></span>
 <span id="cb35-21"><a href="covariates.html#cb35-21"></a><span class="co">#&gt; $ pland_06_closed_shrubland     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span id="cb35-22"><a href="covariates.html#cb35-22"></a><span class="co">#&gt; $ pland_07_open_shrubland       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span id="cb35-23"><a href="covariates.html#cb35-23"></a><span class="co">#&gt; $ pland_08_woody_savanna        &lt;dbl&gt; 0.500, 0.500, 0.250, 0.333, 0.500, 0.333, 0.333, 0.500, 0.250, 0.333, 0.250, 0.333, 0.500…</span></span>
-<span id="cb35-24"><a href="covariates.html#cb35-24"></a><span class="co">#&gt; $ pland_09_savanna              &lt;dbl&gt; 0.000, 0.000, 0.250, 0.333, 0.000, 0.000, 0.333, 0.500, 0.250, 0.333, 0.250, 0.000, 0.000…</span></span>
-<span id="cb35-25"><a href="covariates.html#cb35-25"></a><span class="co">#&gt; $ pland_10_grassland            &lt;dbl&gt; 0.500, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.250, 0.000, 0.000, 0.000, 0.000…</span></span>
+<span id="cb35-23"><a href="covariates.html#cb35-23"></a><span class="co">#&gt; $ pland_08_woody_savanna        &lt;dbl&gt; 0.966, 0.828, 0.724, 0.690, 0.862, 0.690, 0.621, 0.966, 0.793, 0.828, 0.793, 0.310, 0.552…</span></span>
+<span id="cb35-24"><a href="covariates.html#cb35-24"></a><span class="co">#&gt; $ pland_09_savanna              &lt;dbl&gt; 0.0000, 0.0000, 0.2069, 0.1724, 0.0000, 0.0000, 0.0345, 0.0345, 0.1379, 0.0345, 0.1379, 0…</span></span>
+<span id="cb35-25"><a href="covariates.html#cb35-25"></a><span class="co">#&gt; $ pland_10_grassland            &lt;dbl&gt; 0.0345, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0345, 0.0000, 0.0000, 0…</span></span>
 <span id="cb35-26"><a href="covariates.html#cb35-26"></a><span class="co">#&gt; $ pland_11_wetland              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span id="cb35-27"><a href="covariates.html#cb35-27"></a><span class="co">#&gt; $ pland_12_cropland             &lt;dbl&gt; 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00,…</span></span>
-<span id="cb35-28"><a href="covariates.html#cb35-28"></a><span class="co">#&gt; $ pland_13_urban                &lt;dbl&gt; 0.000, 0.000, 0.250, 0.000, 0.000, 0.000, 0.333, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000…</span></span>
-<span id="cb35-29"><a href="covariates.html#cb35-29"></a><span class="co">#&gt; $ pland_14_mosiac               &lt;dbl&gt; 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,…</span></span>
+<span id="cb35-27"><a href="covariates.html#cb35-27"></a><span class="co">#&gt; $ pland_12_cropland             &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0…</span></span>
+<span id="cb35-28"><a href="covariates.html#cb35-28"></a><span class="co">#&gt; $ pland_13_urban                &lt;dbl&gt; 0.0000, 0.0000, 0.0345, 0.0000, 0.0000, 0.0000, 0.3448, 0.0000, 0.0000, 0.0000, 0.0000, 0…</span></span>
+<span id="cb35-29"><a href="covariates.html#cb35-29"></a><span class="co">#&gt; $ pland_14_mosiac               &lt;dbl&gt; 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000…</span></span>
 <span id="cb35-30"><a href="covariates.html#cb35-30"></a><span class="co">#&gt; $ pland_15_barren               &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span id="cb35-31"><a href="covariates.html#cb35-31"></a><span class="co">#&gt; $ elevation_median              &lt;dbl&gt; 40.0, 41.8, 42.6, 42.8, 42.5, 42.8, 45.6, 44.7, 43.6, 41.2, 40.6, 40.9, 42.8, 78.0, 68.1,…</span></span>
 <span id="cb35-32"><a href="covariates.html#cb35-32"></a><span class="co">#&gt; $ elevation_sd                  &lt;dbl&gt; 3.75, 2.78, 2.41, 3.28, 1.40, 1.66, 2.74, 3.33, 2.29, 2.32, 2.52, 3.41, 1.53, 8.61, 7.02,…</span></span></code></pre></div>

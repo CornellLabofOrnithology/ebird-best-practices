@@ -158,7 +158,7 @@ neighborhood_radius <- 5 * ceiling(max(res(landcover))) / 2
 ebird_buff <- ebird %>% 
   distinct(year = format(observation_date, "%Y"),
            locality_id, latitude, longitude) %>% 
-  # for 2018 use 2017 landcover data
+  # for 2019 use 2018 landcover data
   mutate(year_lc = if_else(as.integer(year) > max_lc_year, 
                            as.character(max_lc_year), year),
          year_lc = paste0("y", year_lc)) %>% 

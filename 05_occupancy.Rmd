@@ -223,7 +223,8 @@ So far, we have a single global model that includes all of the covariates we bel
 occ_dredge <- dredge(occ_model)
 
 # model comparison to explore the results for occupancy
-mc <- select(occ_dredge, starts_with("psi(p"), df, AICc, delta, weight)
+mc <- as.data.frame(occ_dredge) %>% 
+  select(starts_with("psi(p"), df, AICc, delta, weight)
 # shorten names for printing
 names(mc) <- names(mc) %>% 
   str_extract("(?<=psi\\(pland_[0-9]{2}_)[a-z_]+") %>% 
@@ -258,9 +259,10 @@ A unique feature of occupancy models, is that we can investigate whether certain
 
 ```{r occupancy-select-detection-define}
 # model comparison to explore the results for detection
-md <- select(occ_dredge, starts_with("p("), df, AICc, delta, weight)
-# shorten names for printing
+md <- as.data.frame(occ_dredge) %>% 
+  select(starts_with("p("), df, AICc, delta, weight)
 
+# shorten names for printing
 names(md) <- names(md) %>% 
   str_extract("(?<=p\\(pland_[0-9]{2}_)[a-z_]+") %>% 
   coalesce(names(md))

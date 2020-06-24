@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 4 Modeling Encounter Rate | Best Practices for Using eBird Data</title>
   <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.19 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 4 Modeling Encounter Rate | Best Practices for Using eBird Data" />
   <meta property="og:type" content="book" />
@@ -32,6 +32,7 @@
   
 <link rel="prev" href="covariates.html"/>
 <link rel="next" href="occupancy.html"/>
+<script src="libs/header-attrs-2.2/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -61,18 +62,17 @@
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -92,7 +92,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -142,10 +142,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome</a></li>
-<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction and Setup</a><ul>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction and Setup</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#intro-intro"><i class="fa fa-check"></i><b>1.1</b> Introduction</a></li>
 <li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#intro-pre"><i class="fa fa-check"></i><b>1.2</b> Prerequisites</a></li>
-<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a><ul>
+<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a>
+<ul>
 <li class="chapter" data-level="1.3.1" data-path="intro.html"><a href="intro.html#intro-setup-data"><i class="fa fa-check"></i><b>1.3.1</b> Data package</a></li>
 <li class="chapter" data-level="1.3.2" data-path="intro.html"><a href="intro.html#intro-setup-software"><i class="fa fa-check"></i><b>1.3.2</b> Software</a></li>
 <li class="chapter" data-level="1.3.3" data-path="intro.html"><a href="intro.html#intro-setup-packages"><i class="fa fa-check"></i><b>1.3.3</b> R packages</a></li>
@@ -154,29 +156,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.3.6" data-path="intro.html"><a href="intro.html#intro-setup-gis"><i class="fa fa-check"></i><b>1.3.6</b> GIS data</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="ebird.html"><a href="ebird.html"><i class="fa fa-check"></i><b>2</b> eBird Data</a><ul>
-<li class="chapter" data-level="2.1" data-path="ebird.html"><a href="ebird.html#ebird-intro"><i class="fa fa-check"></i><b>2.1</b> Introduction</a><ul>
+<li class="chapter" data-level="2" data-path="ebird.html"><a href="ebird.html"><i class="fa fa-check"></i><b>2</b> eBird Data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="ebird.html"><a href="ebird.html#ebird-intro"><i class="fa fa-check"></i><b>2.1</b> Introduction</a>
+<ul>
 <li class="chapter" data-level="2.1.1" data-path="ebird.html"><a href="ebird.html#ebird-intro-tax"><i class="fa fa-check"></i><b>2.1.1</b> eBird taxonomy</a></li>
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="ebird.html"><a href="ebird.html#ebird-extract"><i class="fa fa-check"></i><b>2.2</b> Data extraction with <code>auk</code></a></li>
 <li class="chapter" data-level="2.3" data-path="ebird.html"><a href="ebird.html#ebird-zf"><i class="fa fa-check"></i><b>2.3</b> Importing and zero-filling</a></li>
 <li class="chapter" data-level="2.4" data-path="ebird.html"><a href="ebird.html#ebird-detect"><i class="fa fa-check"></i><b>2.4</b> Accounting for variation in detectability</a></li>
-<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a><ul>
+<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a>
+<ul>
 <li class="chapter" data-level="2.5.1" data-path="ebird.html"><a href="ebird.html#ebird-explore-time"><i class="fa fa-check"></i><b>2.5.1</b> Time of day</a></li>
 <li class="chapter" data-level="2.5.2" data-path="ebird.html"><a href="ebird.html#ebird-explore-duration"><i class="fa fa-check"></i><b>2.5.2</b> Checklist duration</a></li>
 <li class="chapter" data-level="2.5.3" data-path="ebird.html"><a href="ebird.html#ebird-explore-distance"><i class="fa fa-check"></i><b>2.5.3</b> Distance traveled</a></li>
 <li class="chapter" data-level="2.5.4" data-path="ebird.html"><a href="ebird.html#number-of-observers-ebird-explore-observers"><i class="fa fa-check"></i><b>2.5.4</b> Number of observers {#ebird-explore-observers,}</a></li>
 </ul></li>
-<li class="chapter" data-level="2.6" data-path="ebird.html"><a href="ebird.html#ebird-size"><i class="fa fa-check"></i><b>2.6</b> EBD file size issues</a><ul>
+<li class="chapter" data-level="2.6" data-path="ebird.html"><a href="ebird.html#ebird-size"><i class="fa fa-check"></i><b>2.6</b> EBD file size issues</a>
+<ul>
 <li class="chapter" data-level="2.6.1" data-path="ebird.html"><a href="ebird.html#ebird-size-custom"><i class="fa fa-check"></i><b>2.6.1</b> Custom downloads</a></li>
 <li class="chapter" data-level="2.6.2" data-path="ebird.html"><a href="ebird.html#ebird-size-strict"><i class="fa fa-check"></i><b>2.6.2</b> Stricter filtering</a></li>
 <li class="chapter" data-level="2.6.3" data-path="ebird.html"><a href="ebird.html#ebird-size-columns"><i class="fa fa-check"></i><b>2.6.3</b> Removing columns</a></li>
 <li class="chapter" data-level="2.6.4" data-path="ebird.html"><a href="ebird.html#ebird-size-split"><i class="fa fa-check"></i><b>2.6.4</b> Splitting by species</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="covariates.html"><a href="covariates.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a><ul>
+<li class="chapter" data-level="3" data-path="covariates.html"><a href="covariates.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a>
+<ul>
 <li class="chapter" data-level="3.1" data-path="covariates.html"><a href="covariates.html#covariates-intro"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
-<li class="chapter" data-level="3.2" data-path="covariates.html"><a href="covariates.html#covariates-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a><ul>
+<li class="chapter" data-level="3.2" data-path="covariates.html"><a href="covariates.html#covariates-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a>
+<ul>
 <li class="chapter" data-level="3.2.1" data-path="covariates.html"><a href="covariates.html#covariates-dl-setup"><i class="fa fa-check"></i><b>3.2.1</b> <code>MODIS</code> setup</a></li>
 <li class="chapter" data-level="3.2.2" data-path="covariates.html"><a href="covariates.html#covariates-dl-r"><i class="fa fa-check"></i><b>3.2.2</b> Download using R</a></li>
 <li class="chapter" data-level="3.2.3" data-path="covariates.html"><a href="covariates.html#covariates-dl-trouble"><i class="fa fa-check"></i><b>3.2.3</b> Troubleshooting</a></li>
@@ -185,43 +193,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.4" data-path="covariates.html"><a href="covariates.html#covariates-prediction"><i class="fa fa-check"></i><b>3.4</b> Prediction surface</a></li>
 <li class="chapter" data-level="3.5" data-path="covariates.html"><a href="covariates.html#covariates-elevation"><i class="fa fa-check"></i><b>3.5</b> Elevation</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a><ul>
+<li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a>
+<ul>
 <li class="chapter" data-level="4.1" data-path="encounter.html"><a href="encounter.html#encouter-intro"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
 <li class="chapter" data-level="4.2" data-path="encounter.html"><a href="encounter.html#encounter-data"><i class="fa fa-check"></i><b>4.2</b> Data preparation</a></li>
 <li class="chapter" data-level="4.3" data-path="encounter.html"><a href="encounter.html#encounter-sss"><i class="fa fa-check"></i><b>4.3</b> Spatiotemporal subsampling</a></li>
-<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a><ul>
+<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a>
+<ul>
 <li class="chapter" data-level="4.4.1" data-path="encounter.html"><a href="encounter.html#encounter-rf-cal"><i class="fa fa-check"></i><b>4.4.1</b> Calibration</a></li>
 <li class="chapter" data-level="4.4.2" data-path="encounter.html"><a href="encounter.html#encounter-rf-assess"><i class="fa fa-check"></i><b>4.4.2</b> Assessment</a></li>
 </ul></li>
-<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Habitat associations</a><ul>
+<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Habitat associations</a>
+<ul>
 <li class="chapter" data-level="4.5.1" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pi"><i class="fa fa-check"></i><b>4.5.1</b> Predictor importance</a></li>
 <li class="chapter" data-level="4.5.2" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pd"><i class="fa fa-check"></i><b>4.5.2</b> Partial dependence</a></li>
 </ul></li>
 <li class="chapter" data-level="4.6" data-path="encounter.html"><a href="encounter.html#encounter-predict"><i class="fa fa-check"></i><b>4.6</b> Prediction</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a><ul>
+<li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a>
+<ul>
 <li class="chapter" data-level="5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-intro"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
-<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a>
+<ul>
 <li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.2.1</b> Data formatting</a></li>
 <li class="chapter" data-level="5.2.2" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.2.2</b> Spatial subsampling</a></li>
 <li class="chapter" data-level="5.2.3" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.2.3</b> <code>unmarked</code> object</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a><ul>
+<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a>
+<ul>
 <li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.3.1</b> Assessment</a></li>
 <li class="chapter" data-level="5.3.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.3.2</b> Model selection</a></li>
 <li class="chapter" data-level="5.3.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-detection"><i class="fa fa-check"></i><b>5.3.3</b> Exploring the effects of covariates on detection probability</a></li>
 </ul></li>
 <li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.4</b> Prediction</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a><ul>
+<li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a>
+<ul>
 <li class="chapter" data-level="6.1" data-path="abundance.html"><a href="abundance.html#abundance-intro"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
-<li class="chapter" data-level="6.2" data-path="abundance.html"><a href="abundance.html#abundance-data"><i class="fa fa-check"></i><b>6.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="6.2" data-path="abundance.html"><a href="abundance.html#abundance-data"><i class="fa fa-check"></i><b>6.2</b> Data preparation</a>
+<ul>
 <li class="chapter" data-level="6.2.1" data-path="abundance.html"><a href="abundance.html#abundance-data-sss"><i class="fa fa-check"></i><b>6.2.1</b> Spatiotemporal subsampling</a></li>
 <li class="chapter" data-level="6.2.2" data-path="abundance.html"><a href="abundance.html#abundance-data-tt"><i class="fa fa-check"></i><b>6.2.2</b> Test-train split</a></li>
 </ul></li>
 <li class="chapter" data-level="6.3" data-path="abundance.html"><a href="abundance.html#abundance-explore"><i class="fa fa-check"></i><b>6.3</b> Exploratory data analysis</a></li>
 <li class="chapter" data-level="6.4" data-path="abundance.html"><a href="abundance.html#abundance-model"><i class="fa fa-check"></i><b>6.4</b> Abundance models</a></li>
-<li class="chapter" data-level="6.5" data-path="abundance.html"><a href="abundance.html#abundance-assess"><i class="fa fa-check"></i><b>6.5</b> Asssessment</a><ul>
+<li class="chapter" data-level="6.5" data-path="abundance.html"><a href="abundance.html#abundance-assess"><i class="fa fa-check"></i><b>6.5</b> Asssessment</a>
+<ul>
 <li class="chapter" data-level="6.5.1" data-path="abundance.html"><a href="abundance.html#abundance-assess-rank"><i class="fa fa-check"></i><b>6.5.1</b> Predictive performance: Ranking</a></li>
 <li class="chapter" data-level="6.5.2" data-path="abundance.html"><a href="abundance.html#abundance-assess-mag"><i class="fa fa-check"></i><b>6.5.2</b> Predictive performance: Magnitude</a></li>
 <li class="chapter" data-level="6.5.3" data-path="abundance.html"><a href="abundance.html#abundance-assess-cov"><i class="fa fa-check"></i><b>6.5.3</b> Assessing covariate effects</a></li>
@@ -247,15 +264,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="encounter" class="section level1">
+<div id="encounter" class="section level1" number="4">
 <h1><span class="header-section-number">Chapter 4</span> Modeling Encounter Rate</h1>
-<div id="encouter-intro" class="section level2">
+<div id="encouter-intro" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> Introduction</h2>
 <p>In this chapter we’ll estimate the <strong>encounter rate</strong> of Wood Thrush on eBird checklists in June in BCR 27. We define encounter rate as measuring the probability of an eBirder encountering a species on a standard eBird checklist.</p>
 <p>The ecological metric we’re ultimately interested in is the probability that a species occurs at a site (i.e. the occupancy probability). This is usually not possible to estimate with semi-structured citizen science data like those from eBird because we typically can’t estimate <em>absolute</em> detectability. However, by accounting for much of the variation in detectability by including effort covariates in our model, the remaining unaccounted detectability will be more consistent across sites <span class="citation">(Guillera-Arroita et al. <a href="#ref-guillera-arroitaMySpeciesDistribution2015" role="doc-biblioref">2015</a>)</span>. Therefore, the encounter rate metric will be proportional to occupancy, albeit lower by some consistent amount. For some easily detectable species the difference between occurrence and actual occupancy rate will be small, and these encounter rates will approximate the actual occupancy rates of the species. For harder to detect species, the encounter rate may be substantially lower than the occupancy rate.</p>
 <p><a href="https://en.wikipedia.org/wiki/Random_forest"><strong>Random forests</strong></a> are a general purpose machine learning method applicable to a wide range of <a href="https://en.wikipedia.org/wiki/Statistical_classification">classification</a> and <a href="https://en.wikipedia.org/wiki/Regression_analysis">regression</a> problems, including the task at hand: classifying detection and non-detection of a species on eBird checklists. In addition to having good predictive performance, random forests are reasonably easy to use and have several efficient implementations in R. Prior to fitting a random forest model, we’ll demonstrate how to address issues of <a href="intro.html#intro-intro">class imbalance and spatial bias</a> using spatial subsampling on a regular grid. After fitting the model, we’ll assess its performance using a subset of data put aside for testing, and calibrate the model to ensure predictions are accurate. Finally, we’ll predict encounter rates throughout the study area and produce maps of these predictions.</p>
 </div>
-<div id="encounter-data" class="section level2">
+<div id="encounter-data" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> Data preparation</h2>
 <p>Let’s get started by loading the necessary packages and data. If you worked through the previous chapters, you should have all the data required for this chapter. However, you may want to <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip">download the data package</a>, and unzip it to your project directory, to ensure you’re working with exactly the same data as was used in the creation of this book.</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="encounter.html#cb36-1"></a><span class="kw">library</span>(sf)</span>
@@ -316,7 +333,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb36-56"><a href="encounter.html#cb36-56"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb36-57"><a href="encounter.html#cb36-57"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span></code></pre></div>
 </div>
-<div id="encounter-sss" class="section level2">
+<div id="encounter-sss" class="section level2" number="4.3">
 <h2><span class="header-section-number">4.3</span> Spatiotemporal subsampling</h2>
 <p>As <a href="intro.html#intro-intro">discussed in the introduction</a>, three of the challenges faced when using eBird data, are <strong>spatial bias</strong>, <strong>temporal bias</strong>, and <strong>class imbalance</strong>. Spatial and temporal bias refers to the tendency of eBird checklists to be distributed non-randomly in space and time, while class imbalance refers to fact that there will be many more non-detections than detections for most species. All three can impact our ability to make reliable inferences from these data. Fortunately, all three can largely be addressed through subsampling the eBird data prior to modeling. In particular, we define an equal area hexagonal grid across the study region, and then subsample detections and non-detections separately to ensure that we don’t lose too many detections. In our example, we will be sampling one detection and one non-detection checklist from each grid cell for each week.</p>
 <p>Hexagonal grids may seem exotic relative to square grids, which may be more familiar; however, they have a variety of benefits <span class="citation">(Sahr <a href="#ref-sahrHexagonalDiscreteGlobal2011" role="doc-biblioref">2011</a>)</span> including significantly less spatial distortion. With hexagonal grids we can be sure all the cells are of equal area, which is particularly important if we have a large region for modeling. The R package <a href="https://github.com/r-barnes/dggridR"><code>dggridR</code></a> makes working with hexagonal grids simple and efficient. We’ll construct a grid with 5 km spacing between the centres of adjacent hexagons, then sample randomly from these hexagonal cells.</p>
@@ -436,7 +453,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="ebird-best-practices_files/figure-html/encounter-sss-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>For Wood Thrush, subsampling the detections and non-detections independently is sufficient for dealing with class imbalance. You can assess the impact of class imbalance by looking at the prevalence rates and examining whether the models are good at predicting to validation data. For species that are extremely rare, it may be worthwhile considering keeping all detections or even oversampling detections <span class="citation">(Robinson, Ruiz‐Gutierrez, and Fink <a href="#ref-robinsonCorrectingBiasDistribution2018" role="doc-biblioref">2018</a>)</span>. In doing this, be aware that some of your species detections will not be independent, which could lead to overfitting of the data. Overall, when thinking about the number of detections and the prevalence rate, it’s important to consider both the ecology and detectability of the focal species, and the behavior of observers towards this species.</p>
 </div>
-<div id="encounter-rf" class="section level2">
+<div id="encounter-rf" class="section level2" number="4.4">
 <h2><span class="header-section-number">4.4</span> Random forests</h2>
 <p>Now we’ll use a random forest model to relate detection/non-detection of Wood Thrush to the habitat covariates (MODIS land cover and elevation), while also accounting for variation in detectability by including a suite of effort covariates. Before we fit the random forest model, we randomly split the data into 80% of checklists for training and 20% for testing. We’ll hold this 20% aside when we fit the model, then use it as an independent data set to test the predictive performance of the model.</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="encounter.html#cb41-1"></a>ebird_split &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span></span>
@@ -466,7 +483,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb43-7"><a href="encounter.html#cb43-7"></a>             <span class="dt">probability =</span> <span class="ot">TRUE</span>,</span>
 <span id="cb43-8"><a href="encounter.html#cb43-8"></a>             <span class="dt">replace =</span> <span class="ot">TRUE</span>, </span>
 <span id="cb43-9"><a href="encounter.html#cb43-9"></a>             <span class="dt">sample.fraction =</span> <span class="kw">c</span>(detection_freq, detection_freq))</span></code></pre></div>
-<div id="encounter-rf-cal" class="section level3">
+<div id="encounter-rf-cal" class="section level3" number="4.4.1">
 <h3><span class="header-section-number">4.4.1</span> Calibration</h3>
 <p>For various reasons, the predicted probabilities from models do not always align with the observed frequencies of detections. For example, we would hope that if we look at all sites with a estimated probability of encounter of 0.2, that 20% of these would record the species. However, these probabilities are not always so well aligned. This will clearly be the case in our example, because we have deliberately inflated the prevalence of detection records in the data through the spatiotemporal subsampling process. We can produce a <strong>calibration</strong> of the predictions, which can be a useful diagnostic tool to understand the model predictions, and in some cases can be used to realign the predictions with observations. For information on calibration in species distribution models see Vaughan and Ormerod <span class="citation">(<a href="#ref-vaughanContinuingChallengesTesting2005" role="doc-biblioref">2005</a>)</span> and for more fundamental references on calibration see Platt <span class="citation">(<a href="#ref-plattProbabilisticOutputsSupport1999" role="doc-biblioref">1999</a>)</span>, Murphy <span class="citation">(<a href="#ref-murphyNewVectorPartition1973" role="doc-biblioref">1973</a>)</span>, and Niculescu-Mizil and Caruana <span class="citation">(<a href="#ref-niculescu-mizilPredictingGoodProbabilities2005" role="doc-biblioref">2005</a>)</span>.</p>
 <p>To view the calibration of our model results, we predict encounter rate for each checklist in the training set, then fit a binomial Generalized Additive Model (GAM) with the real observed encounter rate as the response and the predicted encounter rate as the predictor variable. Whereas GLMs fit a linear relationship between a response and predictors, GAMs allow non-linear relationships. Although GAMs provide a degree of flexibility, however in some situations they may overfit and provide unrealistic and unhelpful calibrations. We have a strong a priori expectation that higher real values will also be associated with higher estimated rates. In order to maintain the ranking of predictions, it is important that we respect this ordering and to do this we’ll use a GAM that is constrained to only increase. To fit the GAM, we’ll use the R package <a href="https://CRAN.R-project.org/package=scam"><code>scam</code></a>, so the shape can be constrained to be monotonically increasing. Note that predictions from <code>ranger</code> are in the form of a matrix of probabilities for each class, and we want the probability of detections, which is the second column of this matrix.</p>
@@ -512,7 +529,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>If accurate encounter rates are required, and the calibration model is strong (close fit of points to the line in the figure above), then the calibration model can be used to <strong>calibrate</strong> the estimates from the random forest model, so they are adjusted to match the observed encounter rates more closely. The calibrated random forest model is the combination of the original random forest model followed by the calibration model.</p>
 <p>If you’re using this model to calibrate your estimates, notice that the calibration curve can produce probabilities greater than 1 and less than 0, so when applying the calibration we also need to restrict the predictions to be between 0 and 1. It’s possible to run a logistic regression for the calibration to remove these predictions less than 0 or greater than 1; however, we’ve found the Gaussian constrained GAM to be more stable than the logistic constrained GAM.</p>
 </div>
-<div id="encounter-rf-assess" class="section level3">
+<div id="encounter-rf-assess" class="section level3" number="4.4.2">
 <h3><span class="header-section-number">4.4.2</span> Assessment</h3>
 <p>To assess the quality of both the uncalibrated and the calibrated model, we’ll validate the model’s ability to predict the observed patterns of occupancy using independent validation data (i.e. the 20% test data set). We’ll use a range of predictive performance metrics to compare the predictions to the actual observations: <a href="https://en.wikipedia.org/wiki/Mean_squared_error">mean squared error (MSE)</a>, <a href="https://en.wikipedia.org/wiki/Sensitivity_and_specificity">sensitivity</a>, <a href="https://en.wikipedia.org/wiki/Sensitivity_and_specificity">specificity</a>, <a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic#Area_under_the_curve">AUC</a>, and <a href="https://en.wikipedia.org/wiki/Cohen%27s_kappa">Kappa</a>. Several of these metrics require the predicted probabilities to be classified into detection/non-detection. We’ll do this using a threshold, chosen to maximize the Kappa statistic.</p>
 <div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="encounter.html#cb45-1"></a><span class="co"># predict on test data using calibrated model</span></span>
@@ -595,10 +612,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Each of these metrics can inform us about different aspects of the model fit. The objectives of your study will determine which of these metrics is most important. For example, if you want to ensure that the model definitely includes all areas of species presence, you would seek to have high sensitivity. Alternatively, if you want to ensure that places the model predicts for species occurrence are true (for example, when identifying areas for conservation action), you would seek to maximise specificity. Note that in our example, calibration had little effect on any of the metrics of accurate classification (i.e. binary presence/absence), but the mean squared error in estimation of probability of occurrence was halved by calibration.</p>
 </div>
 </div>
-<div id="encounter-habitat" class="section level2">
+<div id="encounter-habitat" class="section level2" number="4.5">
 <h2><span class="header-section-number">4.5</span> Habitat associations</h2>
 <p>From the random forest model, we can glean two important sources of information about the association between Wood Thrush detection and features of their local environment. First, <strong>predictor importance</strong> is a measure of the predictive power of each covariate, and is calculated as a byproduct of fitting a random forest model. Second, <strong>partial dependence</strong> plots estimate the marginal effect of one predictor holding all other predictors constant.</p>
-<div id="encounter-habitat-pi" class="section level3">
+<div id="encounter-habitat-pi" class="section level3" number="4.5.1">
 <h3><span class="header-section-number">4.5.1</span> Predictor importance</h3>
 <p>During the process of fitting a random forest model, some variables are removed at each node of the trees that make up the random forest. <strong>Predictor importance</strong> is based on the mean decrease in accuracy of the model when a given covariate is not used. It’s technically an average <a href="https://en.wikipedia.org/wiki/Gini_coefficient">Gini index</a>, but essentially larger values indicate that a predictor is more important to the model.</p>
 <div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="encounter.html#cb46-1"></a>pi &lt;-<span class="st"> </span><span class="kw">enframe</span>(rf<span class="op">$</span>variable.importance, <span class="st">&quot;predictor&quot;</span>, <span class="st">&quot;importance&quot;</span>)</span>
@@ -624,7 +641,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb47-4"><a href="encounter.html#cb47-4"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dt">n =</span> <span class="dv">9</span>, <span class="dt">wt =</span> importance) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb47-5"><a href="encounter.html#cb47-5"></a><span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(importance))</span></code></pre></div>
 </div>
-<div id="encounter-habitat-pd" class="section level3">
+<div id="encounter-habitat-pd" class="section level3" number="4.5.2">
 <h3><span class="header-section-number">4.5.2</span> Partial dependence</h3>
 <p><strong>Partial dependence</strong> plots show the marginal effect of a given predictor on encounter rate averaged across the other predictors. These plots are generated by predicting encounter rate at a regular sequence of points across the full range of values of a given predictor. At each predictor value, predictions of encounter rate are made for a random subsample of the training dataset with the focal predictor fixed, but all other predictors left as is. The encounter rate predictions are then averaged across all the checklists in the training dataset giving an estimate of the average encounter rate at a specific value of the focal predictor. This is a cumbersome process, but we provide a function below that does all the hard work for you! This function takes the following arguments:</p>
 <ul>
@@ -700,7 +717,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The random forest model has a number of interactions, which are not displayed in these partial dependence plots. When interpreting these, bear in mind that there are likely some more complex interaction effects beneath these individual plots.</p>
 </div>
 </div>
-<div id="encounter-predict" class="section level2">
+<div id="encounter-predict" class="section level2" number="4.6">
 <h2><span class="header-section-number">4.6</span> Prediction</h2>
 <p>Now for the fun part: let’s use the calibrated random forest model to make a map of Wood Thrush encounter rate in BCR 27! In Section <a href="covariates.html#covariates-prediction">3.4</a>, we created a prediction surface consisting of the PLAND habitat covariates summarized on a regular grid of points across BCR 27. In this section, we’ll make predictions of encounter rate at these points. However, first we need to bring effort variables into this prediction surface. We’ll make predictions for a <strong>standard eBird checklist</strong>: a 1 km, 1 hour traveling count at the peak time of day for detecting this species. Finally, we’ll make these predictions for June 15, 2018, the middle of our June focal window for the latest year for which MODIS landcover data exist.</p>
 <p>To find the time of day with the highest detection probability, we can look for the peak of the partial dependence plot. The one caveat to this approach is that it’s important we focus on times of day for which there are enough data to make predictions. In particular, there’s an increasing trend in detectability with earlier start times, and few checklists late at night, which can cause the model to incorrectly extrapolate that trend to show highest detectability at night. Let’s start by looking at a plot to see if this is happening here.</p>

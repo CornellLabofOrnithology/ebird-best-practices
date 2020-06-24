@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 6 Modeling Relative Abundance | Best Practices for Using eBird Data</title>
   <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.19 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 6 Modeling Relative Abundance | Best Practices for Using eBird Data" />
   <meta property="og:type" content="book" />
@@ -32,6 +32,7 @@
   
 <link rel="prev" href="occupancy.html"/>
 <link rel="next" href="references.html"/>
+<script src="libs/header-attrs-2.2/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -61,18 +62,17 @@
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -92,7 +92,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -142,10 +142,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome</a></li>
-<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction and Setup</a><ul>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction and Setup</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#intro-intro"><i class="fa fa-check"></i><b>1.1</b> Introduction</a></li>
 <li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#intro-pre"><i class="fa fa-check"></i><b>1.2</b> Prerequisites</a></li>
-<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a><ul>
+<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a>
+<ul>
 <li class="chapter" data-level="1.3.1" data-path="intro.html"><a href="intro.html#intro-setup-data"><i class="fa fa-check"></i><b>1.3.1</b> Data package</a></li>
 <li class="chapter" data-level="1.3.2" data-path="intro.html"><a href="intro.html#intro-setup-software"><i class="fa fa-check"></i><b>1.3.2</b> Software</a></li>
 <li class="chapter" data-level="1.3.3" data-path="intro.html"><a href="intro.html#intro-setup-packages"><i class="fa fa-check"></i><b>1.3.3</b> R packages</a></li>
@@ -154,29 +156,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.3.6" data-path="intro.html"><a href="intro.html#intro-setup-gis"><i class="fa fa-check"></i><b>1.3.6</b> GIS data</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="ebird.html"><a href="ebird.html"><i class="fa fa-check"></i><b>2</b> eBird Data</a><ul>
-<li class="chapter" data-level="2.1" data-path="ebird.html"><a href="ebird.html#ebird-intro"><i class="fa fa-check"></i><b>2.1</b> Introduction</a><ul>
+<li class="chapter" data-level="2" data-path="ebird.html"><a href="ebird.html"><i class="fa fa-check"></i><b>2</b> eBird Data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="ebird.html"><a href="ebird.html#ebird-intro"><i class="fa fa-check"></i><b>2.1</b> Introduction</a>
+<ul>
 <li class="chapter" data-level="2.1.1" data-path="ebird.html"><a href="ebird.html#ebird-intro-tax"><i class="fa fa-check"></i><b>2.1.1</b> eBird taxonomy</a></li>
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="ebird.html"><a href="ebird.html#ebird-extract"><i class="fa fa-check"></i><b>2.2</b> Data extraction with <code>auk</code></a></li>
 <li class="chapter" data-level="2.3" data-path="ebird.html"><a href="ebird.html#ebird-zf"><i class="fa fa-check"></i><b>2.3</b> Importing and zero-filling</a></li>
 <li class="chapter" data-level="2.4" data-path="ebird.html"><a href="ebird.html#ebird-detect"><i class="fa fa-check"></i><b>2.4</b> Accounting for variation in detectability</a></li>
-<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a><ul>
+<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a>
+<ul>
 <li class="chapter" data-level="2.5.1" data-path="ebird.html"><a href="ebird.html#ebird-explore-time"><i class="fa fa-check"></i><b>2.5.1</b> Time of day</a></li>
 <li class="chapter" data-level="2.5.2" data-path="ebird.html"><a href="ebird.html#ebird-explore-duration"><i class="fa fa-check"></i><b>2.5.2</b> Checklist duration</a></li>
 <li class="chapter" data-level="2.5.3" data-path="ebird.html"><a href="ebird.html#ebird-explore-distance"><i class="fa fa-check"></i><b>2.5.3</b> Distance traveled</a></li>
 <li class="chapter" data-level="2.5.4" data-path="ebird.html"><a href="ebird.html#number-of-observers-ebird-explore-observers"><i class="fa fa-check"></i><b>2.5.4</b> Number of observers {#ebird-explore-observers,}</a></li>
 </ul></li>
-<li class="chapter" data-level="2.6" data-path="ebird.html"><a href="ebird.html#ebird-size"><i class="fa fa-check"></i><b>2.6</b> EBD file size issues</a><ul>
+<li class="chapter" data-level="2.6" data-path="ebird.html"><a href="ebird.html#ebird-size"><i class="fa fa-check"></i><b>2.6</b> EBD file size issues</a>
+<ul>
 <li class="chapter" data-level="2.6.1" data-path="ebird.html"><a href="ebird.html#ebird-size-custom"><i class="fa fa-check"></i><b>2.6.1</b> Custom downloads</a></li>
 <li class="chapter" data-level="2.6.2" data-path="ebird.html"><a href="ebird.html#ebird-size-strict"><i class="fa fa-check"></i><b>2.6.2</b> Stricter filtering</a></li>
 <li class="chapter" data-level="2.6.3" data-path="ebird.html"><a href="ebird.html#ebird-size-columns"><i class="fa fa-check"></i><b>2.6.3</b> Removing columns</a></li>
 <li class="chapter" data-level="2.6.4" data-path="ebird.html"><a href="ebird.html#ebird-size-split"><i class="fa fa-check"></i><b>2.6.4</b> Splitting by species</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="covariates.html"><a href="covariates.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a><ul>
+<li class="chapter" data-level="3" data-path="covariates.html"><a href="covariates.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a>
+<ul>
 <li class="chapter" data-level="3.1" data-path="covariates.html"><a href="covariates.html#covariates-intro"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
-<li class="chapter" data-level="3.2" data-path="covariates.html"><a href="covariates.html#covariates-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a><ul>
+<li class="chapter" data-level="3.2" data-path="covariates.html"><a href="covariates.html#covariates-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a>
+<ul>
 <li class="chapter" data-level="3.2.1" data-path="covariates.html"><a href="covariates.html#covariates-dl-setup"><i class="fa fa-check"></i><b>3.2.1</b> <code>MODIS</code> setup</a></li>
 <li class="chapter" data-level="3.2.2" data-path="covariates.html"><a href="covariates.html#covariates-dl-r"><i class="fa fa-check"></i><b>3.2.2</b> Download using R</a></li>
 <li class="chapter" data-level="3.2.3" data-path="covariates.html"><a href="covariates.html#covariates-dl-trouble"><i class="fa fa-check"></i><b>3.2.3</b> Troubleshooting</a></li>
@@ -185,43 +193,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.4" data-path="covariates.html"><a href="covariates.html#covariates-prediction"><i class="fa fa-check"></i><b>3.4</b> Prediction surface</a></li>
 <li class="chapter" data-level="3.5" data-path="covariates.html"><a href="covariates.html#covariates-elevation"><i class="fa fa-check"></i><b>3.5</b> Elevation</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a><ul>
+<li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a>
+<ul>
 <li class="chapter" data-level="4.1" data-path="encounter.html"><a href="encounter.html#encouter-intro"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
 <li class="chapter" data-level="4.2" data-path="encounter.html"><a href="encounter.html#encounter-data"><i class="fa fa-check"></i><b>4.2</b> Data preparation</a></li>
 <li class="chapter" data-level="4.3" data-path="encounter.html"><a href="encounter.html#encounter-sss"><i class="fa fa-check"></i><b>4.3</b> Spatiotemporal subsampling</a></li>
-<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a><ul>
+<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a>
+<ul>
 <li class="chapter" data-level="4.4.1" data-path="encounter.html"><a href="encounter.html#encounter-rf-cal"><i class="fa fa-check"></i><b>4.4.1</b> Calibration</a></li>
 <li class="chapter" data-level="4.4.2" data-path="encounter.html"><a href="encounter.html#encounter-rf-assess"><i class="fa fa-check"></i><b>4.4.2</b> Assessment</a></li>
 </ul></li>
-<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Habitat associations</a><ul>
+<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Habitat associations</a>
+<ul>
 <li class="chapter" data-level="4.5.1" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pi"><i class="fa fa-check"></i><b>4.5.1</b> Predictor importance</a></li>
 <li class="chapter" data-level="4.5.2" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pd"><i class="fa fa-check"></i><b>4.5.2</b> Partial dependence</a></li>
 </ul></li>
 <li class="chapter" data-level="4.6" data-path="encounter.html"><a href="encounter.html#encounter-predict"><i class="fa fa-check"></i><b>4.6</b> Prediction</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a><ul>
+<li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a>
+<ul>
 <li class="chapter" data-level="5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-intro"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
-<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a>
+<ul>
 <li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.2.1</b> Data formatting</a></li>
 <li class="chapter" data-level="5.2.2" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.2.2</b> Spatial subsampling</a></li>
 <li class="chapter" data-level="5.2.3" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.2.3</b> <code>unmarked</code> object</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a><ul>
+<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a>
+<ul>
 <li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.3.1</b> Assessment</a></li>
 <li class="chapter" data-level="5.3.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.3.2</b> Model selection</a></li>
 <li class="chapter" data-level="5.3.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-detection"><i class="fa fa-check"></i><b>5.3.3</b> Exploring the effects of covariates on detection probability</a></li>
 </ul></li>
 <li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.4</b> Prediction</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a><ul>
+<li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a>
+<ul>
 <li class="chapter" data-level="6.1" data-path="abundance.html"><a href="abundance.html#abundance-intro"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
-<li class="chapter" data-level="6.2" data-path="abundance.html"><a href="abundance.html#abundance-data"><i class="fa fa-check"></i><b>6.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="6.2" data-path="abundance.html"><a href="abundance.html#abundance-data"><i class="fa fa-check"></i><b>6.2</b> Data preparation</a>
+<ul>
 <li class="chapter" data-level="6.2.1" data-path="abundance.html"><a href="abundance.html#abundance-data-sss"><i class="fa fa-check"></i><b>6.2.1</b> Spatiotemporal subsampling</a></li>
 <li class="chapter" data-level="6.2.2" data-path="abundance.html"><a href="abundance.html#abundance-data-tt"><i class="fa fa-check"></i><b>6.2.2</b> Test-train split</a></li>
 </ul></li>
 <li class="chapter" data-level="6.3" data-path="abundance.html"><a href="abundance.html#abundance-explore"><i class="fa fa-check"></i><b>6.3</b> Exploratory data analysis</a></li>
 <li class="chapter" data-level="6.4" data-path="abundance.html"><a href="abundance.html#abundance-model"><i class="fa fa-check"></i><b>6.4</b> Abundance models</a></li>
-<li class="chapter" data-level="6.5" data-path="abundance.html"><a href="abundance.html#abundance-assess"><i class="fa fa-check"></i><b>6.5</b> Asssessment</a><ul>
+<li class="chapter" data-level="6.5" data-path="abundance.html"><a href="abundance.html#abundance-assess"><i class="fa fa-check"></i><b>6.5</b> Asssessment</a>
+<ul>
 <li class="chapter" data-level="6.5.1" data-path="abundance.html"><a href="abundance.html#abundance-assess-rank"><i class="fa fa-check"></i><b>6.5.1</b> Predictive performance: Ranking</a></li>
 <li class="chapter" data-level="6.5.2" data-path="abundance.html"><a href="abundance.html#abundance-assess-mag"><i class="fa fa-check"></i><b>6.5.2</b> Predictive performance: Magnitude</a></li>
 <li class="chapter" data-level="6.5.3" data-path="abundance.html"><a href="abundance.html#abundance-assess-cov"><i class="fa fa-check"></i><b>6.5.3</b> Assessing covariate effects</a></li>
@@ -247,15 +264,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="abundance" class="section level1">
+<div id="abundance" class="section level1" number="6">
 <h1><span class="header-section-number">Chapter 6</span> Modeling Relative Abundance</h1>
-<div id="abundance-intro" class="section level2">
+<div id="abundance-intro" class="section level2" number="6.1">
 <h2><span class="header-section-number">6.1</span> Introduction</h2>
 <p>The previous two chapters focused on modeling occurrence. However, in addition to recording which species they observed, most eBirders also specify how many individuals of each species were observed. So, in this chapter, we’ll take advantage of these counts to model a relative measure of species abundance.</p>
 <p>To motivate this section, we will focus on the specific goal of estimating a map of relative abundance. This type of map would help us to identifyareas with higher or lower abundance. The metric we’ll use to estimate abundance is the expected number of individuals observed on a standardized eBird checklist. Like the encounter rate model, the abundance model we present in this section accounts for variation in detection rates but it does not directly estimate the absolute detection probability. For this reason, the estimates of abundance can only be interpreted as a measure of relative abundance; an index of the <em>count</em> of the individuals of the species present in the search area. To match the common terminology in the literature, we refer to this as an estimate of <em>relative</em> abundance.</p>
 <p>In some respects, the abundance model presented here is similar to the encounter rate model of Chapter <a href="encounter.html#encounter">4</a>. We start by spatiotemporally subsampling the training data to reduce the effects of spatial bias. In a departure from the methodology used for modelling encounter rate, we use semi-parametric models, fitting models of relative abundance using <a href="https://en.wikipedia.org/wiki/Generalized_additive_model">Generalized Additive Models (GAMs)</a> to predict the count response. We have chosen to use GAMs because they can flexibly include many covariates while offering a choice of several error distributions suitable for count responses. It’s important to evaluate different count distributions because the distribution of eBird counts can vary strongly for different species, seasons, and regions, and the choice of distribution can have substantial impacts on model estimates. We’ll test three different distributions (zero-inflated Poisson, negative binomial, and Tweedie) and assess which of these fit the data best using cross validation. Finally, we’ll make predictions of relative abundance throughout BCR 27 and produce a map of these predictions.</p>
 </div>
-<div id="abundance-data" class="section level2">
+<div id="abundance-data" class="section level2" number="6.2">
 <h2><span class="header-section-number">6.2</span> Data preparation</h2>
 <p>Let’s start by loading the necessary packages and data. If you created or downloaded the files needed to follow the analyses in the previous chapters, you may want to <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip">download the data package</a> and unzip it to your project directory. Because we’re modeling abundance in this chapter, we’ll remove any records for which the observer reported that Wood Thrush was present, but didn’t report a count of the number of species (coded as ‘X’ records in the eBird database).</p>
 <div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="abundance.html#cb71-1"></a><span class="kw">library</span>(lubridate)</span>
@@ -315,7 +332,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb71-55"><a href="abundance.html#cb71-55"></a>ne_state_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_state_lines&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb71-56"><a href="abundance.html#cb71-56"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb71-57"><a href="abundance.html#cb71-57"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span></code></pre></div>
-<div id="abundance-data-sss" class="section level3">
+<div id="abundance-data-sss" class="section level3" number="6.2.1">
 <h3><span class="header-section-number">6.2.1</span> Spatiotemporal subsampling</h3>
 <p>As discussed in Section <a href="encounter.html#encounter-sss">4.3</a>, spatiotemporal subsampling detection and non-detection observations reduces both spatial and temporal bias and the class imbalance. We’ll use exactly the same hexagonal subsampling approach as in Chapter <a href="encounter.html#encounter">4</a>.</p>
 <div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="abundance.html#cb72-1"></a><span class="co"># generate hexagonal grid with ~ 5 km betweeen cells</span></span>
@@ -332,7 +349,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb72-12"><a href="abundance.html#cb72-12"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb72-13"><a href="abundance.html#cb72-13"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>cell, <span class="op">-</span>week)</span></code></pre></div>
 </div>
-<div id="abundance-data-tt" class="section level3">
+<div id="abundance-data-tt" class="section level3" number="6.2.2">
 <h3><span class="header-section-number">6.2.2</span> Test-train split</h3>
 <p>Before we fit the abundance models, we randomly split the data into 80% of checklists for training and 20% for testing. We’ll hold this 20% aside when we fit the model, then use it as an independent data set with which to test the predictive performance of the model. Here we select a random 20% of the data, but there are a variety of strategies to select data for testing that may be appropriate in different situations. At this stage, we’ll also retain only the variables that we’ll use as covariates in the models. In particular, we’ll use the full suite of effort covariates and the same four habitat covariates we used in Chapter <a href="occupancy.html#occupancy">5</a>. Deciduous broadleaf forest and mixed forest are known Wood Thrush breeding habitat, and these thrushes are known to avoid croplands and urban. The specific set of habit covariates you use will be specific for your species and should be informed by <em>a priori</em> ecological knowledge of the species. See Section <a href="covariates.html#covariates-intro">3.1</a> for a list of the habitat covariates available in this data set.</p>
 <div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="abundance.html#cb73-1"></a>hab_covs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;pland_04_deciduous_broadleaf&quot;</span>, </span>
@@ -355,7 +372,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb73-18"><a href="abundance.html#cb73-18"></a><span class="co">#&gt;  3941 16145</span></span></code></pre></div>
 </div>
 </div>
-<div id="abundance-explore" class="section level2">
+<div id="abundance-explore" class="section level2" number="6.3">
 <h2><span class="header-section-number">6.3</span> Exploratory data analysis</h2>
 <p>Before we embark on modelling the counts, we’ll start by examining the distribution of the count data. This will help give us an idea of which distributions may be appropriate for modeling the counts of this species. Looking at the distribution of counts with and without the zeros can help reveal evidence of zero-inflation. eBird data often have a very high number of zero counts, since even common bird species are not seen on every checklist. Large numbers of zeros can also arise when the study extent borders on the species’ range boundary.</p>
 <div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="abundance.html#cb74-1"></a>p &lt;-<span class="st"> </span><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
@@ -371,7 +388,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The plot that includes zeros (left) shows an extremely zero-inflated and skewed distribution, due to the large number of zero-counts (checklists with no Wood Thrush detections). For the counts only (right), the data still show a highly skewed distribution, with lots of checklists with low numbers and only a few checklists with more than five Wood Thrush.</p>
 <p>These plots and conclusions are only indicative—they provide some information about what we can expect for distributions at the next step. Overall, for Wood Thrush we can conclude that the counts are highly skewed with many zero observations.</p>
 </div>
-<div id="abundance-model" class="section level2">
+<div id="abundance-model" class="section level2" number="6.4">
 <h2><span class="header-section-number">6.4</span> Abundance models</h2>
 <p>Prior to fitting our GAM models, let’s construct the model formula that we’ll use when we call the fitting function. In a GLM where the relationship between a covariate and the response is linear, whereas a GAM allows smooth non-linear relationships. The degree of variation (wiggliness) allowed in each covariate relationship is controlled by the degrees of freedom. The <code>k</code> parameter determines the <em>maximum</em> wiggliness of the smooth, with higher values allowing for more potential wiggliness. GAMs use a data-driven approach to adaptively reduce the wiggliness (degrees of freedom) based on the training data.</p>
 <p>There are a wide variety of different types of smooth relationships. We use a different different type of smooth for the checklist start time relationship. We want to joins the ends of the relationship, i.e. 0 and 24 are both midnight, so the smooth should be the same value at these points. To accomplish this we’ll use a cubic cyclic spline (<code>bs = "cc"</code>).</p>
@@ -448,7 +465,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb77-22"><a href="abundance.html#cb77-22"></a>            <span class="dt">family =</span> <span class="st">&quot;tw&quot;</span>,</span>
 <span id="cb77-23"><a href="abundance.html#cb77-23"></a>            <span class="dt">knots =</span> time_knots)</span></code></pre></div>
 </div>
-<div id="abundance-assess" class="section level2">
+<div id="abundance-assess" class="section level2" number="6.5">
 <h2><span class="header-section-number">6.5</span> Asssessment</h2>
 <p>Here we assess the predictive performance among the three models. Recall from Section <a href="encounter.html#encounter-rf-assess">4.4.2</a> that this involves making predictions for the test dataset, which wasn’t used to fit the models, then assessing how well these predictions relate to the actual observed counts in the test dataset.</p>
 <p>Care needs to be taken when making predictions from the zero-inflated Poisson model since it has two components: probability of presence and expected count given presence. As a result, the <code>predict()</code> function returns a two column matrix with the count and probability respectively, both on the scale of the link functions. So, we need to back-transform these values, then multiply them to get the expected counts. There may be situations in which you want to summarise these two values in different ways.</p>
@@ -475,7 +492,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb78-21"><a href="abundance.html#cb78-21"></a><span class="co"># combine predictions from all three models</span></span>
 <span id="cb78-22"><a href="abundance.html#cb78-22"></a>test_pred &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(m_ziplss_pred, m_nb_pred, m_tw_pred) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb78-23"><a href="abundance.html#cb78-23"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">family =</span> <span class="kw">as_factor</span>(family))</span></code></pre></div>
-<div id="abundance-assess-rank" class="section level3">
+<div id="abundance-assess-rank" class="section level3" number="6.5.1">
 <h3><span class="header-section-number">6.5.1</span> Predictive performance: Ranking</h3>
 <p>Assessing the fit of the models depends considerably on the goals of the model and hence on the most important aspects of the model fit for the intended use. For our motivating use-case, estimating a map of relative abundance for the purpose of identifying areas with higher or lower abundance, we will evaluate the models based on <a href="https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient">Spearman’s Rank Correlation</a>. This will assess how well the model estimated the ranking of the sites from highest to lowest abundance.</p>
 <div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="abundance.html#cb79-1"></a><span class="co"># spearman’s rank correlation</span></span>
@@ -509,7 +526,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </table>
 <p>In terms of ranking, the zero-inflated Poisson performs worst, having the lowest rank correlation. However, all the models are fairly similar and none have a strong correlation between predicted and observed counts.</p>
 </div>
-<div id="abundance-assess-mag" class="section level3">
+<div id="abundance-assess-mag" class="section level3" number="6.5.2">
 <h3><span class="header-section-number">6.5.2</span> Predictive performance: Magnitude</h3>
 <p>For other applications, it may also be important to generate accurate estimates of the magnitude of the relative abundance. For example, when identifying migration hot-spots it may be important to estimate high counts accurately to distinguish between multiple stop over sites. Or, if the goal is to generate an index of the total population size, it may be more important to generate accurate estimates of small to medium counts, and place less emphasis on the relatively rare high counts.</p>
 <p>We begin the assessment of the quality of the magnitude of abundance estimates by looking at a plot of predicted and observerved counts from the test set. For illustrative purposes, lets assume for our situation that underestimated abundances are more problematic than overestimated abundances. We’ll highlight in red on these plots the regions where the predictions are underestimated by more than an order of magnitude. We’ll also overlay the line <span class="math inline">\(y = x\)</span>, which separates overestimates (above the line) from underestimates (below the line), and a blue smoothed fit showing the general trend through all the data.</p>
@@ -601,7 +618,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>In terms of magnitude, the zero-inflated Poisson model performs the worst across most metrics: it has the largest number of problematic errors, but the lowest MAD. The negative binomial and Tweedie models are almost identical in terms of performace. Either model could be chosen; however, the negative binomial is a simpler model, with fewer parameters to estimate, so it seems reasonable to pick it to make our predictions.</p>
 <p>Depending on your focal species and region, as well as the particular goals of your analysis, some aspects of model fit will be more important than others, so it’s important to consider your assessment criteria and make sure they match your application.</p>
 </div>
-<div id="abundance-assess-cov" class="section level3">
+<div id="abundance-assess-cov" class="section level3" number="6.5.3">
 <h3><span class="header-section-number">6.5.3</span> Assessing covariate effects</h3>
 <p>We recommend also assessing the fitted covariate effects to see whether they show biologically plausible relationships between covariates and species counts. Splines can sometimes overfit, notably when sample sizes are very large, and in this cases it is appropriate to reduce the degrees of freedom.</p>
 <p>Calling <code>plot()</code> on the fitted GAM objects produces plots of the smooth functions for each of the separate predictors, which gives us a sense of the effect of each predictor on the count response. Unfortunately, for large numbers of predictors, plot() will produce a cramped, unreadable plot. Instead, we write a function to capture the data behind the plotting function, then plot them using <code>ggplot2</code> instead.</p>
@@ -649,7 +666,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb84-2"><a href="abundance.html#cb84-2"></a>pred_model &lt;-<span class="st"> </span>m_nb</span></code></pre></div>
 </div>
 </div>
-<div id="abundance-predict" class="section level2">
+<div id="abundance-predict" class="section level2" number="6.6">
 <h2><span class="header-section-number">6.6</span> Prediction</h2>
 <p>Now that we’ve selected the negative binomial GAM, we can use this model to map Wood Thrush relative abundance in BCR 27! In Section <a href="covariates.html#covariates-prediction">3.4</a>, we created a prediction surface consisting of the PLAND habitat covariates summarized on a regular grid of points across BCR 27. In this section, we’ll make predictions of relative abundance at these points. However, first we need to bring effort variables into this prediction surface. We’ll use a <strong>standard eBird checklist</strong>: a 1 km, 1 hour traveling count at the peak time of day for detecting this species. To determine this peak time, we’ll predict abundance and its 95% confidence limits at a series of times throughout the day, then pick the time at which the lower confidence limit is at its maximum. By using the lower confidence limits, we select a time that we are confident has high detectability and thus avoid potentially unrealistic predictions from times of day for which few or no data existed.</p>
 <div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="abundance.html#cb85-1"></a><span class="co"># create a dataframe of covariates with a range of start times</span></span>
@@ -810,7 +827,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb88-69"><a href="abundance.html#cb88-69"></a>}</span></code></pre></div>
 <p><img src="ebird-best-practices_files/figure-html/abundance-predict-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 </div>
-<div id="abundance-final" class="section level2">
+<div id="abundance-final" class="section level2" number="6.7">
 <h2><span class="header-section-number">6.7</span> Final thoughts</h2>
 <p>GAMs are complex and powerful models, but assessing their fit and adapting them accordingly is sometimes more of an art than a science. We recommend people using these functions for their own models consult with a statistician or someone with experience with GAMs. A good reference for GAMs is <span class="citation">(Wood <a href="#ref-woodGeneralizedAdditiveModels2017" role="doc-biblioref">2017</a>)</span>.</p>
 
