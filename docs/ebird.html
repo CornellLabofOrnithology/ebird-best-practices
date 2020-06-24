@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 2 eBird Data | Best Practices for Using eBird Data</title>
   <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.19 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 2 eBird Data | Best Practices for Using eBird Data" />
   <meta property="og:type" content="book" />
@@ -32,6 +32,7 @@
   
 <link rel="prev" href="intro.html"/>
 <link rel="next" href="covariates.html"/>
+<script src="libs/header-attrs-2.2/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -61,18 +62,17 @@
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -92,7 +92,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -142,10 +142,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome</a></li>
-<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction and Setup</a><ul>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction and Setup</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#intro-intro"><i class="fa fa-check"></i><b>1.1</b> Introduction</a></li>
 <li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#intro-pre"><i class="fa fa-check"></i><b>1.2</b> Prerequisites</a></li>
-<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a><ul>
+<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a>
+<ul>
 <li class="chapter" data-level="1.3.1" data-path="intro.html"><a href="intro.html#intro-setup-data"><i class="fa fa-check"></i><b>1.3.1</b> Data package</a></li>
 <li class="chapter" data-level="1.3.2" data-path="intro.html"><a href="intro.html#intro-setup-software"><i class="fa fa-check"></i><b>1.3.2</b> Software</a></li>
 <li class="chapter" data-level="1.3.3" data-path="intro.html"><a href="intro.html#intro-setup-packages"><i class="fa fa-check"></i><b>1.3.3</b> R packages</a></li>
@@ -154,29 +156,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.3.6" data-path="intro.html"><a href="intro.html#intro-setup-gis"><i class="fa fa-check"></i><b>1.3.6</b> GIS data</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="ebird.html"><a href="ebird.html"><i class="fa fa-check"></i><b>2</b> eBird Data</a><ul>
-<li class="chapter" data-level="2.1" data-path="ebird.html"><a href="ebird.html#ebird-intro"><i class="fa fa-check"></i><b>2.1</b> Introduction</a><ul>
+<li class="chapter" data-level="2" data-path="ebird.html"><a href="ebird.html"><i class="fa fa-check"></i><b>2</b> eBird Data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="ebird.html"><a href="ebird.html#ebird-intro"><i class="fa fa-check"></i><b>2.1</b> Introduction</a>
+<ul>
 <li class="chapter" data-level="2.1.1" data-path="ebird.html"><a href="ebird.html#ebird-intro-tax"><i class="fa fa-check"></i><b>2.1.1</b> eBird taxonomy</a></li>
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="ebird.html"><a href="ebird.html#ebird-extract"><i class="fa fa-check"></i><b>2.2</b> Data extraction with <code>auk</code></a></li>
 <li class="chapter" data-level="2.3" data-path="ebird.html"><a href="ebird.html#ebird-zf"><i class="fa fa-check"></i><b>2.3</b> Importing and zero-filling</a></li>
 <li class="chapter" data-level="2.4" data-path="ebird.html"><a href="ebird.html#ebird-detect"><i class="fa fa-check"></i><b>2.4</b> Accounting for variation in detectability</a></li>
-<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a><ul>
+<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a>
+<ul>
 <li class="chapter" data-level="2.5.1" data-path="ebird.html"><a href="ebird.html#ebird-explore-time"><i class="fa fa-check"></i><b>2.5.1</b> Time of day</a></li>
 <li class="chapter" data-level="2.5.2" data-path="ebird.html"><a href="ebird.html#ebird-explore-duration"><i class="fa fa-check"></i><b>2.5.2</b> Checklist duration</a></li>
 <li class="chapter" data-level="2.5.3" data-path="ebird.html"><a href="ebird.html#ebird-explore-distance"><i class="fa fa-check"></i><b>2.5.3</b> Distance traveled</a></li>
 <li class="chapter" data-level="2.5.4" data-path="ebird.html"><a href="ebird.html#number-of-observers-ebird-explore-observers"><i class="fa fa-check"></i><b>2.5.4</b> Number of observers {#ebird-explore-observers,}</a></li>
 </ul></li>
-<li class="chapter" data-level="2.6" data-path="ebird.html"><a href="ebird.html#ebird-size"><i class="fa fa-check"></i><b>2.6</b> EBD file size issues</a><ul>
+<li class="chapter" data-level="2.6" data-path="ebird.html"><a href="ebird.html#ebird-size"><i class="fa fa-check"></i><b>2.6</b> EBD file size issues</a>
+<ul>
 <li class="chapter" data-level="2.6.1" data-path="ebird.html"><a href="ebird.html#ebird-size-custom"><i class="fa fa-check"></i><b>2.6.1</b> Custom downloads</a></li>
 <li class="chapter" data-level="2.6.2" data-path="ebird.html"><a href="ebird.html#ebird-size-strict"><i class="fa fa-check"></i><b>2.6.2</b> Stricter filtering</a></li>
 <li class="chapter" data-level="2.6.3" data-path="ebird.html"><a href="ebird.html#ebird-size-columns"><i class="fa fa-check"></i><b>2.6.3</b> Removing columns</a></li>
 <li class="chapter" data-level="2.6.4" data-path="ebird.html"><a href="ebird.html#ebird-size-split"><i class="fa fa-check"></i><b>2.6.4</b> Splitting by species</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="covariates.html"><a href="covariates.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a><ul>
+<li class="chapter" data-level="3" data-path="covariates.html"><a href="covariates.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a>
+<ul>
 <li class="chapter" data-level="3.1" data-path="covariates.html"><a href="covariates.html#covariates-intro"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
-<li class="chapter" data-level="3.2" data-path="covariates.html"><a href="covariates.html#covariates-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a><ul>
+<li class="chapter" data-level="3.2" data-path="covariates.html"><a href="covariates.html#covariates-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a>
+<ul>
 <li class="chapter" data-level="3.2.1" data-path="covariates.html"><a href="covariates.html#covariates-dl-setup"><i class="fa fa-check"></i><b>3.2.1</b> <code>MODIS</code> setup</a></li>
 <li class="chapter" data-level="3.2.2" data-path="covariates.html"><a href="covariates.html#covariates-dl-r"><i class="fa fa-check"></i><b>3.2.2</b> Download using R</a></li>
 <li class="chapter" data-level="3.2.3" data-path="covariates.html"><a href="covariates.html#covariates-dl-trouble"><i class="fa fa-check"></i><b>3.2.3</b> Troubleshooting</a></li>
@@ -185,43 +193,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.4" data-path="covariates.html"><a href="covariates.html#covariates-prediction"><i class="fa fa-check"></i><b>3.4</b> Prediction surface</a></li>
 <li class="chapter" data-level="3.5" data-path="covariates.html"><a href="covariates.html#covariates-elevation"><i class="fa fa-check"></i><b>3.5</b> Elevation</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a><ul>
+<li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a>
+<ul>
 <li class="chapter" data-level="4.1" data-path="encounter.html"><a href="encounter.html#encouter-intro"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
 <li class="chapter" data-level="4.2" data-path="encounter.html"><a href="encounter.html#encounter-data"><i class="fa fa-check"></i><b>4.2</b> Data preparation</a></li>
 <li class="chapter" data-level="4.3" data-path="encounter.html"><a href="encounter.html#encounter-sss"><i class="fa fa-check"></i><b>4.3</b> Spatiotemporal subsampling</a></li>
-<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a><ul>
+<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a>
+<ul>
 <li class="chapter" data-level="4.4.1" data-path="encounter.html"><a href="encounter.html#encounter-rf-cal"><i class="fa fa-check"></i><b>4.4.1</b> Calibration</a></li>
 <li class="chapter" data-level="4.4.2" data-path="encounter.html"><a href="encounter.html#encounter-rf-assess"><i class="fa fa-check"></i><b>4.4.2</b> Assessment</a></li>
 </ul></li>
-<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Habitat associations</a><ul>
+<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Habitat associations</a>
+<ul>
 <li class="chapter" data-level="4.5.1" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pi"><i class="fa fa-check"></i><b>4.5.1</b> Predictor importance</a></li>
 <li class="chapter" data-level="4.5.2" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pd"><i class="fa fa-check"></i><b>4.5.2</b> Partial dependence</a></li>
 </ul></li>
 <li class="chapter" data-level="4.6" data-path="encounter.html"><a href="encounter.html#encounter-predict"><i class="fa fa-check"></i><b>4.6</b> Prediction</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a><ul>
+<li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a>
+<ul>
 <li class="chapter" data-level="5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-intro"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
-<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a>
+<ul>
 <li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.2.1</b> Data formatting</a></li>
 <li class="chapter" data-level="5.2.2" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.2.2</b> Spatial subsampling</a></li>
 <li class="chapter" data-level="5.2.3" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.2.3</b> <code>unmarked</code> object</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a><ul>
+<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a>
+<ul>
 <li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.3.1</b> Assessment</a></li>
 <li class="chapter" data-level="5.3.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.3.2</b> Model selection</a></li>
 <li class="chapter" data-level="5.3.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-detection"><i class="fa fa-check"></i><b>5.3.3</b> Exploring the effects of covariates on detection probability</a></li>
 </ul></li>
 <li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.4</b> Prediction</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a><ul>
+<li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a>
+<ul>
 <li class="chapter" data-level="6.1" data-path="abundance.html"><a href="abundance.html#abundance-intro"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
-<li class="chapter" data-level="6.2" data-path="abundance.html"><a href="abundance.html#abundance-data"><i class="fa fa-check"></i><b>6.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="6.2" data-path="abundance.html"><a href="abundance.html#abundance-data"><i class="fa fa-check"></i><b>6.2</b> Data preparation</a>
+<ul>
 <li class="chapter" data-level="6.2.1" data-path="abundance.html"><a href="abundance.html#abundance-data-sss"><i class="fa fa-check"></i><b>6.2.1</b> Spatiotemporal subsampling</a></li>
 <li class="chapter" data-level="6.2.2" data-path="abundance.html"><a href="abundance.html#abundance-data-tt"><i class="fa fa-check"></i><b>6.2.2</b> Test-train split</a></li>
 </ul></li>
 <li class="chapter" data-level="6.3" data-path="abundance.html"><a href="abundance.html#abundance-explore"><i class="fa fa-check"></i><b>6.3</b> Exploratory data analysis</a></li>
 <li class="chapter" data-level="6.4" data-path="abundance.html"><a href="abundance.html#abundance-model"><i class="fa fa-check"></i><b>6.4</b> Abundance models</a></li>
-<li class="chapter" data-level="6.5" data-path="abundance.html"><a href="abundance.html#abundance-assess"><i class="fa fa-check"></i><b>6.5</b> Asssessment</a><ul>
+<li class="chapter" data-level="6.5" data-path="abundance.html"><a href="abundance.html#abundance-assess"><i class="fa fa-check"></i><b>6.5</b> Asssessment</a>
+<ul>
 <li class="chapter" data-level="6.5.1" data-path="abundance.html"><a href="abundance.html#abundance-assess-rank"><i class="fa fa-check"></i><b>6.5.1</b> Predictive performance: Ranking</a></li>
 <li class="chapter" data-level="6.5.2" data-path="abundance.html"><a href="abundance.html#abundance-assess-mag"><i class="fa fa-check"></i><b>6.5.2</b> Predictive performance: Magnitude</a></li>
 <li class="chapter" data-level="6.5.3" data-path="abundance.html"><a href="abundance.html#abundance-assess-cov"><i class="fa fa-check"></i><b>6.5.3</b> Assessing covariate effects</a></li>
@@ -247,23 +264,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="ebird" class="section level1">
+<div id="ebird" class="section level1" number="2">
 <h1><span class="header-section-number">Chapter 2</span> eBird Data</h1>
-<div id="ebird-intro" class="section level2">
+<div id="ebird-intro" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> Introduction</h2>
 <p>eBird data are collected and organized around the concept of a checklist, representing observations from a single birding event, such as a 1 km walk through a park or 15 minutes observing bird feeders in your backyard. Each checklist contains a list of species observed, counts of the number of individuals seen of each species, the location and time of the observations, and a measure of the effort expended while collecting these data. The following image depicts a typical eBird checklist as viewed <a href="https://ebird.org/view/checklist/S46908897">on the eBird website</a>:</p>
 <p><img src="images/02_ebird-data_checklist.png" /></p>
 <p>Although eBird collects semi-structured citizen science data, three elements of eBird checklists distinguish them from similar sources. First, eBird checklist require users to specify the survey protocol they used, whether it’s traveling, stationary, incidental (i.e. if the observations were collected when birding was not the primary activity), or one of the other protocols. Second, in addition to typical information on when and where the data were collected, checklists contain effort information specifying how long the observer searched, how far they traveled, and how many observers were part of the party. Finally, observers are asked to indicate whether they are reporting all the birds they were able to identify. Checklists with all species reported, known as <strong>complete checklists</strong>, enable researchers to identify which species were not detected (rather than just not reported). These inferred non-detections allow data to be <em>zero-filled</em>, so there’s a zero count for any species not recorded. Complete checklists with effort information facilitate robust analyses, and thus represent the gold standard of eBird checklists. Because of these factors, eBird data are often referred to as <strong>semi-structured</strong> <span class="citation">(Kelling et al. <a href="#ref-kellingFindingSignalNoise2018" role="doc-biblioref">2018</a>)</span>.</p>
 <p>Access to the complete set of eBird observations is provided via the <a href="https://ebird.org/science/download-ebird-data-products">eBird Basic Dataset (EBD)</a>. This is a tab-separated text file, released monthly, containing all validated bird sightings in the eBird database at the time of release. Each row corresponds to the sighting of a single species within a checklist and, in addition to the species and number of individuals reported, information is provided about the checklist (location, time, date, search effort, etc.). An additional file, the Sampling Event Data (SED), provides just the checklist data. In this file, each row corresponds to a checklist and only the checklist variables are included, not the associated species data. For complete checklists, the SED provides the full set of checklists in the database, which is needed to zero-fill the data. In particular, if a checklist appears in the SED as complete, but has no records in the EBD for a given species, we can infer that there is a 0 count for that species on that checklist. In addition, checklists with no species recorded (yes, these do exist), will not appear in the EBD, so the SED is required to identify these checklists.</p>
 <p>In the previous chapter, we described how to <a href="intro.html#intro-setup-ebird">access and download the EBD</a>. In this chapter, we’ll demonstrate how to use the R package <a href="https://cornelllabofornithology.github.io/auk/"><code>auk</code></a> to extract subsets of the data for analysis. Next, we’ll show how to import the data into R and perform some pre-processing steps required to ensure proper analysis of the data. Finally, we’ll zero-fill the data to produce presence-absence eBird data suitable for modeling species distribution and abundance. In the interest of making examples concrete, throughout this chapter, and those that follow, we’ll use the specific example of <a href="https://www.allaboutbirds.org/guide/Wood_Thrush/">Wood Thrush</a> in <a href="http://nabci-us.org/resources/bird-conservation-regions/">Bird Conservation Region (BCR)</a> 27 (“Southeastern Coastal Plains”) in June for our analyses. Before we get started, we suggest creating a new <a href="https://www.tidyverse.org/articles/2017/12/workflow-vs-script/">RStudio project</a> for following along with these examples; this will ensure your working directory is always the project directory and allow us to use relative paths.</p>
-<div id="ebird-intro-tax" class="section level3">
+<div id="ebird-intro-tax" class="section level3" number="2.1.1">
 <h3><span class="header-section-number">2.1.1</span> eBird taxonomy</h3>
 <p>eBird uses its own <a href="https://ebird.org/science/the-ebird-taxonomy">taxonomic system</a>, updated annually after expert review every August. A notable benefit of these annual, system-wide updates is that splits and lumps are nearly instantly propagated across the entire eBird database. When necessary, expert reviewers manually sort through observations and assign records to current taxonomic hypotheses to the extent possible. This ensures that both new and historical eBird data conform to the updated taxonomy. In addition, after the taxonomy update, both the EBD and <code>auk</code> are updated to reflect the changes.</p>
 <p>We emphasize that for any eBird analysis, you should consider the taxonomy of your study organisms, and whether you’re accessing the intended data from eBird. For example, are you interested in all <a href="https://www.allaboutbirds.org/guide/Willet/">Willets</a> or do you want to treat the eastern and western populations separately since they’re completely allopatric on their breeding grounds? Do you want to do an analysis combining <a href="https://www.allaboutbirds.org/guide/Greater_Yellowlegs/">Greater</a> and <a href="https://www.allaboutbirds.org/guide/Lesser_Yellowlegs/">Lesser Yellowlegs</a>? eBirders have the option of recording observations for taxa above (e.g. at genus level) or below (e.g. at subspecies level) the species level. These more granular taxonomic assignments are available in the EBD. In many cases taxonomic differences can be dealt with by querying specific subspecies, or multiple species, and splitting and lumping after the query as necessary. However, note that the majority of eBird users don’t assign their observations to subspecies, so querying taxa below species will result in a much smaller dataset.</p>
 <p>If you’re not interested in these taxonomic nuances, <code>auk</code> will handle the taxonomy seamlessly for you by resolving all observations to species level. Indeed, for the example in this chapter, we’ll use all Wood Thrush observations and not delve into taxonomic issues further.</p>
 </div>
 </div>
-<div id="ebird-extract" class="section level2">
+<div id="ebird-extract" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> Data extraction with <code>auk</code></h2>
 <p>eBird contains an impressive amount of data (over 600 million bird observations!); however, this makes the EBD particularly challenging to work with due to its sheer size (over 200 GB!). Text files of this size can’t be opened in R, Excel, or most other software. Fortunately, the R package <code>auk</code> has been specifically designed to extract subsets of data from the EBD for analysis using the Unix command line text processing utility AWK. The goal when using <code>auk</code> should always be to subset the full EBD down to a manageable size, small enough that it can be imported into R for further processing or analysis. In our case, that will mean extracting Wood Thrush records from BCR 27 in June.</p>
 <p>Filtering the EBD using <code>auk</code> requires three steps. First, reference the EBD and SED using the function <code>auk_ebd()</code>. If you’ve followed the instruction in the <a href="intro.html#intro">Introduction</a> for <a href="intro.html#intro-setup-ebird">downloading eBird data</a>, you’ll have these files on your computer and will have pointed <code>auk</code> to the directory they’re stored in using <code>auk_set_ebd_path()</code>. If you intend to zero-fill the data, you’ll need to pass both the EBD and SED to <code>auk_ebd()</code>, this ensures that the same set of filters is applied to both files so they contain the same population of checklists. <strong>It is critical that the EBD and SED are both from the same release of the eBird data.</strong></p>
@@ -304,17 +321,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-19"><a href="ebird.html#cb6-19"></a><span class="co">#&gt;   Species: Hylocichla mustelina</span></span>
 <span id="cb6-20"><a href="ebird.html#cb6-20"></a><span class="co">#&gt;   Countries: all</span></span>
 <span id="cb6-21"><a href="ebird.html#cb6-21"></a><span class="co">#&gt;   States: all</span></span>
-<span id="cb6-22"><a href="ebird.html#cb6-22"></a><span class="co">#&gt;   BCRs: 27</span></span>
-<span id="cb6-23"><a href="ebird.html#cb6-23"></a><span class="co">#&gt;   Bounding box: full extent</span></span>
-<span id="cb6-24"><a href="ebird.html#cb6-24"></a><span class="co">#&gt;   Date: *-06-01 - *-06-30</span></span>
-<span id="cb6-25"><a href="ebird.html#cb6-25"></a><span class="co">#&gt;   Start time: all</span></span>
-<span id="cb6-26"><a href="ebird.html#cb6-26"></a><span class="co">#&gt;   Last edited date: all</span></span>
-<span id="cb6-27"><a href="ebird.html#cb6-27"></a><span class="co">#&gt;   Protocol: Stationary, Traveling</span></span>
-<span id="cb6-28"><a href="ebird.html#cb6-28"></a><span class="co">#&gt;   Project code: all</span></span>
-<span id="cb6-29"><a href="ebird.html#cb6-29"></a><span class="co">#&gt;   Duration: all</span></span>
-<span id="cb6-30"><a href="ebird.html#cb6-30"></a><span class="co">#&gt;   Distance travelled: all</span></span>
-<span id="cb6-31"><a href="ebird.html#cb6-31"></a><span class="co">#&gt;   Records with breeding codes only: no</span></span>
-<span id="cb6-32"><a href="ebird.html#cb6-32"></a><span class="co">#&gt;   Complete checklists only: yes</span></span></code></pre></div>
+<span id="cb6-22"><a href="ebird.html#cb6-22"></a><span class="co">#&gt;   Counties: all</span></span>
+<span id="cb6-23"><a href="ebird.html#cb6-23"></a><span class="co">#&gt;   BCRs: 27</span></span>
+<span id="cb6-24"><a href="ebird.html#cb6-24"></a><span class="co">#&gt;   Bounding box: full extent</span></span>
+<span id="cb6-25"><a href="ebird.html#cb6-25"></a><span class="co">#&gt;   Years: all</span></span>
+<span id="cb6-26"><a href="ebird.html#cb6-26"></a><span class="co">#&gt;   Date: *-06-01 - *-06-30</span></span>
+<span id="cb6-27"><a href="ebird.html#cb6-27"></a><span class="co">#&gt;   Start time: all</span></span>
+<span id="cb6-28"><a href="ebird.html#cb6-28"></a><span class="co">#&gt;   Last edited date: all</span></span>
+<span id="cb6-29"><a href="ebird.html#cb6-29"></a><span class="co">#&gt;   Protocol: Stationary, Traveling</span></span>
+<span id="cb6-30"><a href="ebird.html#cb6-30"></a><span class="co">#&gt;   Project code: all</span></span>
+<span id="cb6-31"><a href="ebird.html#cb6-31"></a><span class="co">#&gt;   Duration: all</span></span>
+<span id="cb6-32"><a href="ebird.html#cb6-32"></a><span class="co">#&gt;   Distance travelled: all</span></span>
+<span id="cb6-33"><a href="ebird.html#cb6-33"></a><span class="co">#&gt;   Records with breeding codes only: no</span></span>
+<span id="cb6-34"><a href="ebird.html#cb6-34"></a><span class="co">#&gt;   Complete checklists only: yes</span></span></code></pre></div>
 <p>Note that printing the object <code>ebd_filters</code> shows what filters have been set. At this point, we’ve only defined the filters, not applied them to the EBD. The last step is to use <code>auk_filter()</code> to compile the filters into an AWK script and run it to produce two output files: one for the EBD and one for the SED. <strong>This step typically takes several hours to run since the files are so large.</strong> As a result, it’s wise to wrap this in an <code>if</code> statement, so it’s only run once. As noted in the <a href="intro-setup-software">Introduction</a>, Windows users will need to <a href="https://www.cygwin.com/">install Cygwin</a> for this next step to work.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="ebird.html#cb7-1"></a><span class="co"># output files</span></span>
 <span id="cb7-2"><a href="ebird.html#cb7-2"></a>data_dir &lt;-<span class="st"> &quot;data&quot;</span></span>
@@ -331,7 +350,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Throughout this filtering process we’ve kept the EBD (i.e. the observation data) and the SED (i.e. the checklist data) together. This is because it’s critical that the same set of filters get applied to both datasets to ensure that we’re working with the same population of checklists when we zero-fill to produce presence-absence data. However, some filters don’t apply to the checklist data, notably <code>auk_species()</code>, so these are simply skipped when the filters are compiled and run on the SED.</p>
 <p>These files are now a few megabytes rather than hundreds of gigabytes, which means they can easily be read into R! Don’t feel like waiting for <code>auk_filter()</code> to run? <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip">Download the data package</a> mentioned in the introduction to get a copy of the EBD subset for Wood Thrush in June in BCR27 and proceed to the next section; just make sure you load the packages in the first code chunk before proceeding.</p>
 </div>
-<div id="ebird-zf" class="section level2">
+<div id="ebird-zf" class="section level2" number="2.3">
 <h2><span class="header-section-number">2.3</span> Importing and zero-filling</h2>
 <p>The previous step left us with two tab separated text files, one for the EBD and one for the SED. Next, we’ll use <a href="https://cornelllabofornithology.github.io/auk/reference/auk_zerofill.html"><code>auk_zerofill()</code></a> to read these two files into R and combine them together to produce zero-filled, detection/non-detection data (also called presence/absence data). To just read the EBD or SED, but not combine them, use <a href="https://cornelllabofornithology.github.io/auk/reference/read_ebd.html"><code>read_ebd()</code></a> or <a href="https://cornelllabofornithology.github.io/auk/reference/read_ebd.html"><code>read_sampling()</code></a>, respectively.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="ebird.html#cb8-1"></a>ebd_zf &lt;-<span class="st"> </span><span class="kw">auk_zerofill</span>(f_ebd, f_sampling, <span class="dt">collapse =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
@@ -360,7 +379,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-21"><a href="ebird.html#cb9-21"></a>    <span class="dt">day_of_year =</span> <span class="kw">yday</span>(observation_date)</span>
 <span id="cb9-22"><a href="ebird.html#cb9-22"></a>  )</span></code></pre></div>
 </div>
-<div id="ebird-detect" class="section level2">
+<div id="ebird-detect" class="section level2" number="2.4">
 <h2><span class="header-section-number">2.4</span> Accounting for variation in detectability</h2>
 <p>As discussed in the <a href="intro.html#intro-intro">Introduction</a>, variation in effort between checklists makes inference challenging, because it is associated with variation in detectability. When working with semi-structured datasets like eBird, one approach to dealing with this variation is to impose some more consistent structure on the data by filtering observations on the effort variables. This reduces the variation in detectability between checklists. Based on our experience working with these data, we suggest restricting checklists to less than 5 hours long and 5 km in length, and with 10 or fewer observers. Furthermore, we’ll only consider data from the past 10 years (2010-2019).</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="ebird.html#cb10-1"></a><span class="co"># additional filtering</span></span>
@@ -387,7 +406,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb11-11"><a href="ebird.html#cb11-11"></a><span class="kw">write_csv</span>(ebird, <span class="st">&quot;data/ebd_woothr_june_bcr27_zf.csv&quot;</span>, <span class="dt">na =</span> <span class="st">&quot;&quot;</span>)</span></code></pre></div>
 <p>If you’d like to ensure you’re using exactly the same data as was used to generate this book, download the <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip">data package</a> mentioned in the <a href="intro.html#intro-setup-data">setup instructions</a> and place the contents in the <code>data/</code> subdirectory of your project directory.</p>
 </div>
-<div id="ebird-explore" class="section level2">
+<div id="ebird-explore" class="section level2" number="2.5">
 <h2><span class="header-section-number">2.5</span> Exploratory analysis and visualization</h2>
 <p>Before proceeding to fitting species distribution models with these data, it’s worth exploring the dataset to see what we’re working with. Let’s start by making a simple map of the observations. This map uses GIS data available for <a href="https://github.com/cornelllabofornithology/ebird-best-practices/raw/master/data/data.zip">download in the data package</a>. Place the contents of the zip file in the <code>data/</code> subdirectory of your project directory.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="ebird.html#cb12-1"></a><span class="co"># load and project gis data</span></span>
@@ -441,7 +460,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="ebird-best-practices_files/figure-html/ebird-explore-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>In this map, the spatial bias in eBird data becomes immediately obvious, for example, notice the large number of checklists along the heavily populated Atlantic coast, especially around large cities like Jacksonville, Florida and popular birding areas like the Outer Banks of North Carolina.</p>
 <p>Exploring the effort variables is also a valuable exercise. For each effort variable, we’ll produce both a histogram and a plot of frequency of detection as a function of that effort variable. The histogram will tell us something about birder behavior. For example, what time of day are most people going birding, and for how long? We may also want to note values of the effort variable that have very few observations; predictions made in these regions may be unreliable due to a lack of data. The detection frequency plots tell us how the probability of detecting a species changes with effort.</p>
-<div id="ebird-explore-time" class="section level3">
+<div id="ebird-explore-time" class="section level3" number="2.5.1">
 <h3><span class="header-section-number">2.5.1</span> Time of day</h3>
 <p>The chance of an observer detecting a bird when present can be highly dependent on time of day. For example, many species exhibit a peak in detection early in the morning during dawn chorus and a secondary peak early in the evening. With this in mind, the first predictor of detection that we’ll explore is the time of day at which a checklist was started. We’ll summarize the data in 1 hour intervals, then plot them. Since estimates of detection frequency are unreliable when only a small number of checklists are available, we’ll only plot hours for which at least 100 checklists are present.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="ebird.html#cb13-1"></a><span class="co"># summarize data by hourly bins</span></span>
@@ -486,7 +505,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="ebird-best-practices_files/figure-html/ebird-explore-time-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>As expected, Wood Thrush detectability is highest early in the morning and quickly falls off as the day progresses. In later chapters, we’ll make predictions at the peak time of day for detecatibility to limit the effect of this variation. The majority of checklist submissions also occurs in the morning; however, there are reasonable numbers of checklists between 5am and 9pm. It’s in this region that our model estimates will be most reliable.</p>
 </div>
-<div id="ebird-explore-duration" class="section level3">
+<div id="ebird-explore-duration" class="section level3" number="2.5.2">
 <h3><span class="header-section-number">2.5.2</span> Checklist duration</h3>
 <p>When we initially extracted the eBird data in Section <a href="ebird.html#ebird-extract">2.2</a>, we restricted observations to those from checklists 5 hours in duration or shorter to reduce variability. Let’s see what sort of variation remains in checklist duration.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="ebird.html#cb14-1"></a><span class="co"># summarize data by 30 minute bins</span></span>
@@ -531,7 +550,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="ebird-best-practices_files/figure-html/ebird-explore-duration-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>The majority of checklists are half an hour or shorter and there is a rapid decline in the frequency of checklists with increasing duration. In addition, longer searches yield a higher chance of detecting a Wood Thrush. In many cases, there is a saturation effect, with searches beyond a given length producing little additional benefit; however, here there appears to be a drop off in detection for checklists longer than 4 hours.</p>
 </div>
-<div id="ebird-explore-distance" class="section level3">
+<div id="ebird-explore-distance" class="section level3" number="2.5.3">
 <h3><span class="header-section-number">2.5.3</span> Distance traveled</h3>
 <p>As with checklist duration, we expect <em>a priori</em> that the greater the distance someone travels, the greater the probability of encountering at least one Wood Thrush. Let’s see if this expectation is met. Note that we have already truncated the data to checklists less than 5 km in length.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="ebird.html#cb15-1"></a><span class="co"># summarize data by 500m bins</span></span>
@@ -576,7 +595,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="ebird-best-practices_files/figure-html/ebird-explore-distance-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>As with duration, the majority of observations are from short checklists (less than half a kilometer). One fortunate consequence of this is that most checklists will be contained within a small area within which habitat is not likely to show high variability. In chapter @ref{covariates}, we will summarize land cover data within circles 2.5 km in diameter, centered on each checklist, and it appears that the vast majority of checklists will stay contained within this area.</p>
 </div>
-<div id="number-of-observers-ebird-explore-observers" class="section level3">
+<div id="number-of-observers-ebird-explore-observers" class="section level3" number="2.5.4">
 <h3><span class="header-section-number">2.5.4</span> Number of observers {#ebird-explore-observers,}</h3>
 <p>Finally, let’s consider the number of observers whose observation are being reported in each checklist. We expect that at least up to some number of observers, reporting rates will increase; however, in working with these data we have found cases of declining detection rates for very large groups. With this in mind we have already restricted checklists to those with 10 or fewer observers, thus removing the very largest groups (prior to filtering, some checklists had as many as 230 observers!).</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="ebird.html#cb16-1"></a><span class="co"># summarize data</span></span>
@@ -622,10 +641,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>There is no discernable pattern amongst the noise here, likely because there are so few checklists with more than 3 observers.</p>
 </div>
 </div>
-<div id="ebird-size" class="section level2">
+<div id="ebird-size" class="section level2" number="2.6">
 <h2><span class="header-section-number">2.6</span> EBD file size issues</h2>
 <p>The full EBD is massive (over 200 GB!) and takes a long time to process with <code>auk</code> (typically several hours). Furthermore, it’s onerous to download and uncompress the file, and many users won’t have space on their hard drive to store the file. Fortunately, there are a variety of ways of addressing these file size issues. In this section, we’ll demonstrate how to <a href="ebird.html#ebird-size-custom">use the Custom Download form</a> to download only a subset of the eBird data. In addition, we’ll cover some methods for reducing the size of both the EBD and extracts from the EBD. Specifically, we’ll cover <a href="ebird.html#ebird-size-strict">stricter filtering</a>, <a href="#ebird-size-dropcols">removing columns</a>, and <a href="#ebird-filter-split">splitting by species</a>.</p>
-<div id="ebird-size-custom" class="section level3">
+<div id="ebird-size-custom" class="section level3" number="2.6.1">
 <h3><span class="header-section-number">2.6.1</span> Custom downloads</h3>
 <p>On the <a href="https://ebird.org/data/download/ebd">EBD download page</a>, there’s a Custom Download form that allows you to request a subset of the EBD for a given species, within a region, and/or for a range of dates. After submitting a request, it will be processed on the eBird servers and an email will be sent to you with instructions for downloading the EBD extract.</p>
 <p><img src="images/09_ebird_split_custom.png" /></p>
@@ -640,11 +659,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb17-2"><a href="ebird.html#cb17-2"></a>               <span class="dt">file_sampling =</span> <span class="st">&quot;ebd_sampling_relSep-2019.txt&quot;</span>)</span></code></pre></div>
 <p>Using the above steps, we can produce the exact same results without have to download and filter the the full EBD!</p>
 </div>
-<div id="ebird-size-strict" class="section level3">
+<div id="ebird-size-strict" class="section level3" number="2.6.2">
 <h3><span class="header-section-number">2.6.2</span> Stricter filtering</h3>
 <p>If, after filtering, you’re EBD extract is still too large to read into R, the most obvious way to reduce the size is to use stricter filters: focus on a smaller region, shorter time period, or fewer species. To avoid having to waste several hours trying to filter the entire EBD all over again, it’s worthwhile noting that you can always re-filter an EBD extract directly. So, if you realize you were too coarse in your initial filtering, apply the stricter filter to the EBD extract rather than the full EBD so save time.</p>
 </div>
-<div id="ebird-size-columns" class="section level3">
+<div id="ebird-size-columns" class="section level3" number="2.6.3">
 <h3><span class="header-section-number">2.6.3</span> Removing columns</h3>
 <p>The EBD contains a lot of columns (46 to be precise), many of which are redundant or not useful in most scenarios. For example, country, state, and county each have two columns, one for the name and one for the code. Other columns, such as the Important Bird Area (IBA) that a checklist belong to and the checklist comments, are rarely useful. By removing these columns we can drastically reduce the size of the EBD.</p>
 <p>The available columns in the EBD are listed and defined in the PDF metadata that comes with the EBD (<code>eBird_Basic_Dataset_Metadata_v1.12.pdf</code>). Alternatively, there’s a useful trick to get a list of column names from an <code>auk_ebd</code> object.</p>
@@ -687,7 +706,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>So, by removing columns, we’ve reduced the size of the EBD extract by a factor of almost 6. <code>auk_select()</code> is typically applied to a subset of the EBD to reduce the size before reading it into R. However, this function can also be applied to <em>entire</em> EBD to remove any columns that you’re sure you’ll never need. If you’re running out of hard drive space, this approach can drastically reduce the size of the EBD and free up space.</p>
 <p>Selecting columns can also be done simultaneously with filtering by using the <code>keep</code> and <code>drop</code> arguments to <code>auk_fiter()</code>. Consult the function documentation for details.</p>
 </div>
-<div id="ebird-size-split" class="section level3">
+<div id="ebird-size-split" class="section level3" number="2.6.4">
 <h3><span class="header-section-number">2.6.4</span> Splitting by species</h3>
 <p>If you’re working with a large number of species, the size of extracts from the global EBD can quickly increase. An easy way to address this before importing data into R is to split the EBD extract up into separate files, one for each species. You can then read in species one at a time and process them. Note that the Sampling Event Data doesn’t need to be split and the same file can be used for each species EBD file.</p>
 <p>The function <code>auk_split()</code> facilitates this process. You provide an EBD extract and a vector of species names and it will split the EBD up into species-specific files. This approach is much faster because we only need to filter the EBD once instead of once for each species. This could be the difference between a few hours of processing time and a few days. Consult the <code>auk_split()</code> function documentation for details.</p>

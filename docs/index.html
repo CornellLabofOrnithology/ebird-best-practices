@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Best Practices for Using eBird Data</title>
   <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.19 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Best Practices for Using eBird Data" />
   <meta property="og:type" content="book" />
@@ -32,6 +32,7 @@
   
 
 <link rel="next" href="intro.html"/>
+<script src="libs/header-attrs-2.2/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -61,18 +62,17 @@
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -92,7 +92,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -142,10 +142,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome</a></li>
-<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction and Setup</a><ul>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction and Setup</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#intro-intro"><i class="fa fa-check"></i><b>1.1</b> Introduction</a></li>
 <li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#intro-pre"><i class="fa fa-check"></i><b>1.2</b> Prerequisites</a></li>
-<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a><ul>
+<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a>
+<ul>
 <li class="chapter" data-level="1.3.1" data-path="intro.html"><a href="intro.html#intro-setup-data"><i class="fa fa-check"></i><b>1.3.1</b> Data package</a></li>
 <li class="chapter" data-level="1.3.2" data-path="intro.html"><a href="intro.html#intro-setup-software"><i class="fa fa-check"></i><b>1.3.2</b> Software</a></li>
 <li class="chapter" data-level="1.3.3" data-path="intro.html"><a href="intro.html#intro-setup-packages"><i class="fa fa-check"></i><b>1.3.3</b> R packages</a></li>
@@ -154,29 +156,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.3.6" data-path="intro.html"><a href="intro.html#intro-setup-gis"><i class="fa fa-check"></i><b>1.3.6</b> GIS data</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="ebird.html"><a href="ebird.html"><i class="fa fa-check"></i><b>2</b> eBird Data</a><ul>
-<li class="chapter" data-level="2.1" data-path="ebird.html"><a href="ebird.html#ebird-intro"><i class="fa fa-check"></i><b>2.1</b> Introduction</a><ul>
+<li class="chapter" data-level="2" data-path="ebird.html"><a href="ebird.html"><i class="fa fa-check"></i><b>2</b> eBird Data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="ebird.html"><a href="ebird.html#ebird-intro"><i class="fa fa-check"></i><b>2.1</b> Introduction</a>
+<ul>
 <li class="chapter" data-level="2.1.1" data-path="ebird.html"><a href="ebird.html#ebird-intro-tax"><i class="fa fa-check"></i><b>2.1.1</b> eBird taxonomy</a></li>
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="ebird.html"><a href="ebird.html#ebird-extract"><i class="fa fa-check"></i><b>2.2</b> Data extraction with <code>auk</code></a></li>
 <li class="chapter" data-level="2.3" data-path="ebird.html"><a href="ebird.html#ebird-zf"><i class="fa fa-check"></i><b>2.3</b> Importing and zero-filling</a></li>
 <li class="chapter" data-level="2.4" data-path="ebird.html"><a href="ebird.html#ebird-detect"><i class="fa fa-check"></i><b>2.4</b> Accounting for variation in detectability</a></li>
-<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a><ul>
+<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a>
+<ul>
 <li class="chapter" data-level="2.5.1" data-path="ebird.html"><a href="ebird.html#ebird-explore-time"><i class="fa fa-check"></i><b>2.5.1</b> Time of day</a></li>
 <li class="chapter" data-level="2.5.2" data-path="ebird.html"><a href="ebird.html#ebird-explore-duration"><i class="fa fa-check"></i><b>2.5.2</b> Checklist duration</a></li>
 <li class="chapter" data-level="2.5.3" data-path="ebird.html"><a href="ebird.html#ebird-explore-distance"><i class="fa fa-check"></i><b>2.5.3</b> Distance traveled</a></li>
 <li class="chapter" data-level="2.5.4" data-path="ebird.html"><a href="ebird.html#number-of-observers-ebird-explore-observers"><i class="fa fa-check"></i><b>2.5.4</b> Number of observers {#ebird-explore-observers,}</a></li>
 </ul></li>
-<li class="chapter" data-level="2.6" data-path="ebird.html"><a href="ebird.html#ebird-size"><i class="fa fa-check"></i><b>2.6</b> EBD file size issues</a><ul>
+<li class="chapter" data-level="2.6" data-path="ebird.html"><a href="ebird.html#ebird-size"><i class="fa fa-check"></i><b>2.6</b> EBD file size issues</a>
+<ul>
 <li class="chapter" data-level="2.6.1" data-path="ebird.html"><a href="ebird.html#ebird-size-custom"><i class="fa fa-check"></i><b>2.6.1</b> Custom downloads</a></li>
 <li class="chapter" data-level="2.6.2" data-path="ebird.html"><a href="ebird.html#ebird-size-strict"><i class="fa fa-check"></i><b>2.6.2</b> Stricter filtering</a></li>
 <li class="chapter" data-level="2.6.3" data-path="ebird.html"><a href="ebird.html#ebird-size-columns"><i class="fa fa-check"></i><b>2.6.3</b> Removing columns</a></li>
 <li class="chapter" data-level="2.6.4" data-path="ebird.html"><a href="ebird.html#ebird-size-split"><i class="fa fa-check"></i><b>2.6.4</b> Splitting by species</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="covariates.html"><a href="covariates.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a><ul>
+<li class="chapter" data-level="3" data-path="covariates.html"><a href="covariates.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a>
+<ul>
 <li class="chapter" data-level="3.1" data-path="covariates.html"><a href="covariates.html#covariates-intro"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
-<li class="chapter" data-level="3.2" data-path="covariates.html"><a href="covariates.html#covariates-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a><ul>
+<li class="chapter" data-level="3.2" data-path="covariates.html"><a href="covariates.html#covariates-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a>
+<ul>
 <li class="chapter" data-level="3.2.1" data-path="covariates.html"><a href="covariates.html#covariates-dl-setup"><i class="fa fa-check"></i><b>3.2.1</b> <code>MODIS</code> setup</a></li>
 <li class="chapter" data-level="3.2.2" data-path="covariates.html"><a href="covariates.html#covariates-dl-r"><i class="fa fa-check"></i><b>3.2.2</b> Download using R</a></li>
 <li class="chapter" data-level="3.2.3" data-path="covariates.html"><a href="covariates.html#covariates-dl-trouble"><i class="fa fa-check"></i><b>3.2.3</b> Troubleshooting</a></li>
@@ -185,43 +193,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.4" data-path="covariates.html"><a href="covariates.html#covariates-prediction"><i class="fa fa-check"></i><b>3.4</b> Prediction surface</a></li>
 <li class="chapter" data-level="3.5" data-path="covariates.html"><a href="covariates.html#covariates-elevation"><i class="fa fa-check"></i><b>3.5</b> Elevation</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a><ul>
+<li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a>
+<ul>
 <li class="chapter" data-level="4.1" data-path="encounter.html"><a href="encounter.html#encouter-intro"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
 <li class="chapter" data-level="4.2" data-path="encounter.html"><a href="encounter.html#encounter-data"><i class="fa fa-check"></i><b>4.2</b> Data preparation</a></li>
 <li class="chapter" data-level="4.3" data-path="encounter.html"><a href="encounter.html#encounter-sss"><i class="fa fa-check"></i><b>4.3</b> Spatiotemporal subsampling</a></li>
-<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a><ul>
+<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a>
+<ul>
 <li class="chapter" data-level="4.4.1" data-path="encounter.html"><a href="encounter.html#encounter-rf-cal"><i class="fa fa-check"></i><b>4.4.1</b> Calibration</a></li>
 <li class="chapter" data-level="4.4.2" data-path="encounter.html"><a href="encounter.html#encounter-rf-assess"><i class="fa fa-check"></i><b>4.4.2</b> Assessment</a></li>
 </ul></li>
-<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Habitat associations</a><ul>
+<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Habitat associations</a>
+<ul>
 <li class="chapter" data-level="4.5.1" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pi"><i class="fa fa-check"></i><b>4.5.1</b> Predictor importance</a></li>
 <li class="chapter" data-level="4.5.2" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pd"><i class="fa fa-check"></i><b>4.5.2</b> Partial dependence</a></li>
 </ul></li>
 <li class="chapter" data-level="4.6" data-path="encounter.html"><a href="encounter.html#encounter-predict"><i class="fa fa-check"></i><b>4.6</b> Prediction</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a><ul>
+<li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a>
+<ul>
 <li class="chapter" data-level="5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-intro"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
-<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a>
+<ul>
 <li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.2.1</b> Data formatting</a></li>
 <li class="chapter" data-level="5.2.2" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.2.2</b> Spatial subsampling</a></li>
 <li class="chapter" data-level="5.2.3" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.2.3</b> <code>unmarked</code> object</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a><ul>
+<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a>
+<ul>
 <li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.3.1</b> Assessment</a></li>
 <li class="chapter" data-level="5.3.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.3.2</b> Model selection</a></li>
 <li class="chapter" data-level="5.3.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-detection"><i class="fa fa-check"></i><b>5.3.3</b> Exploring the effects of covariates on detection probability</a></li>
 </ul></li>
 <li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.4</b> Prediction</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a><ul>
+<li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a>
+<ul>
 <li class="chapter" data-level="6.1" data-path="abundance.html"><a href="abundance.html#abundance-intro"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
-<li class="chapter" data-level="6.2" data-path="abundance.html"><a href="abundance.html#abundance-data"><i class="fa fa-check"></i><b>6.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="6.2" data-path="abundance.html"><a href="abundance.html#abundance-data"><i class="fa fa-check"></i><b>6.2</b> Data preparation</a>
+<ul>
 <li class="chapter" data-level="6.2.1" data-path="abundance.html"><a href="abundance.html#abundance-data-sss"><i class="fa fa-check"></i><b>6.2.1</b> Spatiotemporal subsampling</a></li>
 <li class="chapter" data-level="6.2.2" data-path="abundance.html"><a href="abundance.html#abundance-data-tt"><i class="fa fa-check"></i><b>6.2.2</b> Test-train split</a></li>
 </ul></li>
 <li class="chapter" data-level="6.3" data-path="abundance.html"><a href="abundance.html#abundance-explore"><i class="fa fa-check"></i><b>6.3</b> Exploratory data analysis</a></li>
 <li class="chapter" data-level="6.4" data-path="abundance.html"><a href="abundance.html#abundance-model"><i class="fa fa-check"></i><b>6.4</b> Abundance models</a></li>
-<li class="chapter" data-level="6.5" data-path="abundance.html"><a href="abundance.html#abundance-assess"><i class="fa fa-check"></i><b>6.5</b> Asssessment</a><ul>
+<li class="chapter" data-level="6.5" data-path="abundance.html"><a href="abundance.html#abundance-assess"><i class="fa fa-check"></i><b>6.5</b> Asssessment</a>
+<ul>
 <li class="chapter" data-level="6.5.1" data-path="abundance.html"><a href="abundance.html#abundance-assess-rank"><i class="fa fa-check"></i><b>6.5.1</b> Predictive performance: Ranking</a></li>
 <li class="chapter" data-level="6.5.2" data-path="abundance.html"><a href="abundance.html#abundance-assess-mag"><i class="fa fa-check"></i><b>6.5.2</b> Predictive performance: Magnitude</a></li>
 <li class="chapter" data-level="6.5.3" data-path="abundance.html"><a href="abundance.html#abundance-assess-cov"><i class="fa fa-check"></i><b>6.5.3</b> Assessing covariate effects</a></li>
@@ -252,7 +269,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p class="author"><em>Matthew Strimas-Mackey, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink, Alison Johnston</em></p>
 <p class="date"><em>Version 1.0</em></p>
 </div>
-<div id="welcome" class="section level1 unnumbered">
+<div id="welcome" class="section level1 unnumbered" number="">
 <h1>Welcome</h1>
 <p><strong>Best Practices for Using eBird Data</strong> is a supplement to <em>Best practices for making reliable inferences from citizen science data: case study using eBird to estimate species distributions</em> (<a href="https://www.biorxiv.org/content/10.1101/574392v1">Johnston et al. 2019</a>). This paper describes the challenges associated with making inferences from biological citizen science data and proposes a set of best practices for making reliable estimates of species distributions from these data. Throughout, the paper uses <a href="https://ebird.org/">eBird</a>, the world’s largest biological citizen science project, as a case study to illustrate the good practices. This book acts as a supplement to the paper, showing readers how to implement these best practices within <a href="https://www.r-project.org/">R</a> using real data from eBird. After completing this book, readers should be able to extract data from the eBird database suitable for their own studies, process these data to prepare them for robust analyses, collect environmental covariates for modeling, and fit and assess models estimating encounter rate, occupancy, and relative abundance. Readers should be comfortable with the R programming language, and read the <a href="intro.html#intro-pre">Prerequisites</a> and <a href="intro.html#intro-setup">Setup</a> sections of the introduction, before diving into this book.</p>
 <p>A preprint of the paper associated with this book is currently <a href="https://www.biorxiv.org/content/10.1101/574392v2">available on bioRxiv</a>.</p>

@@ -114,7 +114,7 @@ ebird_split <- ebird_ss %>%
          day_of_year, time_observations_started, duration_minutes,
          effort_distance_km, number_observers, protocol_type,
          # habitat covariates
-         hab_covs) 
+         all_of(hab_covs)) 
 # split 80/20
 ebird_split <- ebird_split %>% 
   split(if_else(runif(nrow(.)) <= 0.8, "train", "test"))
