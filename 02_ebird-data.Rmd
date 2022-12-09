@@ -166,7 +166,7 @@ Before proceeding to fitting species distribution models with these data, it's w
 
 ```{r ebird-explore-map}
 # load and project gis data
-map_proj <- st_crs(102003)
+map_proj <- st_crs("ESRI:102003")
 ne_land <- read_sf("data/gis-data.gpkg", "ne_land") %>% 
   st_transform(crs = map_proj) %>% 
   st_geometry()
