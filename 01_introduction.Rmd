@@ -124,7 +124,9 @@ if (!dir.exists(gpkg_dir)) {
 }
 f_ne <- file.path(gpkg_dir, "gis-data.gpkg")
 
-# download bcrs
+# download bcrs; In case the unzip() function does not work, manually download the BCR zip file frpom the URL below and skip to importing it using the exact path as
+# downloaded to;
+# The cleanup section below will then become redundant and may be skipped
 tmp_dir <- normalizePath(tempdir())
 tmp_bcr <- file.path(tmp_dir, "bcr.zip")
 paste0("https://www.birdscanada.org/research/gislab/download/", 
@@ -133,7 +135,7 @@ paste0("https://www.birdscanada.org/research/gislab/download/",
 unzip(tmp_bcr, exdir = tmp_dir)
 bcr <- file.path(tmp_dir, "BCR_Terrestrial_master_International.shp") %>% 
   read_sf() %>% 
-  select(bcr_code = BCR, bcr_name = LABEL) %>% 
+  select(bcr_code = BCR, bcr_name = Label) %>% 
   filter(bcr_code == 27)
 # clean up
 list.files(tmp_dir, "bcr", ignore.case = TRUE, full.names = TRUE) %>% 
@@ -160,9 +162,9 @@ ne_country_lines <- st_intersects(ne_country_lines, ne_land, sparse = FALSE) %>%
 ne_state_lines <- ne_download(scale = 50, category = "cultural",
                               type = "admin_1_states_provinces_lines",
                               returnclass = "sf") %>%
-  filter(adm0_a3 %in% c("USA", "CAN")) %>%
-  mutate(iso_a2 = recode(adm0_a3, USA = "US", CAN = "CAN")) %>% 
-  select(country = adm0_name, country_code = iso_a2)
+  filter(ADM0_A3 %in% c("USA", "CAN")) %>%
+  mutate(iso_a2 = recode(ADM0_A3, USA = "US", CAN = "CAN")) %>% 
+  select(country = ADM0_NAME, country_code = iso_a2)
 
 # output
 unlink(f_ne)
