@@ -96,7 +96,7 @@ begin_year <- format(min(ebird$observation_date), "%Y.01.01")
 # end date for ebird data
 end_year <- format(max(ebird$observation_date), "%Y.12.31")
 # download tiles and combine into a single raster for each year
-tifs <- runGdal(product = "MCD12Q1", collection = "006", SDSstring = "01", 
+tifs <- runGdal(product = "MCD12Q1", collection = "006", SDSstring = "1", 
                 extent = bcr %>% st_buffer(dist = 10000), 
                 begin = begin_year, end = end_year, 
                 outDirPath = "data", job = "modis",
