@@ -175,19 +175,20 @@ ebird_buff <- ebird %>%
 Now, we'll loop over the years and for each square neighborhood extract all the raster values within that neighborhood and count the number of cells of each landcover class. We use the `exactextractr` package for this, since it's often orders of magnitude faster than using `raster::extract()`.
 
 ```{r landcover-lsm-extract}
-# function to summarize landcover data for all checklists in a given year
-calculate_pland <- function(yr, regions, lc) {
-  locs <- st_set_geometry(regions, NULL)
-  exact_extract(lc[[yr]], regions, progress = FALSE) %>% 
-    map(~ count(., landcover = value)) %>% 
-    tibble(locs, data = .) %>% 
+lc_extract <- NULL
+for (yr in names(landcover)) {
+  # get the buffered checklists for a given year
+  regions <- ebird_buff$data[[which(yr == ebird_buff$year_lc)]]
+  # get landcover values within each buffered checklist area
+  ee <- exact_extract(landcover[[yr]], regions, progress = FALSE)
+  # count the number of each landcover class for each checklist buffer
+  ee_count <- map(ee, ~ count(., landcover = value))
+  # attach the year and locality id back to the checklists
+  ee_summ <- tibble(st_drop_geometry(regions), data = ee_count) %>% 
     unnest(data)
+  # bind to results
+  lc_extract <- bind_rows(lc_extract, ee_summ)
 }
-# iterate over all years extracting landcover for all checklists in each
-lc_extract <- ebird_buff %>% 
-  mutate(pland = map2(year_lc, data, calculate_pland, lc = landcover)) %>% 
-  select(pland) %>% 
-  unnest(cols = pland)
 ```
 
 Now we have the set of land cover values within a neighborhood around each checklist location. We can summarize these data within each neighborhood to calculate PLAND: the proportion of the neighborhood within each land cover class. 
@@ -307,6 +308,7 @@ pland_coords <- st_transform(r_centers, crs = 4326) %>%
 Keeping these data in a data frame is a compact way to store them and will be required once we make model predictions in later chapters. However, we can always use the raster template to convert these PLAND metrics into a spatial format, for example, if we want to map them. Let's look at how this works for land cover class 4: deciduous broadleaf forest.
 
 ```{r landcover-prediction-map}
+map_proj <- st_crs("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96")
 forest_cover <- pland_coords %>% 
   # convert to spatial features
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>% 
@@ -314,7 +316,7 @@ forest_cover <- pland_coords %>%
   # rasterize points
   rasterize(r, field = "pland_04_deciduous_broadleaf") %>% 
   # project to albers equal-area for mapping
-  projectRaster(crs = st_crs(102003)$proj4string, method = "ngb") %>% 
+  projectRaster(crs = map_proj$proj4string, method = "ngb") %>% 
   # trim off empty edges of raster
   trim()
 

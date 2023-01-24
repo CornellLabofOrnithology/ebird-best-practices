@@ -63,7 +63,7 @@ max_lc_year <- max(pred_surface$year)
 r <- raster("data/prediction-surface.tif")
 
 # load gis data for making maps
-map_proj <- st_crs(102003)
+map_proj <- st_crs("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96")
 ne_land <- read_sf("data/gis-data.gpkg", "ne_land") %>% 
   st_transform(crs = map_proj) %>% 
   st_geometry()
