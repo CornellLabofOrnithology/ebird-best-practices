@@ -51,8 +51,12 @@ bcr <- read_sf("data/gis-data.gpkg", "bcr") %>%
 # load ebird data
 ebird <- read_csv("data/ebd_woothr_june_bcr27_zf.csv")
 # get list of tiles required to cover this bcr
-tiles <- getTile(bcr)
-tiles@tile
+tiles <- bcr %>% 
+  st_transform(crs = 4326) %>% 
+  st_bbox() %>% 
+  as.list() %>% 
+  getTile()
+tiles[["tile"]]
 ```
 
 So, we'll need to download these three tiles for each of the 10 years from 2010-2019.
@@ -266,7 +270,7 @@ r_centers <- rasterToPoints(r, spatial = TRUE) %>%
 r_cells <- st_buffer(r_centers, dist = neighborhood_radius)
 
 # extract landcover values within neighborhoods, only needed most recent year
-lc_extract_pred <- landcover[[paste0("y", max_lc_year)]] %>% 
+lc_extract_pred <- landcover %>% 
   exact_extract(r_cells, progress = FALSE) %>% 
   map(~ count(., landcover = value)) %>% 
   tibble(id = r_cells$id, data = .) %>% 
@@ -274,7 +278,6 @@ lc_extract_pred <- landcover[[paste0("y", max_lc_year)]] %>%
 
 # calculate the percent for each landcover class
 pland_pred <- lc_extract_pred %>% 
-  count(id, landcover) %>% 
   group_by(id) %>% 
   mutate(pland = n / sum(n)) %>% 
   ungroup() %>% 
