@@ -1,6 +1,6 @@
 Package: ebirstbestpractices
 Title: Best Practices for Using eBird Data
-Version: 1.0
+Version: 2.0
 Authors@R: c(
   person("Matthew", "Strimas-Mackey", , email = "mes335@cornell.edu",
          c("aut", "cre"), 

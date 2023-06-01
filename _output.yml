@@ -10,5 +10,3 @@ bookdown::gitbook:
       link: https://github.com/cornelllabofornithology/ebird-best-practices/edit/master/%s
       text: "Edit"
     sharing: no
-  includes:
-    in_header: ga.html

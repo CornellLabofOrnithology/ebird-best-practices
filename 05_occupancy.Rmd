@@ -197,7 +197,7 @@ summary(occ_model)
 Although few goodness-of-fit tests exist for occupancy models, we demonstrate how to perform the MacKenzie and Bailey [-@mackenzieAssessingFitSiteoccupancy2004] goodness-of-fit test. This approach calculates a Pearson's chi-square fit statistic from the observed and expected frequencies of detection histories for a given model. For this example, we use the `mb.gof.test()` test function in the `AICcmodavg` package, which can handle occupancy models produced by the `occu()` function in `unmarked`. Note that to produce accurate results, this process requires simulating a large number of bootstrap samples, which can take a long time to run. To keep the execution times reasonable, we set `nsim = 10` to simulate 10 samples for this example; however, when running this under regular circumstances, you should increase this to a much higher number of simulations (e.g., `nsim = 1000`).
 
 ```{r occupancy-model-assess, eval = FALSE, echo = 1:4}
-occ_gof <- mb.gof.test(occ_model, nsim = 10, plot.hist = FALSE)
+occ_gof <- mb.gof.test(occ_model, nsim = 100, plot.hist = FALSE)
 # hide the chisq table to give simpler output
 occ_gof$chisq.table <- NULL
 print(occ_gof)
