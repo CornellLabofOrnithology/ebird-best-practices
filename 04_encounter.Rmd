@@ -21,6 +21,7 @@ Let's get started by loading the necessary packages and data. If you worked thro
 ```{r encounter-data}
 library(sf)
 library(raster)
+remotes::install_github("r-barnes/dggridR")
 library(dggridR)
 library(lubridate)
 library(ranger)
